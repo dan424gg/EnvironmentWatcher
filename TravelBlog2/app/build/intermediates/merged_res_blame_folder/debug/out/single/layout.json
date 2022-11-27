@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "C:\\Users\\wells\\.gradle\\daemon\\7.4\\com.travelblog.app-mergeDebugResources-28:\\layout\\activity_login.xml",
+        "source": "C:\\Users\\wells\\.gradle\\daemon\\7.4\\com.travelblog.app-main-31:\\layout\\activity_login.xml"
+    },
+    {
+        "merged": "com.travelblog.app-mergeDebugResources-28:/layout/activity_login.xml",
+        "source": "com.travelblog.app-main-31:/layout/activity_login.xml"
+    },
+    {
+        "merged": "C:\\Users\\wells\\.gradle\\daemon\\7.4\\com.travelblog.app-mergeDebugResources-28:\\layout\\activity_main.xml",
+        "source": "C:\\Users\\wells\\.gradle\\daemon\\7.4\\com.travelblog.app-main-31:\\layout\\activity_main.xml"
+    }
+]

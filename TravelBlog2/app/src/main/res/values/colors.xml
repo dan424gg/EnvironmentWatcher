@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- these colors can now be used throughout styles files -->
 <resources>
+    <color name="blue700">#344955</color>
+    <color name="blue800">#232F34</color>
+    <color name="orange500">#F9AA33</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>

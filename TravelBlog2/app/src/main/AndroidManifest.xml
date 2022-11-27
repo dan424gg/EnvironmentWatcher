@@ -1,7 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.travelblog">
+    <!-- below is used to declare theme of the app -->
     <application
-        android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+        android:theme="@style/AppTheme"
         android:label="Travel Blog">
         <activity android:name=".LoginActivity"
             android:exported="true">
