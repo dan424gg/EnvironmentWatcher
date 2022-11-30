@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.travelblog.app-mergeDebugResources-27:/values-km/values-km.xml",
+            "outputFile": "com.travelblog.app-mergeDebugResources-28:/values-km/values-km.xml",
             "map": [
                 {
                     "source": "C:\\Users\\wells\\.gradle\\caches\\transforms-3\\35247393b79a5fe3c4f500e2adf3d76f\\transformed\\appcompat-1.5.1\\res\\values-km\\values-km.xml",

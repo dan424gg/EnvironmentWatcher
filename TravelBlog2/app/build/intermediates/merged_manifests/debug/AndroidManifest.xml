@@ -8,17 +8,20 @@
         android:minSdkVersion="21"
         android:targetSdkVersion="33" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <permission
         android:name="com.travelblog.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.travelblog.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" /> <!-- below is used to declare theme of the app -->
+    <uses-permission android:name="com.travelblog.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" /> <!-- below is used to declare color theme of the app -->
     <application
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         android:debuggable="true"
         android:label="Travel Blog"
-        android:testOnly="true"
         android:theme="@style/AppTheme" >
+
+        <!-- declare activities used in app -->
         <activity
             android:name="com.travelblog.LoginActivity"
             android:exported="true" >
@@ -29,6 +32,7 @@
             </intent-filter>
         </activity>
         <activity android:name="com.travelblog.MainActivity" />
+        <activity android:name="com.travelblog.BlogDetailsActivity" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"

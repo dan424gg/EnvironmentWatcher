@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.travelblog.app-mergeDebugResources-27:/values-gu/values-gu.xml",
+            "outputFile": "com.travelblog.app-mergeDebugResources-28:/values-gu/values-gu.xml",
             "map": [
                 {
                     "source": "C:\\Users\\wells\\.gradle\\caches\\transforms-3\\f3889f18d4f26e70cef4e17d11226053\\transformed\\core-1.9.0\\res\\values-gu\\values-gu.xml",

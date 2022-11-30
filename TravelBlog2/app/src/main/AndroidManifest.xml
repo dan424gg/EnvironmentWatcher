@@ -1,9 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.travelblog">
-    <!-- below is used to declare theme of the app -->
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- below is used to declare color theme of the app -->
     <application
         android:theme="@style/AppTheme"
         android:label="Travel Blog">
+        <!-- declare activities used in app -->
         <activity android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
@@ -12,5 +16,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" />
+        <activity android:name=".BlogDetailsActivity" />
     </application>
 </manifest>

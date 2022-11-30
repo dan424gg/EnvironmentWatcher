@@ -1,5 +1,6 @@
 package com.travelblog
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -15,6 +16,8 @@ class MainActivity : AppCompatActivity() {
 
         binding.mainTextView.text = "This is my app"
         // activity is created
+
+        startActivity(Intent(this, BlogDetailsActivity::class.java))
     }
 
     override fun onDestroy() {
