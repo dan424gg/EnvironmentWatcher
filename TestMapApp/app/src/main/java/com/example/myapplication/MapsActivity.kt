@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
+import androidx.core.content.ContextCompat
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -24,6 +25,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var longitude = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        requestPermissionLauncher.launch(arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION,
+            android.Manifest.permission.ACCESS_FINE_LOCATION))
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         super.onCreate(savedInstanceState)
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
@@ -33,12 +37,31 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-    }
-
-    fun requestPermissions(){
 
     }
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(RequestMultiplePermissions()
+        ) { permissions ->
+            permissions.entries.forEach{
+                val permissionName = it.key
+                val isGranted = it.value
+                if(isGranted){
+                    // Permission granted
+                }else{
+                    // Permission denied
+                }
+            }
+        }
+
+    private fun getLastKnownLocation(){
+        fusedLocationClient.lastLocation.addOnSuccessListener { location->
+            if(location != null){
+                latitude = location.latitude
+                longitude = location.longitude
+            }
+        }
+    }*
 
     /**
      * Manipulates the map once available.
@@ -53,6 +76,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap = googleMap
         //fusedLocationClient.lastLocation
         // Add a marker in Sydney and move the camera
+        //getLastKnownLocation()
         val currLocation = LatLng(latitude,longitude)
         mMap.addMarker(MarkerOptions().position(currLocation).title("Marker at Current Location"))
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currLocation))
