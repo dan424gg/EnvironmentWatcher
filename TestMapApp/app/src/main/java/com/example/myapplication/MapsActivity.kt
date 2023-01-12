@@ -21,8 +21,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private var latitude = 0.0
-    private var longitude = 0.0
+    private var latitude = 40.0
+    private var longitude = 100.0
+    private var zoomStart = 0.0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         requestPermissionLauncher.launch(arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -59,9 +60,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             if(location != null){
                 latitude = location.latitude
                 longitude = location.longitude
+                zoomStart = 15.0f
             }
         }
-    }*
+    }
 
     /**
      * Manipulates the map once available.
@@ -80,6 +82,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val currLocation = LatLng(latitude,longitude)
         mMap.addMarker(MarkerOptions().position(currLocation).title("Marker at Current Location"))
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currLocation))
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f))
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(zoomStart))
     }
 }
