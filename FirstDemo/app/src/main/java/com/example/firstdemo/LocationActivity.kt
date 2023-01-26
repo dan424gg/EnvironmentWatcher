@@ -28,11 +28,11 @@ class LocationActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_location)
+        //setContentView(R.layout.activity_location)
         Log.d("DEBUG", "Reached second activity")
 
-        longitude = intent.getDoubleExtra("longitude", 0.0)
-        latitude = intent.getDoubleExtra("latitude", 0.0)
+        longitude = intent.getDoubleExtra("longitude", latitude)
+        latitude = intent.getDoubleExtra("latitude", longitude)
 
         locationRequest = LocationRequest.create()
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
@@ -77,7 +77,7 @@ class LocationActivity : AppCompatActivity() {
                     latitude = it.latitude
                     longitude = it.longitude
                     Log.d("DEBUG", latitude.toString())
-                    val returnIntent = Intent(this, LocationActivity::class.java).also{itData->
+                    val returnIntent = Intent(this, MainActivity::class.java).also{itData->
                         itData.putExtra("latitude", latitude)
                         itData.putExtra("longitude", longitude)
                     }

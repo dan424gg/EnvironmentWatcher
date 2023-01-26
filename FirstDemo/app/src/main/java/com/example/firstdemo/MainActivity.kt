@@ -14,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 class MainActivity : AppCompatActivity() {
     private var latitude = 0.0
     private var longitude = 0.0
+    private var weather: String = "Weather"
     
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,9 +23,11 @@ class MainActivity : AppCompatActivity() {
 
         val lat: TextView = findViewById(R.id.latitude)
         val long: TextView = findViewById(R.id.longitude)
-        val button: Button = findViewById(R.id.loc_button)
+        val curr_weather: TextView = findViewById(R.id.weather)
+        val locationButton: Button = findViewById(R.id.loc_button)
+        val weatherButton: Button = findViewById(R.id.weather_button)
 
-        val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+        val locationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
             if(it.resultCode == Activity.RESULT_OK){
                 // Handle result data
                 if(it.data != null) {
@@ -36,15 +39,35 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val startIntent = Intent(this, LocationActivity::class.java).also{
+        val weatherResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+            if(it.resultCode == Activity.RESULT_OK){
+                // Handle result data
+                if(it.data != null) {
+                    Log.d("DEBUG", "BACK TO MAIN")
+                    weather = it.data!!.getStringExtra("weather")!!
+                }
+            }
+        }
+
+        val locationIntent = Intent(this, LocationActivity::class.java).also{
             it.putExtra("latitude", latitude)
             it.putExtra("longitude", longitude)
         }
 
-        button.setOnClickListener{
-            startForResult.launch(startIntent)
+        val weatherIntent = Intent(this, WeatherActivity::class.java).also{
+            it.putExtra("latitude", latitude)
+            it.putExtra("longitude", longitude)
+        }
+
+        locationButton.setOnClickListener{
+            locationResult.launch(locationIntent)
             lat.text = latitude.toString()
             long.text = longitude.toString()
+        }
+
+        weatherButton.setOnClickListener{
+            weatherResult.launch(weatherIntent)
+            curr_weather.text = weather
         }
     }
 }
