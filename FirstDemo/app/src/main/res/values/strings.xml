@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">FirstDemo</string>
+    <string name="instructions">Get your location and weather!</string>
+    <string name="get_location">Get Location</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="get_weather">GET WEATHER</string>
+    <string name="weather">Weather</string>
+</resources>
