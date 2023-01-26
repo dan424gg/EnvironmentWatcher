@@ -17,8 +17,8 @@ import kotlin.concurrent.thread
 class WeatherActivity : AppCompatActivity() {
 
     private val client = OkHttpClient()
-    private var latitude = 0.0
-    private var longitude = 0.0
+    private var latitude = 10.0
+    private var longitude = 10.0
     lateinit var forecastInformation: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,8 +27,8 @@ class WeatherActivity : AppCompatActivity() {
 
         //forecastInformation = findViewById<TextView>(R.id.weather)
 
-        longitude = intent.getDoubleExtra("longitude", latitude)
-        latitude = intent.getDoubleExtra("latitude", longitude)
+        longitude = intent.getDoubleExtra("longitude", longitude)
+        latitude = intent.getDoubleExtra("latitude", latitude)
 
         thread {
             // Get content from initial API request with latitude and longitude
@@ -37,23 +37,28 @@ class WeatherActivity : AppCompatActivity() {
             // Doing some JSON parsing stuff to get gridpoint URL
             json = JSONObject(run(json.getJSONObject("properties").getString("forecast")))
 
-            /*runOnUiThread {
+            runOnUiThread {
                 // Get forecast at index=0 of forecast array
                 val content =
                     json.getJSONObject("properties").getJSONArray("periods").getString(0)
                 val moreContent = JSONObject(content)
-                forecastInformation.text = moreContent.getString("detailedForecast")
-            }*/
 
-            val content = json.getJSONObject("properties").getJSONArray("periods").getString(0)
-            val moreContent = JSONObject(content)
-
-
-            val returnIntent = Intent(this, MainActivity::class.java).also{ itData->
-                itData.putExtra("weather",moreContent.getString("detailedForecast"))
+                val returnIntent = Intent(this, MainActivity::class.java).also{ itData->
+                    itData.putExtra("weather",moreContent.getString("detailedForecast"))
+                }
+                setResult(Activity.RESULT_OK, returnIntent)
+                finish()
             }
-            setResult(Activity.RESULT_OK, returnIntent)
-            finish()
+
+//            val content = json.getJSONObject("properties").getJSONArray("periods").getString(0)
+//            val moreContent = JSONObject(content)
+//
+//
+//            val returnIntent = Intent(this, MainActivity::class.java).also{ itData->
+//                itData.putExtra("weather",moreContent.getString("detailedForecast"))
+//            }
+//            setResult(Activity.RESULT_OK, returnIntent)
+//            finish()
         }
     }
 
@@ -64,8 +69,8 @@ class WeatherActivity : AppCompatActivity() {
             .build()
 
         client.newCall(request).execute().use { response ->
-            Log.d("HailHydra", "Got URL successfully")
             if (!response.isSuccessful) throw IOException("$response")
+            Log.d("HailHydra", "Got URL successfully")
             return response.body!!.string()
         }
     }

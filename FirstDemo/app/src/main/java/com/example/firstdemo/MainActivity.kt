@@ -43,18 +43,13 @@ class MainActivity : AppCompatActivity() {
             if(it.resultCode == Activity.RESULT_OK){
                 // Handle result data
                 if(it.data != null) {
-                    Log.d("DEBUG", "BACK TO MAIN")
-                    weather = it.data!!.getStringExtra("weather")!!
+                    Log.d("DEBUG", "BACK TO MAIN for weather")
+                    weather = it.data!!.getStringExtra("weather").toString()
                 }
             }
         }
 
         val locationIntent = Intent(this, LocationActivity::class.java).also{
-            it.putExtra("latitude", latitude)
-            it.putExtra("longitude", longitude)
-        }
-
-        val weatherIntent = Intent(this, WeatherActivity::class.java).also{
             it.putExtra("latitude", latitude)
             it.putExtra("longitude", longitude)
         }
@@ -66,6 +61,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         weatherButton.setOnClickListener{
+            val weatherIntent = Intent(this, WeatherActivity::class.java).also{
+                it.putExtra("latitude", latitude)
+                it.putExtra("longitude", longitude)
+            }
+
             weatherResult.launch(weatherIntent)
             curr_weather.text = weather
         }

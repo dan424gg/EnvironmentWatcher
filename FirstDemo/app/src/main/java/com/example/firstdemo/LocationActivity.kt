@@ -40,7 +40,7 @@ class LocationActivity : AppCompatActivity() {
         //getLocation()
 
         locationCallback = object : LocationCallback(){
-            override fun onLocationResult(locationResult: LocationResult?){
+            override fun onLocationResult(locationResult: LocationResult) {
                 locationResult ?: return
                 for (location in locationResult.locations){
                     longitude = location.longitude
