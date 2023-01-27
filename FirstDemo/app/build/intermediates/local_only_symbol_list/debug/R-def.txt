@@ -1,0 +1,32 @@
+R_DEF: Internal format may change without notice
+local
+color black
+color purple_200
+color purple_500
+color purple_700
+color teal_200
+color teal_700
+color white
+drawable ic_launcher_background
+drawable ic_launcher_foreground
+id instructions
+id latitude
+id loc_button
+id longitude
+id weather
+id weather_button
+layout activity_location
+layout activity_main
+layout activity_weather
+mipmap ic_launcher
+mipmap ic_launcher_round
+string app_name
+string get_location
+string get_weather
+string instructions
+string latitude
+string longitude
+string weather
+style Theme.FirstDemo
+xml backup_rules
+xml data_extraction_rules
