@@ -6,4 +6,6 @@
     <string name="longitude">Longitude</string>
     <string name="get_weather">GET WEATHER</string>
     <string name="weather">Weather</string>
+    <string name="channel_description">test_description</string>
+    <string name="channel_name">test_name</string>
 </resources>
