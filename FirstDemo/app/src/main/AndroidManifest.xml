@@ -18,14 +18,14 @@
         android:theme="@style/Theme.FirstDemo"
         tools:targetApi="31">
         <activity
-            android:name=".WeatherActivity"
+            android:name=".Weather.WeatherActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".LocationActivity"
+            android:name=".Location.LocationActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
