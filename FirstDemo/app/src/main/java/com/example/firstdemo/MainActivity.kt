@@ -1,6 +1,6 @@
 package com.example.firstdemo
 
-import android.Manifest
+import  android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.NotificationChannel
@@ -47,7 +47,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
          */
-        createNotificationChannel()
 
 
         setContentView(R.layout.activity_main)
@@ -86,39 +85,14 @@ class MainActivity : AppCompatActivity() {
             it.putExtra("longitude", longitude)
         }
 
-        // commented code below (and .setContentIntent() below) will allow notification to be interactive)
-        /*
-        val intent = Intent(this, AlertDetails::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-        */
-
-        var builder = NotificationCompat.Builder(this, "0")
-            .setSmallIcon(R.drawable.notification_icon)
-            .setContentTitle("My notification")
-            .setContentText("Much longer text that cannot fit one line...")
-            .setStyle(NotificationCompat.BigTextStyle()
-                .bigText("Much longer text that cannot fit one line..."))
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-        //.setContentIntent(pendingIntent)
-            .setAutoCancel(true)
-
-        //notify(notificationId, builder.build())else {
-        //                        Log.d("aidan", "notification settings not enabled")
-        //                    }
+        val notificationIntent = Intent(this, NotificationActivity::class.java)
 
         locationButton.setOnClickListener{
+            startActivity(notificationIntent)
             locationResult.launch(locationIntent)
             lat.text = latitude.toString()
             long.text = longitude.toString()
 
-
-            with(NotificationManagerCompat.from(this)) {
-                // notificationId is a unique int for each notification that you must define
-                val notificationId = 0
-                notify(notificationId, builder.build())
-            }
 
         }
 
@@ -135,23 +109,4 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = getString(R.string.channel_name)
-            val descriptionText = getString(R.string.channel_description)
-
-            //Importance value determines if notification should replace last notification from same channel id
-            //set priority with setPriority()
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel("0", name, importance).apply {
-                description = descriptionText
-            }
-            // Register the channel with the system
-            val notificationManager: NotificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
 }
