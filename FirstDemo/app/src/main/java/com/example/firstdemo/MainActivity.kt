@@ -3,16 +3,14 @@ package com.example.firstdemo
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import androidx.annotation.RequiresApi
-import android.widget.Button
-import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.firstdemo.Location.LocationActivity
 import com.example.firstdemo.Location.LocationViewModel
@@ -37,25 +35,35 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val lat: TextView = findViewById(R.id.latitude)
-        val long: TextView = findViewById(R.id.longitude)
-        val currWeather: TextView = findViewById(R.id.weather)
-        val locationButton: Button = findViewById(R.id.loc_button)
-        val weatherButton: Button = findViewById(R.id.weather_button)
+        //val lat: TextView = findViewById(R.id.latitude)
+        //val long: TextView = findViewById(R.id.longitude)
+        //val currWeather: TextView = findViewById(R.id.weather)
+        //val locationButton: Button = findViewById(R.id.loc_button)
+        //val weatherButton: Button = findViewById(R.id.weather_button)
         // Create Live Data obj
+        val mapFragment = MapsFragment()
+        val bundle = Bundle()
+        bundle.putDouble("Latitude", latitude)
+        bundle.putDouble("Longitude", longitude)
+        mapFragment.setArguments(bundle)
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, mapFragment)
+            .commitNow()
+
         val forecastObserver = Observer<String> { newWeather ->
             Log.d("DEBUG", "Weather changed!")
-            currWeather.text = newWeather
+            //currWeather.text = newWeather
         }
         weatherViewModel.forecast.observe(this, forecastObserver)
 
         val longitudeObserver = Observer<Double> { newLongitude ->
-            long.text = newLongitude.toString()
+            //long.text = newLongitude.toString()
         }
         locationViewModel.liveLongitude.observe(this, longitudeObserver)
 
         val latitudeObserver = Observer<Double> { newLatitude ->
-            lat.text = newLatitude.toString()
+            //lat.text = newLatitude.toString()
         }
         locationViewModel.liveLatitude.observe(this, latitudeObserver)
 
