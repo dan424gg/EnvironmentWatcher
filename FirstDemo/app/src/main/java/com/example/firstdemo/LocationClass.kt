@@ -3,36 +3,33 @@ package com.example.firstdemo
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
-import androidx.activity.result.ActivityResultRegistry
+import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ShareCompat.getCallingActivity
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 
-class LocationActivity : AppCompatActivity(){
+object LocationClass {
     private lateinit var locationCallback : LocationCallback
     private lateinit var locationRequest : LocationRequest
     private var longitude = 0.0
     private var latitude = 0.0
+    //private lateinit var context : Activity
 
 
     @RequiresApi(Build.VERSION_CODES.M)
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        //setContentView(R.layout.activity_location)
-        Log.d("DEBUG", "Reached second activity")
+    public fun calling(that: Activity): Pair<Double, Double> {
+        Log.d("DEBUG", "Reached location code")
 
-        longitude = intent.getDoubleExtra("longitude", latitude)
-        latitude = intent.getDoubleExtra("latitude", longitude)
+        //context = that;
 
         locationRequest = LocationRequest.create()
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
@@ -50,22 +47,25 @@ class LocationActivity : AppCompatActivity(){
         }
         Log.d("DEBUG", "Reached second activity 2")
 
-        getLocation()
+        getLocation(that)
+        //return latitude to longitude
+        return latitude to longitude
     }
 
     @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun getLocation(){
+    private fun getLocation(context: Activity){
         Log.d("DEBUG", "Reached getLocation")
-        val client = LocationServices.getFusedLocationProviderClient(this)
+        //val act : TextView = findViewById(R.id.)
+        val client = LocationServices.getFusedLocationProviderClient(context)
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED
             ||
-            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+            ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
             != PackageManager.PERMISSION_GRANTED){
             Log.d("DEBUG", "Reached Ask Permission")
-            ActivityCompat.requestPermissions(this, arrayOf(
+            ActivityCompat.requestPermissions(context, arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ), 1)
@@ -77,19 +77,14 @@ class LocationActivity : AppCompatActivity(){
                     latitude = it.latitude
                     longitude = it.longitude
                     Log.d("DEBUG", latitude.toString())
-                    val returnIntent = Intent(this, MainActivity::class.java).also{itData->
-                        itData.putExtra("latitude", latitude)
-                        itData.putExtra("longitude", longitude)
-                    }
-                    setResult(Activity.RESULT_OK, returnIntent)
-                    finish()
                 }
             }
         }
     }
 
+    /*
     @RequiresApi(Build.VERSION_CODES.M)
-    override fun onRequestPermissionsResult(
+    fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
@@ -99,5 +94,5 @@ class LocationActivity : AppCompatActivity(){
             // Got permission from user
             getLocation()
         }
-    }
+    }*/
 }

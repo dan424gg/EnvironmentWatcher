@@ -88,10 +88,11 @@ class MainActivity : AppCompatActivity() {
         val notificationIntent = Intent(this, NotificationActivity::class.java)
 
         locationButton.setOnClickListener{
-            startActivity(notificationIntent)
-            locationResult.launch(locationIntent)
-            lat.text = latitude.toString()
-            long.text = longitude.toString()
+            val (lat2, lon2) = LocationClass.calling(this)
+            //startActivity(notificationIntent)
+
+            lat.text = lat2.toString()
+            long.text = lon2.toString()
 
 
         }
