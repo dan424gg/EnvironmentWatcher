@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import androidx.annotation.RequiresApi
@@ -15,6 +16,7 @@ class MainActivity : AppCompatActivity() {
     private var latitude = 0.0
     private var longitude = 0.0
     private var weather: String = "Weather"
+    private var runThread = true
 
     
     @SuppressLint("MissingPermission")
@@ -32,20 +34,48 @@ class MainActivity : AppCompatActivity() {
         val notificationIntent = Intent(this, NotificationActivity::class.java)
 
         locationButton.setOnClickListener{
-            val (p_lat, p_long) = LocationClass.calling(this)
-
-            latitude = p_lat
-            longitude = p_long
-            //startActivity(notificationIntent)
-
-            lat.text = latitude.toString()
-            long.text = longitude.toString()
+            runThread = !runThread
         }
 
-        weatherButton.setOnClickListener{
-            val forecast = WeatherClass.calling(latitude, longitude)
+        Thread(Runnable {
+            // Runs only when Button is True
+            while (runThread) {
+                Log.d("DEBUG","Entered thread")
+                val (p_lat, p_long) = LocationClass.calling(this)
+                latitude = p_lat
+                longitude = p_long
+                runOnUiThread {
+                    lat.text = latitude.toString()
+                    long.text = longitude.toString()
+                }
+                Thread.sleep(2500)
+                Log.d("DEBUG","Entered thread 2")
+                if(latitude != 0.0) {
+                    val forecast = WeatherClass.calling(latitude, longitude)
+                    runOnUiThread {
+                        curWeather.text = forecast
+                    }
+                }
+                Thread.sleep(2500)
+            }
+        }).start()
 
-            curWeather.text = forecast
+        /*
+        Thread(Runnable {
+            // Runs only when Button is True
+            while (runThread) {
+                Thread.sleep(2500)
+                val forecast = WeatherClass.calling(latitude, longitude)
+                runOnUiThread {
+                    curWeather.text = forecast
+                }
+                Thread.sleep(2500)
+            }
+        }).start()
+         */
+
+        weatherButton.setOnClickListener{
+            runThread = !runThread
         }
 
 

@@ -39,6 +39,8 @@ object LocationClass {
                 for (location in locationResult.locations){
                     longitude = location.longitude
                     latitude = location.latitude
+                    Log.d("DEBUG", "Updated location")
+                    Log.d("DEBUG", latitude.toString())
                 }
             }
         }
