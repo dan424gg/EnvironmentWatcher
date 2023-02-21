@@ -5,9 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.firstdemo.Location.LocationClass
@@ -21,8 +19,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
-    private var lastLocation: Pair<Double, Double>? = null
-    private lateinit var lastWeather: String
+    private var lastLocation = Pair(0.0, 0.0)
+    private var lastWeather = "Insert Weather"
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMainBinding
     private var runThread = true
@@ -40,15 +38,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        /*
-        val lat: TextView = findViewById(R.id.latitude)
-        val long: TextView = findViewById(R.id.longitude)
-        val curWeather: TextView = findViewById(R.id.weather)
-        val locationButton: Button = findViewById(R.id.loc_button)
-        val weatherButton: Button = findViewById(R.id.weather_button)
-
-         */
-
     }
 
     /**
@@ -72,13 +61,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val notificationIntent = Intent(this, NotificationActivity::class.java)
 
-        /*
-        locationButton.setOnClickListener{
-            runThread = !runThread
-        }
-
-         */
-
         Thread(Runnable {
             // Runs only when Button is True
             while (runThread) {
@@ -90,20 +72,29 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 Thread.sleep(2500)
                 Log.d("DEBUG","Entered thread 2")
                 if(lastLocation != location) {
+                    Log.d("DEBUG", "$lastLocation, $location")
                     lastLocation = location
                     val latLng = LatLng(location.first, location.second)
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
 
-                    // Zoom in further
+                    runOnUiThread {
+                        Log.d("DEBUG", "Updating map location")
+                        Thread.sleep(2500)
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
 
-                    mMap.moveCamera(CameraUpdateFactory.zoomTo(13f))
+                        // Zoom in further
+                        mMap.moveCamera(CameraUpdateFactory.zoomTo(13f))
+                    }
+
 
                     val weather = WeatherClass.calling(location.first, location.second)
+
                     // Update weather
                     if (weather != lastWeather) {
                         lastWeather = weather
-
-                        displayWeather(weather)
+                        runOnUiThread {
+                            Thread.sleep(2500)
+                            displayWeather(weather)
+                        }
                     }
                 }
                 Thread.sleep(2500)
@@ -136,6 +127,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     // Change weather display icon on map
     private fun displayWeather(weather: String) {
+        Log.d("DEBUG", "In displayWeather")
         val weatherImage : ImageView = findViewById(R.id.weatherImage)
         val badWeather = mapOf("cloudy" to R.drawable.cloudy, "sunny" to R.drawable.sunny,
             "rain" to R.drawable.rain, "clear" to R.drawable.sunny)
