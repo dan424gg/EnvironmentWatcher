@@ -20,12 +20,11 @@ import com.google.android.gms.maps.model.MarkerOptions
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private var lastLocation = Pair(0.0, 0.0)
-    private var lastWeather = "Insert Weather"
+    private var lastWeather = "Forecast goes here!"
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMainBinding
-    private var runThread = true
 
-    
+
     @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,36 +62,36 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         Thread(Runnable {
             // Runs only when Button is True
-            while (runThread) {
-                Log.d("DEBUG","Entered thread")
+            while (true) {
+                Log.d("DEBUG", "Entered thread")
                 val (p_lat, p_long) = LocationClass.calling(this)
 
                 val location = Pair(p_lat, p_long)
 
                 Thread.sleep(2500)
-                Log.d("DEBUG","Entered thread 2")
-                if(lastLocation != location) {
+                Log.d("DEBUG", "Entered thread 2")
+                if (lastLocation != location) {
                     Log.d("DEBUG", "$lastLocation, $location")
                     lastLocation = location
                     val latLng = LatLng(location.first, location.second)
 
                     runOnUiThread {
                         Log.d("DEBUG", "Updating map location")
-                        Thread.sleep(2500)
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
 
                         // Zoom in further
-                        mMap.moveCamera(CameraUpdateFactory.zoomTo(13f))
+                        mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
                     }
-
 
                     val weather = WeatherClass.calling(location.first, location.second)
 
+                    Thread.sleep(2500)
+                    Log.d("DEBUG", "weather: $weather")
                     // Update weather
                     if (weather != lastWeather) {
+                        Log.d("DEBUG", "Weather update: $weather")
                         lastWeather = weather
                         runOnUiThread {
-                            Thread.sleep(2500)
                             displayWeather(weather)
                         }
                     }
@@ -100,29 +99,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 Thread.sleep(2500)
             }
         }).start()
-
-        /*
-        Thread(Runnable {
-            // Runs only when Button is True
-            while (runThread) {
-                Thread.sleep(2500)
-                val forecast = WeatherClass.calling(latitude, longitude)
-                runOnUiThread {
-                    curWeather.text = forecast
-                }
-                Thread.sleep(2500)
-            }
-        }).start()
-         */
-        /*
-            weatherButton.setOnClickListener{
-                runThread = !runThread
-            }
-
-         */
-
-
-
     }
 
     // Change weather display icon on map
