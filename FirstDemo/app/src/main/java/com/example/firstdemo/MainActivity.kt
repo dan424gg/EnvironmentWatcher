@@ -96,7 +96,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         }
                     }
                 }
-                Thread.sleep(2500)
             }
         }).start()
     }
