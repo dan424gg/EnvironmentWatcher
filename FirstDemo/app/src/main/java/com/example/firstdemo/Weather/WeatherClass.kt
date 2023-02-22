@@ -24,11 +24,15 @@ object WeatherClass {
 
         latitude = lat
         longitude = long
+        //var o : Object = Object()
 
         thread {
             val json = getNWSData()
             output = getWeatherString(json)
+            //o.notifyAll()
         }
+
+        //o.wait()
 
         return output
     }

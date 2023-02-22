@@ -53,10 +53,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        // Add a marker in Sydney and move the camera
+/*        // Add a marker in Sydney and move the camera
         val sydney = LatLng(-34.0, 151.0)
         mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))*/
 
         val notificationIntent = Intent(this, NotificationActivity::class.java)
 
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 val location = Pair(p_lat, p_long)
 
-                Thread.sleep(2500)
+                Thread.sleep(1000)
                 Log.d("DEBUG", "Entered thread 2")
                 if (lastLocation != location) {
                     Log.d("DEBUG", "$lastLocation, $location")
@@ -82,20 +82,28 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         // Zoom in further
                         mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
                     }
+                }
 
+                if(p_lat != 0.0) { // Make sure the location is not outside of the US
                     val weather = WeatherClass.calling(location.first, location.second)
 
-                    Thread.sleep(2500)
+                    Thread.sleep(1000)
                     Log.d("DEBUG", "weather: $weather")
-                    // Update weather
-                    if (weather != lastWeather) {
-                        Log.d("DEBUG", "Weather update: $weather")
-                        lastWeather = weather
-                        runOnUiThread {
-                            displayWeather(weather)
-                        }
+                    runOnUiThread {
+                        displayWeather(weather)
                     }
                 }
+                // Update weather
+//                 if (weather != lastWeather) {
+//                     Log.d("DEBUG", "Weather update: $weather")
+//                     lastWeather = weather
+//                     runOnUiThread {
+//                         displayWeather(weather)
+//                     }
+//                 }
+
+
+                Thread.sleep(1000)
             }
         }).start()
     }
