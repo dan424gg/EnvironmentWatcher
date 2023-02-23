@@ -1,101 +1,140 @@
 package com.example.firstdemo
 
-import android.app.Activity
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
+import android.widget.ImageView
 import androidx.annotation.RequiresApi
-import android.widget.Button
-import android.widget.TextView
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
-import androidx.lifecycle.Observer
-import com.example.firstdemo.Location.LocationActivity
-import com.example.firstdemo.Location.LocationViewModel
-import com.example.firstdemo.Weather.WeatherActivity
-import com.example.firstdemo.Weather.WeatherViewModel
+import androidx.appcompat.app.AppCompatActivity
+import com.example.firstdemo.Location.LocationClass
+import com.example.firstdemo.Weather.WeatherClass
+import com.example.firstdemo.databinding.ActivityMainBinding
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 
-class MainActivity : AppCompatActivity() {
-    private var latitude = 0.0
-    private var longitude = 0.0
-    private var weather: String = "com/example/firstdemo/Weather"
-    private val weatherViewModel: WeatherViewModel by viewModels()
-    private val locationViewModel: LocationViewModel by viewModels()
-    
+class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+    private var lastLocation = Pair(0.0, 0.0)
+    private var lastWeather = "Forecast goes here!"
+    private lateinit var mMap: GoogleMap
+    private lateinit var binding: ActivityMainBinding
+
+
+    @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        val lat: TextView = findViewById(R.id.latitude)
-        val long: TextView = findViewById(R.id.longitude)
-        val curr_weather: TextView = findViewById(R.id.weather)
-        val locationButton: Button = findViewById(R.id.loc_button)
-        val weatherButton: Button = findViewById(R.id.weather_button)
-        // Create Live Data obj
-        val forecastObserver = Observer<String> { newWeather ->
-            Log.d("DEBUG", "Weather changed!")
-            curr_weather.text = newWeather
-        }
-        weatherViewModel.forecast.observe(this, forecastObserver)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val longitudeObserver = Observer<Double> { newLongitude ->
-            long.text = newLongitude.toString()
-        }
-        locationViewModel.liveLongitude.observe(this, longitudeObserver)
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        val mapFragment = supportFragmentManager
+            .findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+    }
 
-        val latitudeObserver = Observer<Double> { newLatitude ->
-            lat.text = newLatitude.toString()
-        }
-        locationViewModel.liveLatitude.observe(this, latitudeObserver)
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
 
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
 
-        val locationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-            if(it.resultCode == Activity.RESULT_OK){
-                // Handle result data
-                if(it.data != null) {
-                    latitude = it.data!!.getDoubleExtra("latitude", latitude)
-                    longitude = it.data!!.getDoubleExtra("longitude", longitude)
+/*        // Add a marker in Sydney and move the camera
+        val sydney = LatLng(-34.0, 151.0)
+        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))*/
 
-                    locationViewModel.liveLatitude.setValue(latitude)
-                    locationViewModel.liveLongitude.setValue(longitude)
+        val notificationIntent = Intent(this, NotificationActivity::class.java)
+
+        Thread(Runnable {
+            // Runs only when Button is True
+            while (true) {
+                Log.d("DEBUG", "Entered thread")
+                val (p_lat, p_long) = LocationClass.calling(this)
+
+                val location = Pair(p_lat, p_long)
+
+                Thread.sleep(1000)
+                Log.d("DEBUG", "Entered thread 2")
+                if (lastLocation != location) {
+                    Log.d("DEBUG", "$lastLocation, $location")
+                    lastLocation = location
+                    val latLng = LatLng(location.first, location.second)
+
+                    runOnUiThread {
+                        Log.d("DEBUG", "Updating map location")
+                        mMap.addMarker(MarkerOptions().position(LatLng(p_lat, p_long)).icon(
+                            BitmapDescriptorFactory.fromResource(R.drawable.user_icon)))
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+
+                        // Zoom in further
+                        mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
+                    }
                 }
-            }
-        }
 
-        val weatherResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-            if(it.resultCode == Activity.RESULT_OK){
-                // Handle result data
-                if(it.data != null) {
-                    weather = it.data!!.getStringExtra("weather").toString()
-                    weatherViewModel.forecast.setValue(weather)
+                if(p_lat != 0.0) { // Make sure the location is not outside of the US
+                    val weather = WeatherClass.calling(location.first, location.second)
+
+                    Thread.sleep(1000)
+                    Log.d("DEBUG", "weather: $weather")
+                    runOnUiThread {
+                        displayWeather(weather)
+                    }
                 }
+                // Update weather
+//                 if (weather != lastWeather) {
+//                     Log.d("DEBUG", "Weather update: $weather")
+//                     lastWeather = weather
+//                     runOnUiThread {
+//                         displayWeather(weather)
+//                     }
+//                 }
+
+
+                Thread.sleep(1000)
+            }
+        }).start()
+    }
+
+    // Change weather display icon on map
+    private fun displayWeather(weather: String) {
+        Log.d("DEBUG", "In displayWeather")
+        val weatherImage : ImageView = findViewById(R.id.weatherImage)
+        val badWeather = mapOf("cloudy" to R.drawable.cloudy, "sunny" to R.drawable.sunny,
+            "rain" to R.drawable.rain, "clear" to R.drawable.sunny)
+        var badWeatherExists = false
+
+        // Check if forecast is in list of weather types
+        for (weatherType in badWeather.keys) {
+            if (weather.contains(weatherType, ignoreCase = true)) {
+                badWeather[weatherType]?.let {
+                    badWeatherExists = true
+                    weatherImage.setImageResource(it) }
+                break
             }
         }
 
-        val locationIntent = Intent(this, LocationActivity::class.java).also{
-            it.putExtra("latitude", latitude)
-            it.putExtra("longitude", longitude)
-        }
-
-        locationButton.setOnClickListener{
-            locationResult.launch(locationIntent)
-//            Handler().postDelayed({
-//                lat.text = latitude.toString()
-//                long.text = longitude.toString()
-//            }, 3000)
-        }
-
-        weatherButton.setOnClickListener{
-            val weatherIntent = Intent(this, WeatherActivity::class.java).also{
-                it.putExtra("latitude", latitude)
-                it.putExtra("longitude", longitude)
-            }
-
-            weatherResult.launch(weatherIntent)
+        // Dangerous weather not detected
+        if (!badWeatherExists) {
+            // icon default is lightning for testing
+            weatherImage.setImageResource(R.drawable.lightning)
         }
     }
+
 }
