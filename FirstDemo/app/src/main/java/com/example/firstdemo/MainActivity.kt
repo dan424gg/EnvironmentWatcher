@@ -2,6 +2,7 @@ package com.example.firstdemo
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -15,6 +16,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
@@ -77,6 +79,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     runOnUiThread {
                         Log.d("DEBUG", "Updating map location")
+                        mMap.addMarker(MarkerOptions().position(LatLng(p_lat, p_long)).icon(
+                            BitmapDescriptorFactory.fromResource(R.drawable.user_icon)))
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
 
                         // Zoom in further
