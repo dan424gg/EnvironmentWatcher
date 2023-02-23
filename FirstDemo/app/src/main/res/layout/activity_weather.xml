@@ -4,46 +4,40 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-<<<<<<< HEAD:MyTempApplication/app/src/main/res/layout/activity_main.xml
     android:visibility="visible"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Some forecast stuff!"
-=======
-    tools:context=".Weather.WeatherActivity">
+<!--    <TextView-->
+<!--        android:id="@+id/textView"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Some forecast stuff!"-->
+<!--        tools:context=".Weather.WeatherActivity"/>-->
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/container"
-        android:name="com.example.firstdemo.MapsFragment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="202dp"
-        android:layout_marginTop="365dp"
-        android:layout_marginEnd="209dp"
-        android:layout_marginBottom="367dp"
->>>>>>> main:FirstDemo/app/src/main/res/layout/activity_weather.xml
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.268" />
+<!--    <androidx.fragment.app.FragmentContainerView-->
+<!--        android:id="@+id/container"-->
+<!--        android:name="com.example.firstdemo.MapsFragment"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="202dp"-->
+<!--        android:layout_marginTop="365dp"-->
+<!--        android:layout_marginEnd="209dp"-->
+<!--        android:layout_marginBottom="367dp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias="0.268" />-->
 
-<<<<<<< HEAD:MyTempApplication/app/src/main/res/layout/activity_main.xml
-    <TextView
-        android:id="@+id/forecast_information"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="150dp"
-        android:text="TextView"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+<!--    <TextView-->
+<!--        android:id="@+id/forecast_information"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginBottom="150dp"-->
+<!--        android:text="TextView"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/textView" />-->
 
-=======
->>>>>>> main:FirstDemo/app/src/main/res/layout/activity_weather.xml
 </androidx.constraintlayout.widget.ConstraintLayout>

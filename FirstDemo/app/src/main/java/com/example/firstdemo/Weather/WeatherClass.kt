@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.activity.viewModels
 import androidx.lifecycle.MutableLiveData
 import com.example.firstdemo.MainActivity
+import com.google.android.gms.maps.model.LatLng
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
@@ -20,10 +21,10 @@ object WeatherClass {
     private var longitude = 10.0
     private var output : String = "Forecast goes here!"
 
-    public fun calling(lat: Double, long: Double): String {
+    public fun calling(location: LatLng): String {
 
-        latitude = lat
-        longitude = long
+        latitude = location.latitude
+        longitude = location.longitude
         //var o : Object = Object()
 
         thread {
@@ -33,6 +34,7 @@ object WeatherClass {
         }
 
         //o.wait()
+        Thread.sleep(3000)
 
         return output
     }
@@ -62,7 +64,6 @@ object WeatherClass {
 
         _client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) throw IOException("$response")
-            Log.d("HailHydra", "Got URL successfully")
             return response.body!!.string()
         }
     }
