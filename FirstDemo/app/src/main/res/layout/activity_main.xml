@@ -16,18 +16,11 @@
         android:id="@+id/weatherImage"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_margin="8dp"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginTop="16dp"
+        android:src="@null"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/destinationSearchbar" />
-
-    <ImageView
-        android:id="@+id/settingsIcon"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_margin="8dp"
-        android:src="@drawable/gear"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/recenterIcon"
@@ -35,42 +28,9 @@
         android:layout_height="60dp"
         android:layout_margin="8dp"
         android:src="@drawable/recenter"
-        app:layout_constraintBottom_toTopOf="@+id/settingsIcon"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-
-    <SearchView
-        android:id="@+id/sourceSearchbar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:queryHint="Source"
-        android:background="@color/white"
-        android:searchIcon="@null"
-        android:layout_margin="8dp"
-        android:iconifiedByDefault="false"
-        app:layout_constraintEnd_toStartOf="@+id/guideline7"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <SearchView
-        android:id="@+id/destinationSearchbar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:queryHint="Destination"
-        android:queryBackground="@color/cardview_light_background"
-        android:background="@color/white"
-        android:searchIcon="@null"
-        android:layout_margin="8dp"
-        android:iconifiedByDefault="false"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/sourceSearchbar"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline7"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
+    
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

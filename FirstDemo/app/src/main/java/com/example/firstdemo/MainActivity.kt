@@ -21,6 +21,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import android.view.Menu
+import android.view.MenuInflater
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private var lastLocation = Pair(0.0, 0.0)
@@ -43,6 +45,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
     }
 
+    // Initialize map menu on UI
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.map_menu,menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -56,8 +66,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        val sourceSearchbar = findViewById<SearchView>(R.id.sourceSearchbar)
-        val destinationSearchbar = findViewById<SearchView>(R.id.destinationSearchbar)
 
 /*        // Add a marker in Sydney and move the camera
         val sydney = LatLng(-34.0, 151.0)
@@ -118,13 +126,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }).start()
 
-        sourceSearchbar.setOnClickListener {
-            Log.d("DEBUG", "Source clicked")
-        }
-
-        destinationSearchbar.setOnClickListener {
-            Log.d("DEBUG", "Destination clicked")
-        }
     }
 
     // Change weather display icon on map
