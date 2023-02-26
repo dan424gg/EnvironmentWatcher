@@ -3,10 +3,12 @@ package com.example.firstdemo
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
+import android.widget.SearchView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.firstdemo.Location.LocationClass
@@ -54,6 +56,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        val sourceSearchbar = findViewById<SearchView>(R.id.sourceSearchbar)
+        val destinationSearchbar = findViewById<SearchView>(R.id.destinationSearchbar)
 
 /*        // Add a marker in Sydney and move the camera
         val sydney = LatLng(-34.0, 151.0)
@@ -76,11 +80,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     Log.d("DEBUG", "$lastLocation, $location")
                     lastLocation = location
                     val latLng = LatLng(location.first, location.second)
+                    var bitmap = BitmapFactory.decodeResource(resources, R.drawable.user_icon)
+                    bitmap = Bitmap.createScaledBitmap(bitmap, 120, 120, false)
 
                     runOnUiThread {
                         Log.d("DEBUG", "Updating map location")
                         mMap.addMarker(MarkerOptions().position(LatLng(p_lat, p_long)).icon(
-                            BitmapDescriptorFactory.fromResource(R.drawable.user_icon)))
+                            BitmapDescriptorFactory.fromBitmap(bitmap)))
+
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
 
                         // Zoom in further
@@ -110,6 +117,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 Thread.sleep(1000)
             }
         }).start()
+
+        sourceSearchbar.setOnClickListener {
+            Log.d("DEBUG", "Source clicked")
+        }
+
+        destinationSearchbar.setOnClickListener {
+            Log.d("DEBUG", "Destination clicked")
+        }
     }
 
     // Change weather display icon on map
