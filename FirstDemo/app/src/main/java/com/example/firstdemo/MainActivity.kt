@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private var lastWeather = "Forecast goes here!"
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMainBinding
+    private var seattle = LatLng(44.6205, -110.3493)
 
 
     @SuppressLint("MissingPermission")
@@ -69,6 +70,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val notificationIntent = Intent(this, NotificationActivity::class.java)
         val weatherImage : ImageView = findViewById(R.id.weatherImage)
+        val moveCam = true
 
         Thread {
             // Runs only when Button is True
@@ -80,6 +82,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 Thread.sleep(750)
                 Log.d("DEBUG", "Entered thread 2")
+                val latLng = LatLng(location.first, location.second)
+                /*
                 if (lastLocation != location) {
                     Log.d("DEBUG", "$lastLocation, $location")
                     lastLocation = location
@@ -97,13 +101,25 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     }
                 }
 
+                 */
+
                 if(p_lat != 0.0) { // Make sure the location is not outside of the US
                     val weather = WeatherClass.calling(location.first, location.second)
 
                     Thread.sleep(750)
                     Log.d("DEBUG", "weather: $weather")
+                    Thread.sleep(2000)
+                    var userIcon = Bitmap.createScaledBitmap(getWeatherImage(weather), 150, 150, false)
                     runOnUiThread {
-                        weatherImage.setImageBitmap(getWeatherImage(weather))
+                        if(moveCam){
+                            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+                            mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
+                        }
+                        mMap.addMarker(
+                            MarkerOptions().position(latLng).icon(
+                                BitmapDescriptorFactory.fromBitmap(userIcon)
+                            )
+                        )
                     }
                 }
                 // Update weather
