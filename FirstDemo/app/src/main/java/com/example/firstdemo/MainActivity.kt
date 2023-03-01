@@ -4,11 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
+import android.widget.SearchView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.firstdemo.Location.LocationClass
@@ -21,14 +21,15 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private var lastLocation = Pair(0.0, 0.0)
     private var lastWeather = "Forecast goes here!"
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMainBinding
-    private var seattle = LatLng(44.6205, -110.3493)
 
 
     @SuppressLint("MissingPermission")
@@ -44,6 +45,23 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
+
+    // Initialize map menu on UI
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.map_menu,menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    // Handle item selection
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.settingsOption) {
+            // Call settings activity
+            Log.d("DEBUG","Settings clicked")
+        }
+        return true
+    }
+
 
     /**
      * Manipulates the map once available.
@@ -63,16 +81,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val sydney = LatLng(-34.0, 151.0)
         mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))*/
-        var icon = BitmapFactory.decodeResource(resources, R.drawable.user_icon)
-
-        icon = Bitmap.createScaledBitmap(icon, 120, 120, false)
-        mMap.uiSettings.isZoomControlsEnabled = true
 
         val notificationIntent = Intent(this, NotificationActivity::class.java)
-        val weatherImage : ImageView = findViewById(R.id.weatherImage)
-        val moveCam = true
 
-        Thread {
+        Thread(Runnable {
             // Runs only when Button is True
             while (true) {
                 Log.d("DEBUG", "Entered thread")
@@ -80,20 +92,20 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 val location = Pair(p_lat, p_long)
 
-                Thread.sleep(750)
+                Thread.sleep(1000)
                 Log.d("DEBUG", "Entered thread 2")
-                val latLng = LatLng(location.first, location.second)
-                /*
                 if (lastLocation != location) {
                     Log.d("DEBUG", "$lastLocation, $location")
                     lastLocation = location
                     val latLng = LatLng(location.first, location.second)
+                    var bitmap = BitmapFactory.decodeResource(resources, R.drawable.user_icon)
+                    bitmap = Bitmap.createScaledBitmap(bitmap, 120, 120, false)
 
                     runOnUiThread {
                         Log.d("DEBUG", "Updating map location")
-
                         mMap.addMarker(MarkerOptions().position(LatLng(p_lat, p_long)).icon(
-                            BitmapDescriptorFactory.fromBitmap(icon)))
+                            BitmapDescriptorFactory.fromBitmap(bitmap)))
+
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
 
                         // Zoom in further
@@ -101,25 +113,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     }
                 }
 
-                 */
-
                 if(p_lat != 0.0) { // Make sure the location is not outside of the US
                     val weather = WeatherClass.calling(location.first, location.second)
 
-                    Thread.sleep(750)
+                    Thread.sleep(1000)
                     Log.d("DEBUG", "weather: $weather")
-                    Thread.sleep(2000)
-                    var userIcon = Bitmap.createScaledBitmap(getWeatherImage(weather), 150, 150, false)
                     runOnUiThread {
-                        if(moveCam){
-                            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
-                            mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
-                        }
-                        mMap.addMarker(
-                            MarkerOptions().position(latLng).icon(
-                                BitmapDescriptorFactory.fromBitmap(userIcon)
-                            )
-                        )
+                        displayWeather(weather)
                     }
                 }
                 // Update weather
@@ -130,14 +130,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 //                         displayWeather(weather)
 //                     }
 //                 }
+
+
+                Thread.sleep(1000)
             }
-        }.start()
+        }).start()
+
     }
 
     // Change weather display icon on map
-    private fun getWeatherImage(weather: String): Bitmap {
-        lateinit var bitmap: Bitmap
-
+    private fun displayWeather(weather: String) {
         Log.d("DEBUG", "In displayWeather")
         val weatherImage : ImageView = findViewById(R.id.weatherImage)
         val badWeather = mapOf("cloudy" to R.drawable.cloudy, "sunny" to R.drawable.sunny,
@@ -149,7 +151,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             if (weather.contains(weatherType, ignoreCase = true)) {
                 badWeather[weatherType]?.let {
                     badWeatherExists = true
-                    bitmap = BitmapFactory.decodeResource(resources, it) }
+                    weatherImage.setImageResource(it) }
                 break
             }
         }
@@ -157,11 +159,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Dangerous weather not detected
         if (!badWeatherExists) {
             // icon default is lightning for testing
-            //weatherImage.setImageResource(R.drawable.lightning)
-            bitmap = BitmapFactory.decodeResource(resources, R.drawable.lightning)
+            weatherImage.setImageResource(R.drawable.lightning)
         }
-
-        return bitmap
     }
 
 }
