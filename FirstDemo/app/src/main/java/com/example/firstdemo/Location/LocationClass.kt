@@ -25,7 +25,6 @@ object LocationClass {
 
     @RequiresApi(Build.VERSION_CODES.M)
     public fun calling(that: Activity): LatLng {
-        Log.d("DEBUG", "Reached location code")
 
         //context = that;
 
@@ -52,7 +51,6 @@ object LocationClass {
 
     @SuppressLint("MissingPermission")
     private fun getLocation(context: Activity){
-        Log.d("DEBUG", "Reached getLocation")
         //val act : TextView = findViewById(R.id.)
         val client = LocationServices.getFusedLocationProviderClient(context)
 
@@ -61,7 +59,6 @@ object LocationClass {
             ||
             ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
             != PackageManager.PERMISSION_GRANTED){
-            Log.d("DEBUG", "Reached Ask Permission")
             ActivityCompat.requestPermissions(context, arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
@@ -70,10 +67,8 @@ object LocationClass {
             client.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
             client.lastLocation.addOnSuccessListener {
                 if(it != null) {
-                    Log.d("DEBUG", "Reached Update location")
                     latitude = it.latitude
                     longitude = it.longitude
-                    Log.d("DEBUG", latitude.toString())
                 }
             }
         }

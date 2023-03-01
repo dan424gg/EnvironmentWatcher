@@ -1,7 +1,6 @@
 package com.example.firstdemo
 
 import android.app.Activity
-import android.util.Log
 import com.example.firstdemo.Weather.WeatherClass
 import com.google.android.gms.maps.GoogleMap
 import com.google.maps.android.PolyUtil
@@ -12,7 +11,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
 import java.lang.Math.floorDiv
-import java.lang.System.exit
 import kotlin.concurrent.thread
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -26,13 +24,14 @@ import kotlin.math.round
  */
 
 
-object RoutingClass {
+object RoutingGoogleClass {
 
     private val client = OkHttpClient()
-    private var path: List<LatLng> = ArrayList()
+    private val path: MutableList<List<LatLng>> = ArrayList()
+    private var totPath: List<LatLng> = ArrayList()
     private lateinit var json : JSONObject
 
-    // Number of segments in route
+    // Number of segments of route
     private var numSegments : Int = 6
 
     fun calling(googleMap: GoogleMap, origin: LatLng, destination: LatLng, activity: Activity) {
@@ -45,7 +44,7 @@ object RoutingClass {
 
         // construct URL
         val urlDirections =
-            "https://api.mapbox.com/directions/v5/mapbox/driving/$originLng,$originLat;$destLng,$destLat?geometries=polyline&access_token=pk.eyJ1IjoiZGFuNDI0Z2ciLCJhIjoiY2xlZXF2cDBsMDB5NjN6dWwwM2F3YWc1ZCJ9.7pQJfMN_gPpJNBJ2PqqnzQ"
+            "https://maps.googleapis.com/maps/api/directions/json?origin=$originLat,$originLng&destination=$destLat,$destLng&key=AIzaSyCATUJigQ64LYkCQ5NkBYkaiSO8PWwL8ec"
 
         thread {
             getJSONObject(urlDirections) { json ->
@@ -59,10 +58,15 @@ object RoutingClass {
 
         // Parse JSON object into noteworthy objects
         val routes = json.getJSONArray("routes")
-        val duration = routes.getJSONObject(0).getInt("duration")
-        val polyline = routes.getJSONObject(0).getString("geometry")
+        val legs = routes.getJSONObject(0).getJSONArray("legs")
+        val duration = legs.getJSONObject(0).getJSONObject("duration").getInt("value")
+        val steps = legs.getJSONObject(0).getJSONArray("steps")
 
-        path = PolyUtil.decode(polyline)
+        // On each step, decode points on polyline for route segment and add a segmented path to the list
+        for (i in 0 until steps.length()) {
+            val points = steps.getJSONObject(i).getJSONObject("polyline").getString("points")
+            path.add(PolyUtil.decode(points))
+        }
 
         thread {
             displayRoute(googleMap, activity)
@@ -74,18 +78,26 @@ object RoutingClass {
 
         // On each segment of path, update UI map with path
         activity.runOnUiThread {
-            googleMap.addPolyline(
-                PolylineOptions().addAll(path).color(
-                    android.graphics.Color.BLUE
+            for (i in 0 until path.size) {
+                googleMap.addPolyline(
+                    PolylineOptions().addAll(path[i]).color(
+                        android.graphics.Color.BLUE
+                    )
                 )
-            )
+            }
         }
     }
 
     private fun checkCondOfRoute(googleMap: GoogleMap, duration: Int, activity: Activity) {
 
-        // Find first segment of flattened path list, subtract one to not allow index go out of bounds (so segmentIdx != path.size)
-        val segmentIdx = floorDiv(path.size, numSegments) - 1
+        // Convert cur time to seconds to get more accurate weather results later
+        val curSeconds = curTimeToSeconds()
+
+        // Flatten path list of LatLng objects
+        totPath = path.flatten()
+
+        // Find first segment of flattened path list, subtract one to not allow index go out of bounds (so segmentIdx != totPath.size)
+        val segmentIdx = floorDiv(totPath.size, numSegments) - 1
 
         // Split time based on numSplits
         val segmentTime = floorDiv(duration, numSegments)
@@ -98,7 +110,7 @@ object RoutingClass {
                 // Round futureTime to nearest hour
                 val hour = round((futureTime / 60.0) / 60.0).toInt()
 
-                val location = path[segmentIdx * i]
+                val location = totPath[segmentIdx * i]
                 WeatherClass.getWeatherData(location, hour, "shortForecast") { result ->
 
                     activity.runOnUiThread {
