@@ -1,23 +1,25 @@
 package com.example.firstdemo
 
 import android.Manifest
+import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.content.Intent
+
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
+
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat.getSystemService
+import com.example.firstdemo.Notifications.WeatherTypes
 
-class NotificationActivity : AppCompatActivity() {
-    private var sent = false
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+object NotificationClass {
+
+    fun calling(that: Activity) {
         Log.d("aidan", "entering NotificationActivity")
 
         // commented code below (and .setContentIntent() below) will allow notification to be interactive)
@@ -31,21 +33,21 @@ class NotificationActivity : AppCompatActivity() {
         //2nd argument is a channel id
         //https://stackoverflow.com/questions/58526610/what-channelid-should-i-pass-to-the-constructor-of-notificationcompat-builder
 
-        var builder = NotificationCompat.Builder(this, "0")
+        var builder = NotificationCompat.Builder(that, R.string.channel_name.toString())
             .setSmallIcon(R.drawable.notification_icon)
             .setContentTitle("TESTING")
             .setContentText("The fog consumes us all")
             //.setContentIntent(pendingIntent)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
 
-        createNotificationChannel()
-        getNotificationPermission()
+        makeChannel(that, NotificationManager.IMPORTANCE_HIGH)
+        getNotificationPermission(that, 1)
 
-        with(NotificationManagerCompat.from(this)) {
+        with(NotificationManagerCompat.from(that)) {
 
             if (ActivityCompat.checkSelfPermission(
-                    this@NotificationActivity,
+                    that,
                     Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
@@ -57,47 +59,45 @@ class NotificationActivity : AppCompatActivity() {
                 //                                          int[] grantResults)
                 // to handle the case where the user grants the permission. See the documentation
                 // for ActivityCompat#requestPermissions for more details.
-                getNotificationPermission()
+                getNotificationPermission(that, 2)
 
                 return
             }
             // notificationId (first arg) is a unique int for each notification that you must define
+            Log.d("Aidan", "sending notification")
             notify(1, builder.build())
 
-            val returnIntent = Intent(this@NotificationActivity, MainActivity::class.java)
-            finish()
         }
 
     }
 
-    private fun getNotificationPermission() {
+    private fun getNotificationPermission(that: Activity, code : Int) {
         Log.d("Aidan", "entering getNotificationPermission")
-        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
-
+        ActivityCompat.requestPermissions(that, arrayOf(Manifest.permission.POST_NOTIFICATIONS), code)
     }
 
-    private fun createNotificationChannel() {
+
+    fun makeChannel(that: Activity, importance: Int ) {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = getString(R.string.channel_name)
-            val descriptionText = getString(R.string.channel_description)
+            val name = R.string.channel_name
+            val descriptionText = R.string.channel_description
 
             //Importance value determines if notification should replace last notification from same channel id
             //set priority with setPriority()
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel("0", name, importance).apply {
-                description = descriptionText
+            val channel = NotificationChannel("0", name.toString(), importance).apply {
+                description = descriptionText.toString()
             }
             // Register the channel with the system
-            val notificationManager: NotificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
+
+            val manager = that.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            return manager.createNotificationChannel(channel)
         }
     }
 
-    //parameters: unique channel id, user-visible name, user-visible description, use notification.IMPORTANCE_x for int
-    public fun makeNotificationChannel(ID : String, channelName : String, descriptionText : String, importance : Int){
+    //parameters: context, unique channel id, user-visible name, user-visible description, use notification.IMPORTANCE_x for int
+    public fun makeNotificationChannel(that: Activity, ID : String, channelName : String, descriptionText : String, importance : Int){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
             val channel = NotificationChannel(ID, channelName, importance).apply {
@@ -105,12 +105,19 @@ class NotificationActivity : AppCompatActivity() {
             }
 
             val notificationManager: NotificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                that.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
 
-    public fun makebuilder() {
-
+    public fun sendNotification(that : Activity, weather : WeatherTypes) {
+        var builder = NotificationCompat.Builder(that, R.string.channel_name.toString())
+            //.setSmallIcon(WeatherTypes("rain").smallIcon)
+            .setContentTitle("TESTING")
+            .setContentText("The fog consumes us all")
+            //.setContentIntent(pendingIntent)
+            //.setPriority()
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
     }
 }

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="henlo">
+    <!--
+        <EditTextPreference
+            android:key="signature"
+            android:title="henlo2"
+            android:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            android:defaultValue="reply"
+            android:entries="@array/reply_entries"
+            android:entryValues="@array/reply_values"
+            android:key="reply"
+            android:title="@string/reply_title"
+            android:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/sync_header">
+
+        <SwitchPreferenceCompat
+            android:key="sync"
+            android:title="@string/sync_title" />
+
+        <SwitchPreferenceCompat
+            android:dependency="sync"
+            android:key="attachment"
+            android:summaryOff="@string/attachment_summary_off"
+            android:summaryOn="@string/attachment_summary_on"
+            android:title="@string/attachment_title" />
+    -->
+    </PreferenceCategory>
+</PreferenceScreen>
