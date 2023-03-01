@@ -23,6 +23,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private var lastLocation = Pair(0.0, 0.0)
@@ -50,6 +51,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.map_menu,menu)
         return super.onCreateOptionsMenu(menu)
+    }
+
+    // Handle item selection
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.settingsOption) {
+            // Call settings activity
+            Log.d("DEBUG","Settings clicked")
+        }
+        return true
     }
 
 

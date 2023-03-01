@@ -2,14 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/routeOption"
-        android:icon="@drawable/start_dest"
-        android:title="Weather on Route"
-        app:showAsAction="withText" />
-
     <item android:id="@+id/settingsOption"
         android:icon="@drawable/gear"
         android:title="Settings"
         app:showAsAction="withText" />
+
+    <item android:id="@+id/aboutOption"
+        android:title="About" />
 
 </menu>
