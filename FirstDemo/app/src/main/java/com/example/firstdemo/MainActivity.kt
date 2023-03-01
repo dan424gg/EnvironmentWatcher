@@ -56,6 +56,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     // Handle item selection
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.settingsOption) {
+            Log.d("DEBUG","Settings clicked")
+            val settingsIntent = Intent(this, SettingsActivity::class.java)
+            startActivity(settingsIntent)
             // Call settings activity
             Log.d("DEBUG","Settings clicked")
         }
