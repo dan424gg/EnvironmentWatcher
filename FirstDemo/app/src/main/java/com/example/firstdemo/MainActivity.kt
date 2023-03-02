@@ -7,8 +7,11 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.widget.Button
 import android.widget.ImageView
-import android.widget.SearchView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.firstdemo.Location.LocationClass
@@ -21,15 +24,15 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private var lastLocation = Pair(0.0, 0.0)
     private var lastWeather = "Forecast goes here!"
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMainBinding
+    var moveCam = true
+    private lateinit var curLocation: LatLng
+    private var weather = "Forecast goes here!"
 
 
     @SuppressLint("MissingPermission")
@@ -44,6 +47,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        val dirButton: Button = findViewById(R.id.dirButton)
+        dirButton.setOnClickListener{
+            Log.d("DEBUG", "Directions clicked")
+            moveCam = true
+        }
     }
 
     // Initialize map menu on UI
@@ -79,6 +88,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        var moveCam = true
+        mMap.setOnCameraMoveStartedListener {
+            //moveCam = false
+        }
 
 /*        // Add a marker in Sydney and move the camera
         val sydney = LatLng(-34.0, 151.0)
@@ -91,17 +104,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val notificationIntent = Intent(this, NotificationActivity::class.java)
         val weatherImage : ImageView = findViewById(R.id.weatherImage)
-        var moveCam = true
 
         Thread {
             // Runs only when Button is True
             while (true) {
                 Log.d("DEBUG", "Entered thread")
-                val (p_lat, p_long) = LocationClass.calling(this)
-
-                val location = Pair(p_lat, p_long)
-                Log.d("DEBUG", "Location")
-                val latLng = LatLng(location.first, location.second)
+                curLocation = LocationClass.calling(this)
+                Log.d("DEBUG", "Location: $curLocation")
+                val latLng = LatLng(curLocation.latitude, curLocation.longitude)
                 /*
                 if (lastLocation != location) {
                     Log.d("DEBUG", "$lastLocation, $location")
@@ -121,13 +131,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
 
                  */
+                Thread.sleep(500)
 
-                if(p_lat != 0.0) { // Make sure the location is not outside of the US
-                    val weather = WeatherClass.calling(location.first, location.second)
+                if(curLocation.latitude != 0.0) { // Make sure the location is not outside of the US
+                    Log.d("DEBUG", "Inside weather")
+                    weather = WeatherClass.getWeatherData(curLocation)
                     Log.d("DEBUG", "weather: $weather")
                     var userIcon = Bitmap.createScaledBitmap(getWeatherImage(weather), 150, 150, false)
                     runOnUiThread {
                         if(moveCam){
+                            Log.d("DEBUG", "Camera update")
                             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
                             mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
                             moveCam = false

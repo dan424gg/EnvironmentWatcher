@@ -1,12 +1,7 @@
 package com.example.firstdemo.Weather
 
-import android.app.Activity
-import android.content.Intent
-import android.os.Bundle
 import android.util.Log
-import androidx.activity.viewModels
-import androidx.lifecycle.MutableLiveData
-import com.example.firstdemo.MainActivity
+import com.google.android.gms.maps.model.LatLng
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
@@ -15,43 +10,56 @@ import kotlin.concurrent.thread
 
 object WeatherClass {
 
-    private val _client = OkHttpClient()
-    private var latitude = 10.0
-    private var longitude = 10.0
-    private var output : String = "Forecast goes here!"
+    private val okHttpClient = OkHttpClient()
 
-    public fun calling(lat: Double, long: Double): String {
+    /* Get the short forecast for a specific hour into the future
+     *      callback: gives function ability to have a callback functionality
+     *      location: LatLng object
+     *      hour: how many hours into the day to get weather (DEFAULT = 0)
+     *      property: which specific property from period of day (DEFAULT = detailedForecast)
+     *
+     * Method calls 'getNWSPropertyJSON' which is another callback function.
+     */
+    fun getWeatherData(location: LatLng, hour: Int = 0, property: String = "detailedForecast", callback: (result: String) -> Unit) {
 
-        latitude = lat
-        longitude = long
-        //var o : Object = Object()
+        getNWSPropertyJSON(location, "forecastHourly") { json ->
+            Log.d("DEBUG", "Inside weather")
+//            val content = json.getJSONObject("properties").getJSONObject("elevation").getDouble("value").toString()   // For debugging
+            val period = json.getJSONObject("properties").getJSONArray("periods").getString(hour)
+            val content = JSONObject(period).getString(property)
 
-        thread {
-            val json = getNWSData()
-            output = getWeatherString(json)
-            //o.notifyAll()
+            callback.invoke(content)
+        }
+    }
+
+    fun getWeatherData(location: LatLng, hour: Int = 0, property: String = "detailedForecast") : String {
+        var content = "Insert weather"
+        getNWSPropertyJSON(location, "forecastHourly") { json ->
+            Log.d("DEBUG", "Inside weather")
+//            val content = json.getJSONObject("properties").getJSONObject("elevation").getDouble("value").toString()   // For debugging
+            val period = json.getJSONObject("properties").getJSONArray("periods").getString(hour)
+            content = JSONObject(period).getString(property)
         }
 
-        //o.wait()
-
-        return output
+        return content
     }
 
-    fun getNWSData() : JSONObject {
-        var json = JSONObject(run("https://api.weather.gov/points/$latitude,$longitude"))
+    /* Get a specific JSON object from the list of 'properties' given by the initial NWS request
+     *      property: specify property wanted
+     *
+     * Deprecates need for two separate functions to get a specific property
+     */
+    private fun getNWSPropertyJSON(location: LatLng, property: String, callback: (result: JSONObject) -> Unit) {
+        val latitude = location.latitude
+        val longitude = location.longitude
+        lateinit var json : JSONObject
 
-        // Doing some JSON parsing stuff to get gridpoint URL
-        json = JSONObject(run(json.getJSONObject("properties").getString("forecast")))
+        thread {
+            json = JSONObject(run("https://api.weather.gov/points/$latitude,$longitude"))
+            json = JSONObject(run(json.getJSONObject("properties").getString(property)))
 
-        return json
-    }
-
-    fun getWeatherString(json: JSONObject) : String{
-        val content =
-            json.getJSONObject("properties").getJSONArray("periods").getString(0)
-        val moreContent = JSONObject(content)
-        return moreContent.getString("detailedForecast")
-//        forecast.setValue(moreContent.getString("detailedForecast"))
+            callback.invoke(json)
+        }
     }
 
     private fun run(url : String) : String {
@@ -60,11 +68,15 @@ object WeatherClass {
             .header("User-agent", "an agent")
             .build()
 
-        _client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) throw IOException("$response")
-            Log.d("HailHydra", "Got URL successfully")
+        okHttpClient.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                if (response.toString().contains("code=500")) {
+                    Log.d("hailhydra", "caught code 500!!")
+                }
+
+                throw IOException("$response")
+            }
             return response.body!!.string()
         }
     }
-
 }
