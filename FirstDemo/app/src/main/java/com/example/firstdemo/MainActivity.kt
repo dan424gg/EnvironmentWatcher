@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val notificationIntent = Intent(this, NotificationActivity::class.java)
         val weatherImage : ImageView = findViewById(R.id.weatherImage)
-        val moveCam = true
+        var moveCam = true
 
         Thread {
             // Runs only when Button is True
@@ -79,8 +79,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 val (p_lat, p_long) = LocationClass.calling(this)
 
                 val location = Pair(p_lat, p_long)
-
-                Thread.sleep(750)
                 Log.d("DEBUG", "Entered thread 2")
                 val latLng = LatLng(location.first, location.second)
                 /*
@@ -105,15 +103,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 if(p_lat != 0.0) { // Make sure the location is not outside of the US
                     val weather = WeatherClass.calling(location.first, location.second)
-
-                    Thread.sleep(750)
                     Log.d("DEBUG", "weather: $weather")
-                    Thread.sleep(2000)
                     var userIcon = Bitmap.createScaledBitmap(getWeatherImage(weather), 150, 150, false)
                     runOnUiThread {
                         if(moveCam){
                             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
                             mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
+                            moveCam = false
                         }
                         mMap.addMarker(
                             MarkerOptions().position(latLng).icon(
@@ -122,6 +118,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         )
                     }
                 }
+                Thread.sleep(500)
                 // Update weather
 //                 if (weather != lastWeather) {
 //                     Log.d("DEBUG", "Weather update: $weather")

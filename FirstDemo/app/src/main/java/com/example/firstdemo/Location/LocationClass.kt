@@ -46,7 +46,9 @@ object LocationClass {
         }
         Log.d("DEBUG", "Reached second activity 2")
 
-        getLocation(that)
+        var t = Thread{ getLocation(that)}
+        t.start()
+        t.join()
         //return latitude to longitude
         return latitude to longitude
     }

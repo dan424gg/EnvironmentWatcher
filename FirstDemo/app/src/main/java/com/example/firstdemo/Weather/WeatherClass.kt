@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.activity.viewModels
 import androidx.lifecycle.MutableLiveData
 import com.example.firstdemo.MainActivity
+import kotlinx.coroutines.sync.Mutex
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
@@ -33,6 +34,7 @@ object WeatherClass {
         }
 
         //o.wait()
+        Thread.sleep(2000)
 
         return output
     }
