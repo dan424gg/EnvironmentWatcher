@@ -47,6 +47,7 @@ object LocationClass {
         Log.d("DEBUG", "Reached second activity 2")
 
         getLocation(that)
+        Thread.sleep(500)
         //return latitude to longitude
         return latitude to longitude
     }
