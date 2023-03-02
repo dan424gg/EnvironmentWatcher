@@ -23,6 +23,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -30,7 +31,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private var lastWeather = "Forecast goes here!"
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMainBinding
-    var moveCam = true
+    var changeViewToCurLocation = true
     private lateinit var curLocation: LatLng
     private var weather = "Forecast goes here!"
 
@@ -51,7 +52,20 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val dirButton: Button = findViewById(R.id.dirButton)
         dirButton.setOnClickListener{
             Log.d("DEBUG", "Directions clicked")
-            moveCam = true
+            changeViewToCurLocation = false
+
+            // Change destination to destination latlng
+            val destination = LatLng(46.8802, -117.3643)
+
+            // Creating LatLngBounds obj to create a "bounds" for what is displayed on the map
+            val routeBounds = LatLngBounds.builder()
+            routeBounds.include(curLocation).include(destination)
+
+            mMap.addMarker(MarkerOptions().position(curLocation).title("Origin"))
+            mMap.addMarker(MarkerOptions().position(destination).title("Destination"))
+            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(routeBounds.build(), 1000, 1000, 0))
+
+            RoutingClass.calling(mMap, curLocation, destination, this)
         }
     }
 
@@ -68,39 +82,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             Log.d("DEBUG","Settings clicked")
             val settingsIntent = Intent(this, SettingsActivity::class.java)
             startActivity(settingsIntent)
-            // Call settings activity
             Log.d("DEBUG","Settings clicked")
         }
         return true
     }
 
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        var moveCam = true
-        mMap.setOnCameraMoveStartedListener {
-            //moveCam = false
-        }
 
-/*        // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))*/
-        var icon = BitmapFactory.decodeResource(resources, R.drawable.user_icon)
-
-        icon = Bitmap.createScaledBitmap(icon, 120, 120, false)
-        //mMap.uiSettings.isZoomControlsEnabled = true
+        val icon = BitmapFactory.decodeResource(resources, R.drawable.user_icon)
+        Bitmap.createScaledBitmap(icon, 120, 120, false)
 
         val notificationIntent = Intent(this, NotificationActivity::class.java)
         val weatherImage : ImageView = findViewById(R.id.weatherImage)
@@ -111,56 +103,29 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 Log.d("DEBUG", "Entered thread")
                 curLocation = LocationClass.calling(this)
                 Log.d("DEBUG", "Location: $curLocation")
-                val latLng = LatLng(curLocation.latitude, curLocation.longitude)
-                /*
-                if (lastLocation != location) {
-                    Log.d("DEBUG", "$lastLocation, $location")
-                    lastLocation = location
-                    val latLng = LatLng(location.first, location.second)
-
-                    runOnUiThread {
-                        Log.d("DEBUG", "Updating map location")
-
-                        mMap.addMarker(MarkerOptions().position(LatLng(p_lat, p_long)).icon(
-                            BitmapDescriptorFactory.fromBitmap(icon)))
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
-
-                        // Zoom in further
-                        mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
-                    }
-                }
-
-                 */
                 Thread.sleep(500)
 
                 if(curLocation.latitude != 0.0) { // Make sure the location is not outside of the US
                     Log.d("DEBUG", "Inside weather")
                     weather = WeatherClass.getWeatherData(curLocation)
                     Log.d("DEBUG", "weather: $weather")
-                    var userIcon = Bitmap.createScaledBitmap(getWeatherImage(weather), 150, 150, false)
+                    val userIcon = Bitmap.createScaledBitmap(getWeatherImage(weather), 150, 150, false)
+
                     runOnUiThread {
-                        if(moveCam){
+                        if(changeViewToCurLocation){
                             Log.d("DEBUG", "Camera update")
-                            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+                            mMap.moveCamera(CameraUpdateFactory.newLatLng(curLocation))
                             mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
-                            moveCam = false
+                            changeViewToCurLocation = false
                         }
+
                         mMap.addMarker(
-                            MarkerOptions().position(latLng).icon(
+                            MarkerOptions().position(curLocation).icon(
                                 BitmapDescriptorFactory.fromBitmap(userIcon)
                             )
                         )
                     }
                 }
-                Thread.sleep(500)
-                // Update weather
-//                 if (weather != lastWeather) {
-//                     Log.d("DEBUG", "Weather update: $weather")
-//                     lastWeather = weather
-//                     runOnUiThread {
-//                         displayWeather(weather)
-//                     }
-//                 }
             }
         }.start()
     }
@@ -191,7 +156,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Dangerous weather not detected
         if (!badWeatherExists) {
             // icon default is lightning for testing
-            //weatherImage.setImageResource(R.drawable.lightning)
+            // weatherImage.setImageResource(R.drawable.lightning)
             bitmap = BitmapFactory.decodeResource(resources, R.drawable.lightning)
         }
 

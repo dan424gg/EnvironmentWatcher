@@ -34,6 +34,7 @@ object WeatherClass {
 
     fun getWeatherData(location: LatLng, hour: Int = 0, property: String = "detailedForecast") : String {
         var content = "Insert weather"
+
         getNWSPropertyJSON(location, "forecastHourly") { json ->
             Log.d("DEBUG", "Inside weather")
 //            val content = json.getJSONObject("properties").getJSONObject("elevation").getDouble("value").toString()   // For debugging
@@ -72,9 +73,10 @@ object WeatherClass {
             if (!response.isSuccessful) {
                 if (response.toString().contains("code=500")) {
                     Log.d("hailhydra", "caught code 500!!")
+                    return run(url)
+                } else {
+                    throw IOException("$response")
                 }
-
-                throw IOException("$response")
             }
             return response.body!!.string()
         }
