@@ -54,7 +54,7 @@ object WeatherClass {
         val latitude = location.latitude
         val longitude = location.longitude
         lateinit var json : JSONObject
-
+        Log.d("LOCATION", "$location")
         thread {
             json = JSONObject(run("https://api.weather.gov/points/$latitude,$longitude"))
             json = JSONObject(run(json.getJSONObject("properties").getString(property)))
@@ -66,7 +66,7 @@ object WeatherClass {
     private fun run(url : String) : String {
         val request = Request.Builder()
             .url(url)
-            .header("User-agent", "an agent")
+//            .header("User-agent", "an agent")
             .build()
 
         okHttpClient.newCall(request).execute().use { response ->
