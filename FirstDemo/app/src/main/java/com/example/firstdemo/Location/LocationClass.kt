@@ -43,7 +43,9 @@ object LocationClass {
             }
         }
 
-        getLocation(that)
+        var t = Thread{ getLocation(that)}
+        t.start()
+        t.join()
 
         //return latitude to longitude
         return LatLng(latitude, longitude)

@@ -95,4 +95,22 @@ class NotificationActivity : AppCompatActivity() {
             notificationManager.createNotificationChannel(channel)
         }
     }
+
+    //parameters: unique channel id, user-visible name, user-visible description, use notification.IMPORTANCE_x for int
+    public fun makeNotificationChannel(ID : String, channelName : String, descriptionText : String, importance : Int){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            val channel = NotificationChannel(ID, channelName, importance).apply {
+                description = descriptionText
+            }
+
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    public fun makebuilder() {
+
+    }
 }
