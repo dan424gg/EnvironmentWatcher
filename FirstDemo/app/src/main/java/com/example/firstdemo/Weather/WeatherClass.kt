@@ -23,12 +23,26 @@ object WeatherClass {
     fun getWeatherData(location: LatLng, hour: Int = 0, property: String = "detailedForecast", callback: (result: String) -> Unit) {
 
         getNWSPropertyJSON(location, "forecastHourly") { json ->
+            Log.d("DEBUG", "Inside weather")
 //            val content = json.getJSONObject("properties").getJSONObject("elevation").getDouble("value").toString()   // For debugging
             val period = json.getJSONObject("properties").getJSONArray("periods").getString(hour)
             val content = JSONObject(period).getString(property)
 
             callback.invoke(content)
         }
+    }
+
+    fun getWeatherData(location: LatLng, hour: Int = 0, property: String = "detailedForecast") : String {
+        var content = "Insert weather"
+
+        getNWSPropertyJSON(location, "forecastHourly") { json ->
+            Log.d("DEBUG", "Inside weather")
+//            val content = json.getJSONObject("properties").getJSONObject("elevation").getDouble("value").toString()   // For debugging
+            val period = json.getJSONObject("properties").getJSONArray("periods").getString(hour)
+            content = JSONObject(period).getString(property)
+        }
+
+        return content
     }
 
     /* Get a specific JSON object from the list of 'properties' given by the initial NWS request
@@ -59,9 +73,10 @@ object WeatherClass {
             if (!response.isSuccessful) {
                 if (response.toString().contains("code=500")) {
                     Log.d("hailhydra", "caught code 500!!")
+                    return run(url)
+                } else {
+                    throw IOException("$response")
                 }
-
-                throw IOException("$response")
             }
             return response.body!!.string()
         }

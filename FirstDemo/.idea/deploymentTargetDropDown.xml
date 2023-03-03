@@ -7,11 +7,15 @@
         <deviceKey>
           <Key>
             <type value="VIRTUAL_DEVICE_PATH" />
-            <value value="C:\Users\wells\.android\avd\Pixel_3_API_31_1.avd" />
+            <value value="C:\Users\wells\.android\avd\Pixel_3_API_31_2_1.avd" />
           </Key>
         </deviceKey>
       </Target>
     </targetSelectedWithDropDown>
+<<<<<<< HEAD
     <timeTargetWasSelectedWithDropDown value="2023-03-01T23:37:47.086149200Z" />
+=======
+    <timeTargetWasSelectedWithDropDown value="2023-03-02T22:07:43.464263400Z" />
+>>>>>>> mergetest
   </component>
 </project>

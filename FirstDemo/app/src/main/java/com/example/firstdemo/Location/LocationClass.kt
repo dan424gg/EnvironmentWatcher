@@ -26,6 +26,8 @@ object LocationClass {
     @RequiresApi(Build.VERSION_CODES.M)
     public fun calling(that: Activity): LatLng {
 
+        Log.d("DEBUG", "Reached location code")
+
         //context = that;
 
         locationRequest = LocationRequest.create()
@@ -43,9 +45,11 @@ object LocationClass {
             }
         }
 
-        var t = Thread{ getLocation(that)}
-        t.start()
-        t.join()
+        getLocation(that)
+        //val t = Thread{getLocation(that)}
+        //t.start()
+        //t.join()
+        Thread.sleep(500)
 
         //return latitude to longitude
         return LatLng(latitude, longitude)

@@ -26,6 +26,18 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <activity
+            android:name=".LocationActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
+        <activity
+            android:name="SettingsActivity"
+            >
+        </activity>
 
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
@@ -58,4 +70,5 @@
         </activity>
     </application>
 
+>>>>>>> mergetest
 </manifest>

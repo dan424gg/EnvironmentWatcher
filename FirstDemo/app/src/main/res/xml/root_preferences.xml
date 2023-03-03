@@ -1,34 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="henlo">
-    <!--
-        <EditTextPreference
-            android:key="signature"
-            android:title="henlo2"
-            android:useSimpleSummaryProvider="true" />
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <androidx.preference.PreferenceCategory android:title="@string/WeatherSettings">
+        <androidx.preference.SwitchPreferenceCompat
+            android:key="rain"
+            android:title="@string/rainSettings" />
 
-        <ListPreference
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory android:title="@string/PermissionSettings">
+
+        <androidx.preference.SwitchPreferenceCompat
+            android:key="Notifications"
+            android:title="@string/NotificationSett" />
+
+        <androidx.preference.SwitchPreferenceCompat
+            android:dependency="Notifications"
+            android:key="attachment"
+            android:summaryOff="@string/attachment_summary_off"
+            android:summaryOn="@string/attachment_summary_on"
+            android:title="@string/alerts" />
+
+        <androidx.preference.ListPreference
             android:defaultValue="reply"
             android:entries="@array/reply_entries"
             android:entryValues="@array/reply_values"
             android:key="reply"
-            android:title="@string/reply_title"
-            android:useSimpleSummaryProvider="true" />
+            android:title="@string/locationSettings" />
+    </androidx.preference.PreferenceCategory>
 
-    </PreferenceCategory>
-
-    <PreferenceCategory android:title="@string/sync_header">
-
-        <SwitchPreferenceCompat
-            android:key="sync"
-            android:title="@string/sync_title" />
-
-        <SwitchPreferenceCompat
-            android:dependency="sync"
-            android:key="attachment"
-            android:summaryOff="@string/attachment_summary_off"
-            android:summaryOn="@string/attachment_summary_on"
-            android:title="@string/attachment_title" />
-    -->
-    </PreferenceCategory>
-</PreferenceScreen>
+    <androidx.preference.PreferenceCategory android:title="@string/misc">
+        <androidx.preference.EditTextPreference
+            android:key="look you can type too"
+            android:title="type here"
+            />
+    </androidx.preference.PreferenceCategory>
+</androidx.preference.PreferenceScreen>
