@@ -107,34 +107,40 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 if(curLocation.latitude != 0.0) { // Make sure the location is not outside of the US
                     Log.d("DEBUG", "Inside weather")
-                    weather = WeatherClass.getWeatherData(curLocation)
-                    Log.d("DEBUG", "weather: $weather")
-                    val userIcon = Bitmap.createScaledBitmap(getWeatherImage(weather), 150, 150, false)
+                    //weather = WeatherClass.getWeatherData(curLocation)
+                    WeatherClass.getWeatherData(curLocation) { result ->
+                        weather = result
 
-                    runOnUiThread {
-                        if(changeViewToCurLocation){
-                            Log.d("DEBUG", "Camera update")
-                            mMap.moveCamera(CameraUpdateFactory.newLatLng(curLocation))
-                            mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
-                            changeViewToCurLocation = false
-                        }
+                        Log.d("DEBUG", "weather: $weather")
+                        val userIcon =
+                            Bitmap.createScaledBitmap(getWeatherImage(result), 150, 150, false)
 
-                        mMap.addMarker(
-                            MarkerOptions().position(curLocation).icon(
-                                BitmapDescriptorFactory.fromBitmap(userIcon)
+                        runOnUiThread {
+                            if (changeViewToCurLocation) {
+                                Log.d("DEBUG", "Camera update")
+                                mMap.moveCamera(CameraUpdateFactory.newLatLng(curLocation))
+                                mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
+                                changeViewToCurLocation = false
+                            }
+
+                            mMap.addMarker(
+                                MarkerOptions().position(curLocation).icon(
+                                    BitmapDescriptorFactory.fromBitmap(userIcon)
+                                )
                             )
-                        )
+                        }
                     }
                 }
+                Thread.sleep(500)
             }
         }.start()
     }
 
     // Change weather display icon on map
-    private fun getWeatherImage(weather: String): Bitmap {
+    public fun getWeatherImage(curWeather: String): Bitmap {
         lateinit var bitmap: Bitmap
 
-        Log.d("DEBUG", "In displayWeather")
+        Log.d("DEBUG", "In displayWeather: $curWeather")
         val weatherImage: ImageView = findViewById(R.id.weatherImage)
         val badWeather = mapOf(
             "cloudy" to R.drawable.cloudy, "sunny" to R.drawable.sunny,
@@ -144,7 +150,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Check if forecast is in list of weather types
         for (weatherType in badWeather.keys) {
-            if (weather.contains(weatherType, ignoreCase = true)) {
+            if (curWeather.contains(weatherType, ignoreCase = true)) {
                 badWeather[weatherType]?.let {
                     badWeatherExists = true
                     bitmap = BitmapFactory.decodeResource(resources, it)
