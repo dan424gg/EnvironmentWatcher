@@ -148,6 +148,7 @@ object NotificationClass {
             // for ActivityCompat#requestPermissions for more details.
             return
         }
+        //notification id should be incremented, in order to make notifications unique.
         NotificationManagerCompat.from(that).notify(1, builder.build())
     }
 }

@@ -44,6 +44,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        NotificationClass.makeNotificationChannel(
+            this, "default", getString(R.string.WeatherUpdateChannelName),
+            "Current weather", 3
+        )
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
@@ -108,12 +113,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 if(curLocation.latitude != 0.0) { // Make sure the location is not outside of the US
                     Log.d("DEBUG", "Inside weather")
                     //weather = WeatherClass.getWeatherData(curLocation)
-                    WeatherClass.getWeatherData(curLocation, 0, "shortForecast") { result ->
-//                        weather = result
+                    WeatherClass.getWeatherData(curLocation, 0, "shortForecast") { weather ->
+//
 
-                        Log.d("weatherresult", result)
+                        Log.d("weatherresult", weather)
                         val userIcon =
-                            Bitmap.createScaledBitmap(getWeatherImage(result), 150, 150, false)
+                            Bitmap.createScaledBitmap(getWeatherImage(weather), 150, 150, false)
+
+                        //call notification for test
+                        NotificationClass.sendNotification(this, weather, weather, userIcon)
 
                         runOnUiThread {
                             if (changeViewToCurLocation) {
