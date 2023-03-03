@@ -17,4 +17,6 @@
     <string name="attachment_summary_off">Do not receive alerts</string>
     <string name="attachment_summary_on">Receive emergency alerts</string>
     <string name="rainSettings">Receive rain notifications</string>
+    <string name="internetSett">Allow app to have internet access</string>
+    <string name="WeatherUpdateChannelName">Weather Updates</string>
 </resources>
