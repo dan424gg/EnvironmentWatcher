@@ -108,10 +108,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 if(curLocation.latitude != 0.0) { // Make sure the location is not outside of the US
                     Log.d("DEBUG", "Inside weather")
                     //weather = WeatherClass.getWeatherData(curLocation)
-                    WeatherClass.getWeatherData(curLocation) { result ->
-                        weather = result
+                    WeatherClass.getWeatherData(curLocation, 0, "shortForecast") { result ->
+//                        weather = result
 
-                        Log.d("DEBUG", "weather: $weather")
+                        Log.d("weatherresult", result)
                         val userIcon =
                             Bitmap.createScaledBitmap(getWeatherImage(result), 150, 150, false)
 

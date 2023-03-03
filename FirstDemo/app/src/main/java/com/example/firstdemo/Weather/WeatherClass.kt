@@ -23,7 +23,6 @@ object WeatherClass {
     fun getWeatherData(location: LatLng, hour: Int = 0, property: String = "detailedForecast", callback: (result: String) -> Unit) {
 
         getNWSPropertyJSON(location, "forecastHourly") { json ->
-            Log.d("DEBUG", "Inside weather")
 //            val content = json.getJSONObject("properties").getJSONObject("elevation").getDouble("value").toString()   // For debugging
             val period = json.getJSONObject("properties").getJSONArray("periods").getString(hour)
             val content = JSONObject(period).getString(property)
