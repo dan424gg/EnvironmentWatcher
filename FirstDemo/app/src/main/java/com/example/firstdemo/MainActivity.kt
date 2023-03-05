@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -11,6 +12,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -59,18 +61,33 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             Log.d("DEBUG", "Directions clicked")
             changeViewToCurLocation = false
 
-            // Change destination to destination latlng
-            val destination = LatLng(46.8802, -117.3643)
+            val startLocationInput = findViewById<EditText>(R.id.startLocation)
+            val endLocationInput = findViewById<EditText>(R.id.endLocation)
+            var start = curLocation
+            var destination = LatLng(0.0, 0.0)
+
+            Log.d("DEBUG", "Start: ${startLocationInput.text.toString()}")
+            Log.d("DEBUG", "Destination: ${endLocationInput.text.toString()}")
+
+            if (startLocationInput.text != null) {
+                start = locNameToLatLng(startLocationInput.text.toString())
+            }
+
+            if (endLocationInput.text != null) {
+                destination = locNameToLatLng(endLocationInput.text.toString())
+            }
 
             // Creating LatLngBounds obj to create a "bounds" for what is displayed on the map
-            val routeBounds = LatLngBounds.builder()
-            routeBounds.include(curLocation).include(destination)
+            if (destination != LatLng(0.0, 0.0) && start != LatLng(0.0, 0.0)) {
+                val routeBounds = LatLngBounds.builder()
+                routeBounds.include(start).include(destination)
 
-            mMap.addMarker(MarkerOptions().position(curLocation).title("Origin"))
-            mMap.addMarker(MarkerOptions().position(destination).title("Destination"))
-            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(routeBounds.build(), 1000, 1000, 0))
+                mMap.addMarker(MarkerOptions().position(start).title("Origin"))
+                mMap.addMarker(MarkerOptions().position(destination).title("Destination"))
+                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(routeBounds.build(), 1000, 1000, 0))
 
-            RoutingClass.calling(mMap, curLocation, destination, this)
+                RoutingClass.calling(mMap, start, destination, this)
+            }
         }
     }
 
@@ -144,8 +161,38 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }.start()
     }
 
+    private fun locNameToLatLng(loc : String) : LatLng {
+        val geocoder = Geocoder(this)
+        val addressList = geocoder.getFromLocationName(loc, 1)
+
+        /*
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            /*addressList = geocoder.getFromLocationName(startLocStr, 1,
+                Geocoder.GeocodeListener())
+
+             */
+        } else {
+            addressList = geocoder.getFromLocationName(startLocStr, 1)
+        }
+
+         */
+
+
+        if (addressList != null) {
+            if (addressList.isNotEmpty()) {
+                Log.d("DEBUG", "Address list: $addressList")
+
+                return LatLng(addressList[0].latitude, addressList[0].longitude)
+            } else {
+                // Handle case where no results were found
+            }
+        }
+
+        return LatLng(0.0, 0.0)
+    }
+
     // Change weather display icon on map
-    public fun getWeatherImage(curWeather: String): Bitmap {
+    fun getWeatherImage(curWeather: String): Bitmap {
         lateinit var bitmap: Bitmap
 
         Log.d("DEBUG", "In displayWeather: $curWeather")
