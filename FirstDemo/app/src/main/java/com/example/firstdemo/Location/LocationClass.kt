@@ -20,20 +20,14 @@ object LocationClass {
     private lateinit var locationRequest : LocationRequest
     private var longitude = 0.0
     private var latitude = 0.0
-    //private lateinit var context : Activity
 
 
     @RequiresApi(Build.VERSION_CODES.M)
     public fun calling(that: Activity): LatLng {
 
-        Log.d("DEBUG", "Reached location code")
-
-        //context = that;
-
         locationRequest = LocationRequest.create()
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         locationRequest.interval = 20000
-        //getLocation()
 
         locationCallback = object : LocationCallback(){
             override fun onLocationResult(locationResult: LocationResult) {
@@ -46,12 +40,8 @@ object LocationClass {
         }
 
         getLocation(that)
-        //val t = Thread{getLocation(that)}
-        //t.start()
-        //t.join()
         Thread.sleep(500)
 
-        //return latitude to longitude
         return LatLng(latitude, longitude)
     }
 
@@ -79,18 +69,4 @@ object LocationClass {
             }
         }
     }
-
-    /*
-    @RequiresApi(Build.VERSION_CODES.M)
-    fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 1){
-            // Got permission from user
-            getLocation()
-        }
-    }*/
 }

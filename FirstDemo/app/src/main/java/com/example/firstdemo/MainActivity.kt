@@ -29,17 +29,13 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
-    private var lastLocation = Pair(0.0, 0.0)
-    private var lastWeather = "Forecast goes here!"
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMainBinding
     var changeViewToCurLocation = true
     private lateinit var curLocation: LatLng
-    private var weather = "Forecast goes here!"
 
 
     @SuppressLint("MissingPermission")
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -58,35 +54,32 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val dirButton: Button = findViewById(R.id.dirButton)
         dirButton.setOnClickListener{
-            Log.d("DEBUG", "Directions clicked")
             changeViewToCurLocation = false
 
             val startLocationInput = findViewById<EditText>(R.id.startLocation)
             val endLocationInput = findViewById<EditText>(R.id.endLocation)
-            var start = curLocation
+            var origin = curLocation
             var destination = LatLng(0.0, 0.0)
 
-            Log.d("DEBUG", "Start: ${startLocationInput.text.toString()}")
-            Log.d("DEBUG", "Destination: ${endLocationInput.text.toString()}")
-
-            if (startLocationInput.text != null) {
-                start = locNameToLatLng(startLocationInput.text.toString())
+            if (!startLocationInput.text.isEmpty()) {
+                origin = locNameToLatLng(startLocationInput.text.toString())
             }
 
-            if (endLocationInput.text != null) {
+            if (!endLocationInput.text.isEmpty()) {
                 destination = locNameToLatLng(endLocationInput.text.toString())
             }
 
             // Creating LatLngBounds obj to create a "bounds" for what is displayed on the map
-            if (destination != LatLng(0.0, 0.0) && start != LatLng(0.0, 0.0)) {
+            if (destination != LatLng(0.0, 0.0) && origin != LatLng(0.0, 0.0)) {
                 val routeBounds = LatLngBounds.builder()
-                routeBounds.include(start).include(destination)
+                routeBounds.include(origin).include(destination)
 
-                mMap.addMarker(MarkerOptions().position(start).title("Origin"))
+                mMap.clear()
+                mMap.addMarker(MarkerOptions().position(origin).title("Origin"))
                 mMap.addMarker(MarkerOptions().position(destination).title("Destination"))
                 mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(routeBounds.build(), 1000, 1000, 0))
 
-                RoutingClass.calling(mMap, start, destination, this)
+                RoutingClass.calling(mMap, origin, destination, this)
             }
         }
     }
@@ -101,10 +94,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     // Handle item selection
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.settingsOption) {
-            Log.d("DEBUG","Settings clicked")
             val settingsIntent = Intent(this, SettingsActivity::class.java)
             startActivity(settingsIntent)
-            Log.d("DEBUG","Settings clicked")
         }
         return true
     }
@@ -116,24 +107,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val icon = BitmapFactory.decodeResource(resources, R.drawable.user_icon)
         Bitmap.createScaledBitmap(icon, 120, 120, false)
 
-        val notificationIntent = Intent(this, NotificationActivity::class.java)
-        val weatherImage : ImageView = findViewById(R.id.weatherImage)
-
         Thread {
             // Runs only when Button is True
             while (true) {
-                Log.d("DEBUG", "Entered thread")
                 curLocation = LocationClass.calling(this)
-                Log.d("DEBUG", "Location: $curLocation")
-                Thread.sleep(500)
 
-                if(curLocation.latitude != 0.0) { // Make sure the location is not outside of the US
-                    Log.d("DEBUG", "Inside weather")
-                    //weather = WeatherClass.getWeatherData(curLocation)
+                // Make sure the location is valid
+                if(curLocation != LatLng(0.0,0.0)) {
                     WeatherClass.getWeatherData(curLocation, 0, "shortForecast") { weather ->
-//
 
-                        Log.d("weatherresult", weather)
                         val userIcon =
                             Bitmap.createScaledBitmap(getWeatherImage(weather), 150, 150, false)
 
@@ -142,21 +124,20 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                         runOnUiThread {
                             if (changeViewToCurLocation) {
-                                Log.d("DEBUG", "Camera update")
                                 mMap.moveCamera(CameraUpdateFactory.newLatLng(curLocation))
                                 mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
+
+                                mMap.addMarker(
+                                    MarkerOptions().position(curLocation).icon(
+                                        BitmapDescriptorFactory.fromBitmap(userIcon)
+                                    )
+                                )
+
                                 changeViewToCurLocation = false
                             }
-
-                            mMap.addMarker(
-                                MarkerOptions().position(curLocation).icon(
-                                    BitmapDescriptorFactory.fromBitmap(userIcon)
-                                )
-                            )
                         }
                     }
                 }
-                Thread.sleep(500)
             }
         }.start()
     }
@@ -165,26 +146,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val geocoder = Geocoder(this)
         val addressList = geocoder.getFromLocationName(loc, 1)
 
-        /*
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            /*addressList = geocoder.getFromLocationName(startLocStr, 1,
-                Geocoder.GeocodeListener())
-
-             */
-        } else {
-            addressList = geocoder.getFromLocationName(startLocStr, 1)
-        }
-
-         */
-
-
         if (addressList != null) {
             if (addressList.isNotEmpty()) {
-                Log.d("DEBUG", "Address list: $addressList")
-
                 return LatLng(addressList[0].latitude, addressList[0].longitude)
             } else {
                 // Handle case where no results were found
+                Log.d("DEBUG", "AddressList is not empty!")
             }
         }
 
@@ -195,7 +162,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     fun getWeatherImage(curWeather: String): Bitmap {
         lateinit var bitmap: Bitmap
 
-        Log.d("DEBUG", "In displayWeather: $curWeather")
         val weatherImage: ImageView = findViewById(R.id.weatherImage)
         val badWeather = mapOf(
             "cloudy" to R.drawable.cloudy, "sunny" to R.drawable.sunny,

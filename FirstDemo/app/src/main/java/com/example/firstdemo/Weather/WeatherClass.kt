@@ -35,7 +35,6 @@ object WeatherClass {
         var content = "Insert weather"
 
         getNWSPropertyJSON(location, "forecastHourly") { json ->
-            Log.d("DEBUG", "Inside weather")
 //            val content = json.getJSONObject("properties").getJSONObject("elevation").getDouble("value").toString()   // For debugging
             val period = json.getJSONObject("properties").getJSONArray("periods").getString(hour)
             content = JSONObject(period).getString(property)
@@ -53,7 +52,7 @@ object WeatherClass {
         val latitude = location.latitude
         val longitude = location.longitude
         lateinit var json : JSONObject
-        Log.d("LOCATION", "$location")
+
         thread {
             json = JSONObject(run("https://api.weather.gov/points/$latitude,$longitude"))
             json = JSONObject(run(json.getJSONObject("properties").getString(property)))
