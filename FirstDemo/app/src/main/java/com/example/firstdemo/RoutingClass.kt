@@ -1,9 +1,11 @@
 package com.example.firstdemo
 
 import android.app.Activity
+import android.graphics.Bitmap
 import android.util.Log
 import com.example.firstdemo.Weather.WeatherClass
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.PolyUtil
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -108,10 +110,12 @@ object RoutingClass {
                 val hour = round((futureTime / 60.0) / 60.0).toInt()
 
                 val location = path[segmentIdx * i]
-                WeatherClass.getWeatherData(locations[i], hour, "shortForecast") { result ->
 
+                WeatherClass.getWeatherData(location, hour, "shortForecast") { result ->
+                    val locIcon =
+                        Bitmap.createScaledBitmap((activity as MainActivity).getWeatherImage(result), 150, 150, false)
                     activity.runOnUiThread {
-                        googleMap.addMarker(MarkerOptions().position(locations[i]).title(result))
+                        googleMap.addMarker(MarkerOptions().position(location).title(result).icon(BitmapDescriptorFactory.fromBitmap(locIcon)))
                     }
                 }
             }

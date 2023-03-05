@@ -10,8 +10,8 @@
     <androidx.preference.PreferenceCategory android:title="@string/PermissionSettings">
 
         <androidx.preference.SwitchPreferenceCompat
-            android:key="Notifications"
-            android:title="@string/NotificationSett" />
+            android:key="Internet access"
+            android:title="@string/internetSett" />
 
         <androidx.preference.SwitchPreferenceCompat
             android:dependency="Notifications"
@@ -27,11 +27,12 @@
             android:key="reply"
             android:title="@string/locationSettings" />
     </androidx.preference.PreferenceCategory>
-
+    <!--
     <androidx.preference.PreferenceCategory android:title="@string/misc">
         <androidx.preference.EditTextPreference
             android:key="look you can type too"
             android:title="type here"
             />
     </androidx.preference.PreferenceCategory>
+    -->
 </androidx.preference.PreferenceScreen>
