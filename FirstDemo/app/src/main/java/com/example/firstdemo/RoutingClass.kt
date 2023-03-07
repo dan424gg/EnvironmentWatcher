@@ -3,7 +3,7 @@ package com.example.firstdemo
 import android.app.Activity
 import android.graphics.Bitmap
 import android.util.Log
-import com.example.firstdemo.Weather.WeatherClass
+import com.example.firstdemo.Weather.WeatherClass.getWeatherData
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.PolyUtil
@@ -15,7 +15,6 @@ import okhttp3.Request
 import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.Math.floorDiv
-import java.lang.System.exit
 import kotlin.concurrent.thread
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -28,13 +27,12 @@ import kotlin.math.round
    have UI based around map view
  */
 
-
 object RoutingClass {
 
     private val client = OkHttpClient()
     private var path: List<LatLng> = ArrayList()
     private lateinit var steps: JSONArray
-    private var distance: Double = 0.0
+    private var totDistance: Double = 0.0
     private var duration: Double = 0.0
 
     // Number of segments in route
@@ -67,7 +65,7 @@ object RoutingClass {
         val polyline = routes.getJSONObject(0).getString("geometry")
 
         duration = routes.getJSONObject(0).getDouble("duration")
-        distance = routes.getJSONObject(0).getDouble("distance")
+        totDistance = routes.getJSONObject(0).getDouble("distance")
         steps = routes.getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps")
 
         path = PolyUtil.decode(polyline)
@@ -98,24 +96,24 @@ object RoutingClass {
         // Split time based on numSplits
         val segmentTime = floorDiv(duration.toInt(), numSegments)
 
-        for (i in 1 until numSegments) {
+        // Get list of locations to do markers
+        val locations = getLocations()
+
+        for (i in 1 until locations.size) {
             thread {
                 // Add cur time to segmentTime
                 val futureTime = (segmentTime * i)
-
-                // Get list of locations to do markers
-                val locations = getLocations()
 
                 // Round futureTime to nearest hour
                 val hour = round((futureTime / 60.0) / 60.0).toInt()
 
                 val location = path[segmentIdx * i]
-
-                WeatherClass.getWeatherData(location, hour, "shortForecast") { result ->
+                Log.d("DEBUG", "made it")
+                getWeatherData(locations[i], hour, "shortForecast") { result ->
                     val locIcon =
                         Bitmap.createScaledBitmap((activity as MainActivity).getWeatherImage(result), 150, 150, false)
                     activity.runOnUiThread {
-                        googleMap.addMarker(MarkerOptions().position(location).title(result).icon(BitmapDescriptorFactory.fromBitmap(locIcon)))
+                        googleMap.addMarker(MarkerOptions().position(locations[i]).title(result).icon(BitmapDescriptorFactory.fromBitmap(locIcon)))
                     }
                 }
             }
@@ -125,32 +123,56 @@ object RoutingClass {
     private fun getLocations() : List<LatLng>{
 
         val output: MutableList<LatLng> = ArrayList()
-        val segment = distance / numSegments
+        val segment = totDistance / numSegments
         var sum = 0.0
 
         for (i in 0 until steps.length()) {
-            /* can't split based on distance from step format
-                    might try going off of duration
-                        could potentially go into intersections and
-                        somehow go into the list, get each little duration,
-                        check everytime and keep track of spot in list.
-                    figure out some other way
-                 */
 
             val dist = steps.getJSONObject(i).getDouble("distance")
-
-            sum += dist
-
-            if (sum >= segment) {
-                // Get location
-                val locations = (steps.getJSONObject(i).getJSONArray("intersections").getJSONObject(0).getJSONArray("location"))
-
-                // "Split" location into a latitude and longitude
-                val loc = LatLng(locations.get(1).toString().toDouble(), locations.get(0).toString().toDouble())
-                output.add(loc)
-
+//            if (dist > segment) {
+//
+//                val multiplier = dist / segment
+//                val count = 1
+//
+//                var locations =
+//                    (steps.getJSONObject(i).getJSONArray("intersections").getJSONObject(0)
+//                        .getJSONArray("location"))
+//                // "Split" location into a latitude and longitude
+//                val x1 = locations.get(1).toString().toDouble()
+//                val y1 = locations.get(0).toString().toDouble()
+//
+//                locations =
+//                    (steps.getJSONObject(i + 1).getJSONArray("intersections").getJSONObject(0)
+//                        .getJSONArray("location"))
+//                val x2 = locations.get(1).toString().toDouble()
+//                val y2 = locations.get(0).toString().toDouble()
+//
+//                while (count < (multiplier + 1)) {
+//
+//                    val newx = (count * (x1 + x2)) / (multiplier + 1)
+//                    val newy = (count * (y1 + y2)) / (multiplier + 1)
+//                    output.add(LatLng(newx, newy))
+//                }
+//
 //                sum = 0.0
-            }
+//
+//            } else {
+                sum += dist
+
+                if (sum >= segment) {
+                    // Get location
+                    val locations =
+                        (steps.getJSONObject(i).getJSONArray("intersections").getJSONObject(0)
+                            .getJSONArray("location"))
+
+                    // "Split" location into a latitude and longitude
+                    val loc = LatLng(
+                        locations.get(1).toString().toDouble(),
+                        locations.get(0).toString().toDouble()
+                    )
+                    output.add(loc)
+                }
+//            }
         }
 
         return output

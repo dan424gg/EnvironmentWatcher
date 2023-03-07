@@ -64,7 +64,6 @@ object WeatherClass {
     private fun run(url : String) : String {
         val request = Request.Builder()
             .url(url)
-//            .header("User-agent", "an agent")
             .build()
 
         okHttpClient.newCall(request).execute().use { response ->

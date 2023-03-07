@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMainBinding
     var changeViewToCurLocation = true
-    private lateinit var curLocation: LatLng
+    private var curLocation = LatLng(0.0, 0.0)
 
 
     @SuppressLint("MissingPermission")
@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
 
             // Creating LatLngBounds obj to create a "bounds" for what is displayed on the map
-            if (destination != LatLng(0.0, 0.0) && origin != LatLng(0.0, 0.0)) {
+            if (origin != LatLng(0.0, 0.0) && destination != LatLng(0.0, 0.0)) {
                 val routeBounds = LatLngBounds.builder()
                 routeBounds.include(origin).include(destination)
 
@@ -183,7 +183,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Dangerous weather not detected
         if (!badWeatherExists) {
             // icon default is lightning for testing
-            // weatherImage.setImageResource(R.drawable.lightning)
             bitmap = BitmapFactory.decodeResource(resources, R.drawable.lightning)
         }
 
