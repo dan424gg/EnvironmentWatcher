@@ -13,6 +13,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 
 object LocationClass {
     private lateinit var locationCallback : LocationCallback
@@ -23,7 +24,7 @@ object LocationClass {
 
 
     @RequiresApi(Build.VERSION_CODES.M)
-    public fun calling(that: Activity): Pair<Double, Double> {
+    public fun calling(that: Activity): LatLng {
         Log.d("DEBUG", "Reached location code")
 
         //context = that;
@@ -46,11 +47,13 @@ object LocationClass {
         }
         Log.d("DEBUG", "Reached second activity 2")
 
-        var t = Thread{ getLocation(that)}
-        t.start()
-        t.join()
+        getLocation(that)
+        //val t = Thread{getLocation(that)}
+        //t.start()
+        //t.join()
+        Thread.sleep(500)
         //return latitude to longitude
-        return latitude to longitude
+        return LatLng(latitude, longitude)
     }
 
     @SuppressLint("MissingPermission")

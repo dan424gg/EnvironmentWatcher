@@ -8,4 +8,15 @@
     <string name="weather">Weather</string>
     <string name="channel_description">test_description</string>
     <string name="channel_name">test_name</string>
+    <string name="WeatherSettings">Weather Settings</string>
+    <string name="PermissionSettings">Permissions</string>
+    <string name="NotificationSett">Receive notifications outside of app</string>
+    <string name="misc">Miscellaneous Settings</string>
+    <string name="alerts">Receive emergency alerts?</string>
+    <string name="locationSettings">Track Location</string>
+    <string name="attachment_summary_off">Do not receive alerts</string>
+    <string name="attachment_summary_on">Receive emergency alerts</string>
+    <string name="rainSettings">Receive rain notifications</string>
+    <string name="internetSett">Allow app to have internet access</string>
+    <string name="WeatherUpdateChannelName">Weather Updates</string>
 </resources>

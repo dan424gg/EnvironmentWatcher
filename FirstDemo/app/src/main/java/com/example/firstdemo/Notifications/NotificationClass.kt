@@ -7,6 +7,7 @@ import android.app.NotificationManager
 import android.content.Context
 
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -96,6 +97,16 @@ object NotificationClass {
         }
     }
 
+    /* up default notification channel
+    NotificationClass.makeNotificationChannel(
+    this, "default", getString(R.string.WeatherUpdateChannelName),
+    "Current weather", 3
+    )
+
+     //call notification for test
+                    NotificationClass.sendNotification(this, weather, "weather description", getWeatherImage(weather))
+
+    */
     //parameters: context, unique channel id, user-visible name, user-visible description, use notification.IMPORTANCE_x for int
     public fun makeNotificationChannel(that: Activity, ID : String, channelName : String, descriptionText : String, importance : Int){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -110,14 +121,34 @@ object NotificationClass {
         }
     }
 
-    public fun sendNotification(that : Activity, weather : WeatherTypes) {
-        var builder = NotificationCompat.Builder(that, R.string.channel_name.toString())
-            //.setSmallIcon(WeatherTypes("rain").smallIcon)
-            .setContentTitle("TESTING")
-            .setContentText("The fog consumes us all")
+
+
+    public fun sendNotification(that : Activity, title : String, description: String, bits : Bitmap) {
+        var builder = NotificationCompat.Builder(that, "default")
+            .setSmallIcon(R.drawable.sunny)
+            .setLargeIcon(bits)
+            .setContentTitle(title)
+            .setContentText(description)
             //.setContentIntent(pendingIntent)
             //.setPriority()
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            //.setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
+
+        if (ActivityCompat.checkSelfPermission(
+                that,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
+        //notification id should be incremented, in order to make notifications unique.
+        NotificationManagerCompat.from(that).notify(1, builder.build())
     }
 }
