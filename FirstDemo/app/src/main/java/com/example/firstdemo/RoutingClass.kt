@@ -34,17 +34,22 @@ object RoutingClass {
     private lateinit var steps: JSONArray
     private var totDistance: Double = 0.0
     private var duration: Double = 0.0
+    var originLat = 0.0
+    var originLng = 0.0
+    var destLat = 0.0
+    var destLng = 0.0
+
 
     // Number of segments in route
-    private var numSegments : Int = 6
+    private const val numSegments = 10
 
     fun calling(googleMap: GoogleMap, origin: LatLng, destination: LatLng, activity: Activity) {
 
         // deconstruct LatLng objects to use in URL
-        val originLat = origin.latitude
-        val originLng = origin.longitude
-        val destLat = destination.latitude
-        val destLng = destination.longitude
+        originLat = origin.latitude
+        originLng = origin.longitude
+        destLat = destination.latitude
+        destLng = destination.longitude
 
         // construct URL
         val urlDirections =
@@ -91,7 +96,7 @@ object RoutingClass {
     private fun checkCondOfRoute(googleMap: GoogleMap, activity: Activity) {
 
         // Find first segment of flattened path list, subtract one to not allow index go out of bounds (so segmentIdx != path.size)
-        val segmentIdx = floorDiv(path.size, numSegments) - 1
+//        val segmentIdx = floorDiv(path.size, numSegments + 1) - 1
 
         // Split time based on numSplits
         val segmentTime = floorDiv(duration.toInt(), numSegments)
@@ -107,8 +112,6 @@ object RoutingClass {
                 // Round futureTime to nearest hour
                 val hour = round((futureTime / 60.0) / 60.0).toInt()
 
-                val location = path[segmentIdx * i]
-                Log.d("DEBUG", "made it")
                 getWeatherData(locations[i], hour, "shortForecast") { result ->
                     val locIcon =
                         Bitmap.createScaledBitmap((activity as MainActivity).getWeatherImage(result), 150, 150, false)
@@ -122,57 +125,42 @@ object RoutingClass {
 
     private fun getLocations() : List<LatLng>{
 
-        val output: MutableList<LatLng> = ArrayList()
-        val segment = totDistance / numSegments
         var sum = 0.0
+        val output: MutableList<LatLng> = ArrayList()
+        val segment = totDistance / (numSegments)
+        var x1 = originLat
+        var y1 = originLng
 
-        for (i in 0 until steps.length()) {
+        for (i in 0 until steps.length() - 1) {
 
             val dist = steps.getJSONObject(i).getDouble("distance")
-//            if (dist > segment) {
-//
-//                val multiplier = dist / segment
-//                val count = 1
-//
-//                var locations =
-//                    (steps.getJSONObject(i).getJSONArray("intersections").getJSONObject(0)
-//                        .getJSONArray("location"))
-//                // "Split" location into a latitude and longitude
-//                val x1 = locations.get(1).toString().toDouble()
-//                val y1 = locations.get(0).toString().toDouble()
-//
-//                locations =
-//                    (steps.getJSONObject(i + 1).getJSONArray("intersections").getJSONObject(0)
-//                        .getJSONArray("location"))
-//                val x2 = locations.get(1).toString().toDouble()
-//                val y2 = locations.get(0).toString().toDouble()
-//
-//                while (count < (multiplier + 1)) {
-//
-//                    val newx = (count * (x1 + x2)) / (multiplier + 1)
-//                    val newy = (count * (y1 + y2)) / (multiplier + 1)
-//                    output.add(LatLng(newx, newy))
-//                }
-//
-//                sum = 0.0
-//
-//            } else {
-                sum += dist
 
-                if (sum >= segment) {
-                    // Get location
-                    val locations =
-                        (steps.getJSONObject(i).getJSONArray("intersections").getJSONObject(0)
-                            .getJSONArray("location"))
+            val multiplier = dist / segment
+            Log.d("routingstuff", "$multiplier")
+            sum += dist
+            if (sum >= segment || multiplier > 1) {
+                sum = segment - sum
 
-                    // "Split" location into a latitude and longitude
-                    val loc = LatLng(
-                        locations.get(1).toString().toDouble(),
-                        locations.get(0).toString().toDouble()
-                    )
-                    output.add(loc)
+                var locations =
+                    steps.getJSONObject(i + 1).getJSONArray("intersections").getJSONObject(0)
+                        .getJSONArray("location")
+                val x2 = locations.get(1).toString().toDouble()
+                val y2 = locations.get(0).toString().toDouble()
+
+                var count = 1
+                while (count < (multiplier + 1)) {
+                    val newx = (x1 + ((count / (multiplier + 1)) * (x2 - x1)))
+                    val newy = (y1 + ((count / (multiplier + 1)) * (y2 - y1)))
+                    output.add(LatLng(newx, newy))
+                    count += 1
                 }
-//            }
+
+                locations =
+                    steps.getJSONObject(i).getJSONArray("intersections").getJSONObject(0)
+                        .getJSONArray("location")
+                x1 = locations.get(1).toString().toDouble()
+                y1 = locations.get(0).toString().toDouble()
+            }
         }
 
         return output
