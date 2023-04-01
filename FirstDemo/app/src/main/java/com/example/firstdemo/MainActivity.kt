@@ -23,10 +23,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private var lastLocation = Pair(0.0, 0.0)
@@ -113,11 +110,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
+        // This should end up being useful for recentering, but need to add permissions
+        //mMap.isMyLocationEnabled = true
+        //mMap.isMyLocationButtonEnabled = true
+
         val icon = BitmapFactory.decodeResource(resources, R.drawable.user_icon)
         Bitmap.createScaledBitmap(icon, 120, 120, false)
 
         val notificationIntent = Intent(this, NotificationActivity::class.java)
         val weatherImage : ImageView = findViewById(R.id.weatherImage)
+        var markerCreated = false
+        lateinit var userMarker: Marker
 
         Thread {
             // Runs only when Button is True
@@ -148,11 +151,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                                 changeViewToCurLocation = false
                             }
 
-                            mMap.addMarker(
-                                MarkerOptions().position(curLocation).icon(
-                                    BitmapDescriptorFactory.fromBitmap(userIcon)
-                                )
-                            )
+                            if(!markerCreated) {
+                                userMarker = mMap.addMarker(
+                                    MarkerOptions().position(curLocation).icon(
+                                        BitmapDescriptorFactory.fromBitmap(userIcon)
+                                    )
+                                )!!
+                                markerCreated = true
+                            }else if(userMarker.position != curLocation){
+                                userMarker.position= curLocation
+                                userMarker.setIcon(BitmapDescriptorFactory.fromBitmap(userIcon))
+
+                            }
                         }
                     }
                 }
