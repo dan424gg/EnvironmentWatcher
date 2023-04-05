@@ -1,12 +1,16 @@
 package com.example.firstdemo
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
@@ -16,9 +20,11 @@ import android.widget.EditText
 import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import com.example.firstdemo.Location.LocationClass
 import com.example.firstdemo.Weather.WeatherClass
 import com.example.firstdemo.databinding.ActivityMainBinding
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -110,12 +116,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        // This should end up being useful for recentering, but need to add permissions
-        //mMap.isMyLocationEnabled = true
-        //mMap.isMyLocationButtonEnabled = true
-
         val icon = BitmapFactory.decodeResource(resources, R.drawable.user_icon)
         Bitmap.createScaledBitmap(icon, 120, 120, false)
+        enableLocationButton()
 
         val notificationIntent = Intent(this, NotificationActivity::class.java)
         val weatherImage : ImageView = findViewById(R.id.weatherImage)
@@ -126,7 +129,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             // Runs only when Button is True
             while (true) {
                 Log.d("DEBUG", "Entered thread")
-                curLocation = LocationClass.calling(this)
+                curLocation = LocationClass.calling(this, mMap)
                 Log.d("DEBUG", "Location: $curLocation")
                 Thread.sleep(500)
 
@@ -232,6 +235,39 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         return bitmap
+    }
+
+    @SuppressLint("MissingPermission")
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun enableLocationButton(){
+        val client = LocationServices.getFusedLocationProviderClient(this)
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED
+            ||
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ), 1)
+        }else{
+            mMap.isMyLocationEnabled = true
+            mMap.uiSettings.isMyLocationButtonEnabled = true
+        }
+    }
+    
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1){
+            // Got permission from user
+            enableLocationButton()
+        }
     }
 
 }

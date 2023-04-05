@@ -13,6 +13,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 
 object LocationClass {
@@ -24,7 +25,7 @@ object LocationClass {
 
 
     @RequiresApi(Build.VERSION_CODES.M)
-    public fun calling(that: Activity): LatLng {
+    public fun calling(that: Activity, map: GoogleMap): LatLng {
         Log.d("DEBUG", "Reached location code")
 
         //context = that;
