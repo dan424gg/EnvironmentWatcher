@@ -49,9 +49,6 @@ object LocationClass {
         Log.d("DEBUG", "Reached second activity 2")
 
         getLocation(that)
-        //val t = Thread{getLocation(that)}
-        //t.start()
-        //t.join()
         Thread.sleep(500)
         //return latitude to longitude
         return LatLng(latitude, longitude)
@@ -86,18 +83,4 @@ object LocationClass {
             }
         }
     }
-
-    /*
-    @RequiresApi(Build.VERSION_CODES.M)
-    fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 1){
-            // Got permission from user
-            getLocation()
-        }
-    }*/
 }
