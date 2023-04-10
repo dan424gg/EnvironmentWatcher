@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val icon = BitmapFactory.decodeResource(resources, R.drawable.user_icon)
         Bitmap.createScaledBitmap(icon, 120, 120, false)
 
-        val notificationIntent = Intent(this, NotificationActivity::class.java)
+
         val weatherImage : ImageView = findViewById(R.id.weatherImage)
 
         Thread {
