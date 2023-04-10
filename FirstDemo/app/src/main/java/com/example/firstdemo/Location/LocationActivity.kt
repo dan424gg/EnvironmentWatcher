@@ -17,12 +17,14 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.GoogleMap
 
 class LocationActivity : AppCompatActivity(){
     private lateinit var locationCallback : LocationCallback
     private lateinit var locationRequest : LocationRequest
     private var longitude = 0.0
     private var latitude = 0.0
+    private lateinit var mMap: GoogleMap
 
 
     @RequiresApi(Build.VERSION_CODES.M)

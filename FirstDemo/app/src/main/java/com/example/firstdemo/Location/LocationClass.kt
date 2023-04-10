@@ -13,6 +13,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 
 object LocationClass {
@@ -24,7 +25,7 @@ object LocationClass {
 
 
     @RequiresApi(Build.VERSION_CODES.M)
-    public fun calling(that: Activity): LatLng {
+    public fun calling(that: Activity, map: GoogleMap): LatLng {
         Log.d("DEBUG", "Reached location code")
 
         //context = that;
@@ -48,9 +49,6 @@ object LocationClass {
         Log.d("DEBUG", "Reached second activity 2")
 
         getLocation(that)
-        //val t = Thread{getLocation(that)}
-        //t.start()
-        //t.join()
         Thread.sleep(500)
         //return latitude to longitude
         return LatLng(latitude, longitude)
@@ -85,18 +83,4 @@ object LocationClass {
             }
         }
     }
-
-    /*
-    @RequiresApi(Build.VERSION_CODES.M)
-    fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 1){
-            // Got permission from user
-            getLocation()
-        }
-    }*/
 }
