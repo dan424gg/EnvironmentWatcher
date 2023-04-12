@@ -5,6 +5,8 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Geocoder
+import android.location.Address
+import android.location.Geocoder.GeocodeListener
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -35,6 +37,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private var curLocation = LatLng(0.0, 0.0)
 
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +57,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val dirButton: Button = findViewById(R.id.dirButton)
         dirButton.setOnClickListener{
+
+            Log.d("debug", "button clicked")
+
             changeViewToCurLocation = false
 
             val startLocationInput = findViewById<EditText>(R.id.startLocation)
@@ -61,11 +67,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             var origin = curLocation
             var destination = LatLng(0.0, 0.0)
 
-            if (!startLocationInput.text.isEmpty()) {
+            if (startLocationInput.text.isNotEmpty()) {
                 origin = locNameToLatLng(startLocationInput.text.toString())
             }
 
-            if (!endLocationInput.text.isEmpty()) {
+            if (endLocationInput.text.isNotEmpty()) {
                 destination = locNameToLatLng(endLocationInput.text.toString())
             }
 
@@ -143,6 +149,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun locNameToLatLng(loc : String) : LatLng {
+
         val geocoder = Geocoder(this)
         val addressList = geocoder.getFromLocationName(loc, 1)
 

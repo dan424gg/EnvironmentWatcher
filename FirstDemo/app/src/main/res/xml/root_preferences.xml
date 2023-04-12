@@ -14,7 +14,6 @@
             android:title="@string/internetSett" />
 
         <androidx.preference.SwitchPreferenceCompat
-            android:dependency="Notifications"
             android:key="attachment"
             android:summaryOff="@string/attachment_summary_off"
             android:summaryOn="@string/attachment_summary_on"

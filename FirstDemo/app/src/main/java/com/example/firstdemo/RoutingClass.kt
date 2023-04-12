@@ -96,7 +96,6 @@ object RoutingClass {
     private fun checkCondOfRoute(googleMap: GoogleMap, activity: Activity) {
 
         // Find first segment of flattened path list, subtract one to not allow index go out of bounds (so segmentIdx != path.size)
-//        val segmentIdx = floorDiv(path.size, numSegments + 1) - 1
 
         // Split time based on numSplits
         val segmentTime = floorDiv(duration.toInt(), numSegments)
@@ -127,26 +126,42 @@ object RoutingClass {
 
         var sum = 0.0
         val output: MutableList<LatLng> = ArrayList()
-        val segment = totDistance / (numSegments)
+        val segmentSize = totDistance / numSegments
         var x1 = originLat
         var y1 = originLng
 
+        // Go through all steps of the route given from the directions
         for (i in 0 until steps.length() - 1) {
 
+            // Get the distance from the given step
             val dist = steps.getJSONObject(i).getDouble("distance")
 
-            val multiplier = dist / segment
-            Log.d("routingstuff", "$multiplier")
+            /* If the dist > segmentSize
+                    Return how much bigger the dist is compared to the segmentSize
+                    1 < dist / segmentSize
+               else
+                    1 >= dist / segmentSize
+             */
+            val multiplier = dist / segmentSize
             sum += dist
-            if (sum >= segment || multiplier > 1) {
-                sum = segment - sum
 
+            /* When the sum of distances is greater or equal to the segmentSize OR the distance is larger than the segmentSize
+               place a waypoint
+             */
+            if (sum >= segmentSize || multiplier > 1) {
+
+                // If sum goes over segmentSize, counteract it
+                if (sum > segmentSize)
+                    sum = segmentSize - sum
+
+                // Get second set of coordinates
                 var locations =
                     steps.getJSONObject(i + 1).getJSONArray("intersections").getJSONObject(0)
                         .getJSONArray("location")
                 val x2 = locations.get(1).toString().toDouble()
                 val y2 = locations.get(0).toString().toDouble()
 
+                // Get x-points where x = multiplier
                 var count = 1
                 while (count < (multiplier + 1)) {
                     val newx = (x1 + ((count / (multiplier + 1)) * (x2 - x1)))
@@ -155,6 +170,7 @@ object RoutingClass {
                     count += 1
                 }
 
+                // Get first set of coordinates
                 locations =
                     steps.getJSONObject(i).getJSONArray("intersections").getJSONObject(0)
                         .getJSONArray("location")
