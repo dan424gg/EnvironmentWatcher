@@ -12,12 +12,11 @@ import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
+//import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 
 object LocationClass {
-    private lateinit var locationCallback : LocationCallback
-    private lateinit var locationRequest : LocationRequest
     private var longitude = 0.0
     private var latitude = 0.0
 
@@ -26,26 +25,6 @@ object LocationClass {
     @RequiresApi(Build.VERSION_CODES.M)
     public fun calling(that: Activity): LatLng {
         Log.d("DEBUG", "Reached location code")
-
-        // Deprecated code to initialize a repeating location request
-        locationRequest = LocationRequest.create()
-        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        locationRequest.interval = 20000
-
-        // Callback that will be updated whenever the location is changed
-        // Used mostly to enable last location to work
-        locationCallback = object : LocationCallback(){
-            override fun onLocationResult(locationResult: LocationResult) {
-                locationResult ?: return
-                for (location in locationResult.locations){
-                    longitude = location.longitude
-                    latitude = location.latitude
-                    Log.d("DEBUG", "Updated location")
-                    Log.d("DEBUG", latitude.toString())
-                }
-            }
-        }
-        Log.d("DEBUG", "Reached second activity 2")
 
         // Calls the main location function to update the global variables
         // and then sleeps to keep it from returning to the main activity too soon
@@ -79,9 +58,6 @@ object LocationClass {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ), 1)
         }else{
-            // Start location updates
-            client.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
-
             // Get the most recent location
             client.lastLocation.addOnSuccessListener {
                 if(it != null) {
