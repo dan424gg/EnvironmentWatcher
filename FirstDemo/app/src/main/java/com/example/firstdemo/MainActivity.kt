@@ -177,6 +177,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                                 changeViewToCurLocation = false
                             }
 
+
+
                             // Check if the user's marker has already been created
                             if(!markerCreated) {
                                 // If not, create a marker using the already created icon and place
@@ -184,7 +186,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                                 userMarker = mMap.addMarker(
                                     MarkerOptions().position(curLocation).icon(
                                         BitmapDescriptorFactory.fromBitmap(userIcon)
-                                    )
+                                    ).anchor(0.5f,0.5f)
                                 )!!
 
                                 // Flip the boolean so that redundant markers will not be created

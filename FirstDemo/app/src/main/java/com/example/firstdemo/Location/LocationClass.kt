@@ -34,7 +34,6 @@ object LocationClass {
         // Returns location as a LatLng
         return LatLng(latitude, longitude)
     }
-
     // Function that checks location permissions and updates the global location variables
     @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.M)
