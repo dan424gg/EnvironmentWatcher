@@ -31,6 +31,14 @@ object WeatherClass {
         }
     }
 
+    //this is here to feed the weatherparser class
+    fun getAllWeatherData(location: LatLng, hour: Int = 0, property: String = "detailedForecast", callback: (result: String) -> Unit) {
+        getNWSPropertyJSON(location, "forecastHourly") { json ->
+            val period = json.getJSONObject("properties").getJSONArray("periods").getString(hour)
+            val content = JSONObject(period).getString(property)
+        }
+    }
+
     fun getWeatherData(location: LatLng, hour: Int = 0, property: String = "detailedForecast") : String {
         var content = "Insert weather"
 

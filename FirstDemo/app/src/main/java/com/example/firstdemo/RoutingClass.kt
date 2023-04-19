@@ -2,8 +2,11 @@ package com.example.firstdemo
 
 import android.app.Activity
 import android.graphics.Bitmap
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.example.firstdemo.Weather.WeatherClass
+import com.example.firstdemo.Weather.WeatherParser
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.PolyUtil
@@ -104,7 +107,7 @@ object RoutingClass {
                 val location = path[segmentIdx * i]
                 WeatherClass.getWeatherData(location, hour, "shortForecast") { result ->
                     val locIcon =
-                        Bitmap.createScaledBitmap((activity as MainActivity).getWeatherImage(result), 150, 150, false)
+                        Bitmap.createScaledBitmap(WeatherParser(result, activity.applicationContext).img, 150, 150, false)
                     activity.runOnUiThread {
                         googleMap.addMarker(MarkerOptions().position(location).title(result).icon(BitmapDescriptorFactory.fromBitmap(locIcon)))
                     }
@@ -129,6 +132,7 @@ object RoutingClass {
     }
 
     // Convert current time to seconds
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun curTimeToSeconds() : Double {
 
         val curTime = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME).split(":")
