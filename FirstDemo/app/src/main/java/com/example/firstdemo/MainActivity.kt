@@ -23,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.firstdemo.Location.LocationClass
 import com.example.firstdemo.Weather.WeatherClass
+import com.example.firstdemo.Weather.WeatherParser
 import com.example.firstdemo.databinding.ActivityMainBinding
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -162,13 +163,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                         Log.d("weatherresult", weather)
 
+
+
                         // Find the weather icon corresponding to the user's current location to use
                         // as the image for the user marker
-                        val userIcon =
-                            Bitmap.createScaledBitmap(getWeatherImage(weather), 150, 150, false)
+                        //val userIcon =
+                        //    Bitmap.createScaledBitmap(getWeatherImage(weather), 150, 150, false)
+                        val userIcon = WeatherParser(weather, this).img
+                        Bitmap.createScaledBitmap(userIcon, 150, 150, false)
 
                         // Display a notification for testing purposes
-                        NotificationClass.sendNotification(this, weather, weather, userIcon)
+                        //NotificationClass.sendNotification(this, weather, weather, userIcon)
 
                         // Run necessary processes on the ui thread
                         runOnUiThread {
