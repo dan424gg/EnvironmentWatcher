@@ -76,6 +76,8 @@ object WeatherClass {
             .header("User-agent", "an agent")
             .build()
 
+        //TODO: handle timeouts (.isSuccessful doesn't handle timeouts, so the app crashes)
+        //maybe put this on a loop, in the event of a timeout??
         okHttpClient.newCall(request).execute().use { response ->
             if (!response.isSuccessful) {
                 if (response.toString().contains("code=500")) {

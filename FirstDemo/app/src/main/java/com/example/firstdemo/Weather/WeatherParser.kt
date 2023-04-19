@@ -78,6 +78,7 @@ class WeatherParser(val weatherInfo: String, val context: Context) {
             "Thunderstorm Light Rain",
             "Thunderstorm Showers",
             "Thunderstorm Rain",
+            "Showers and Thunderstorms",
             "Clear",
             "Funnel Cloud",
             "Tornado",
@@ -129,6 +130,7 @@ class WeatherParser(val weatherInfo: String, val context: Context) {
             "Thunderstorm Light Rain" to R.drawable.thunderstorm_rain,
             "Thunderstorm Showers" to R.drawable.thunderstorm_rain,
             "Thunderstorm Rain" to R.drawable.thunderstorm_rain,
+            "Showers and Thunderstorms" to R.drawable.thunderstorm_rain,
 
             "Thunderstorm" to R.drawable.thunderstorm,
             "T-storms" to R.drawable.thunderstorm,
