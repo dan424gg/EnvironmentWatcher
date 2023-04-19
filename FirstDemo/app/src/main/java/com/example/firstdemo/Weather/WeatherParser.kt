@@ -19,7 +19,7 @@ class WeatherParser(val weatherInfo: String, val context: Context) {
     //Should this be a global? Maps the keywords to images.
     //NOTE: do not change badWeather or substrings without mirroring
     //the change in the other
-    val badWeather = mapOf(
+    /* badWeather = mapOf(
 
         "Fair" to R.drawable.sun,
         "Clear" to R.drawable.sun,
@@ -61,7 +61,7 @@ class WeatherParser(val weatherInfo: String, val context: Context) {
 
         "Dust" to R.drawable.dust_sand,
         "Sand" to R.drawable.dust_sand,
-    )
+    )*/
 
 
     private fun findWeatherType(weatherString: String, context: Context): Bitmap {
@@ -123,6 +123,16 @@ class WeatherParser(val weatherInfo: String, val context: Context) {
 
         val badWeather = mapOf(
 
+            "Thunderstorm Small Hail" to R.drawable.thunderstorm_rain,
+            "Thunderstorm Hail" to R.drawable.thunderstorm_rain,
+            "Thunderstorm Heaver Rain" to R.drawable.thunderstorm_rain,
+            "Thunderstorm Light Rain" to R.drawable.thunderstorm_rain,
+            "Thunderstorm Showers" to R.drawable.thunderstorm_rain,
+            "Thunderstorm Rain" to R.drawable.thunderstorm_rain,
+
+            "Thunderstorm" to R.drawable.thunderstorm,
+            "T-storms" to R.drawable.thunderstorm,
+
             "Fair" to R.drawable.sun,
             "Clear" to R.drawable.sun,
 
@@ -146,15 +156,6 @@ class WeatherParser(val weatherInfo: String, val context: Context) {
             "Showers" to R.drawable.heavy_rain,
             "Rain" to R.drawable.heavy_rain,
 
-            "Thunderstorm" to R.drawable.thunderstorm,
-
-            "Thunderstorm Small Hail" to R.drawable.thunderstorm_rain,
-            "Thunderstorm Hail" to R.drawable.thunderstorm_rain,
-            "Thunderstorm Heaver Rain" to R.drawable.thunderstorm_rain,
-            "Thunderstorm Light Rain" to R.drawable.thunderstorm_rain,
-            "Thunderstorm Showers" to R.drawable.thunderstorm_rain,
-            "Thunderstorm Rain" to R.drawable.thunderstorm_rain,
-
             "Breezy" to R.drawable.wind,
             "Windy" to R.drawable.wind,
 
@@ -164,11 +165,19 @@ class WeatherParser(val weatherInfo: String, val context: Context) {
             "Dust" to R.drawable.dust_sand,
             "Sand" to R.drawable.dust_sand,
         )
-        
-        val regex = substrings.joinToString("|").toRegex()
+
+        var iconType: String? = null
+        for (strings in substrings) {
+            iconType = strings.toRegex().find(weatherString)?.value
+            if (iconType != null) {
+                break
+            }
+        }
+
+        //val regex = substrings.joinToString("|").toRegex()
 
         //iconType is a matchResult object
-        val iconType = regex.find(weatherString)?.value
+        //val iconType = regex.find(weatherString)?.value
         Log.d("Aidan", "weatherString: $weatherString")
 
         if (iconType == null) {
