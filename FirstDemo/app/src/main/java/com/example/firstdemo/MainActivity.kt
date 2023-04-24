@@ -72,17 +72,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             var start = curLocation
             var destination = LatLng(0.0, 0.0)
 
-            Log.d("DEBUG", "Start: ${startLocationInput.text.toString()}")
-            Log.d("DEBUG", "Destination: ${endLocationInput.text.toString()}")
-
             // If start is not blank, replace the value of the start variable
             // with the coordinates to the input address.
-            if (startLocationInput.text != null) {
+            if (startLocationInput.text.isNotEmpty()) {
                 start = locNameToLatLng(startLocationInput.text.toString())
             }
 
             // Do the same for the destination
-            if (endLocationInput.text != null) {
+            if (endLocationInput.text.isNotEmpty()) {
                 destination = locNameToLatLng(endLocationInput.text.toString())
             }
 
@@ -92,6 +89,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 val routeBounds = LatLngBounds.builder()
                 routeBounds.include(start).include(destination)
 
+                mMap.clear()
                 // Add markers to the start point and destination
                 mMap.addMarker(MarkerOptions().position(start).title("Origin"))
                 mMap.addMarker(MarkerOptions().position(destination).title("Destination"))
