@@ -193,8 +193,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                                 // Flip the boolean so that redundant markers will not be created
                                 markerCreated = true
-                            // Other wise, check if the user has moved and update the marker's
-                            // position (and icon if the weather has changed) if so
+                                // Other wise, check if the user has moved and update the marker's
+                                // position (and icon if the weather has changed) if so
                             }else if(userMarker.position != curLocation){
                                 userMarker.position= curLocation
                                 userMarker.setIcon(BitmapDescriptorFactory.fromBitmap(userIcon))
@@ -203,7 +203,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         }
                     }
                 }
-                //Thread.sleep(500)
             }
         }.start()
     }
@@ -293,11 +292,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             ||
             ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
             != PackageManager.PERMISSION_GRANTED){
-                // If not, get them
-                ActivityCompat.requestPermissions(this, arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ), 1)
+            // If not, get them
+            ActivityCompat.requestPermissions(this, arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ), 1)
         }else{
             // Otherwise, enable the location features
             mMap.isMyLocationEnabled = true

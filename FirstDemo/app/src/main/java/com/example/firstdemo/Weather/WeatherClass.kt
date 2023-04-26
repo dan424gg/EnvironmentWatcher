@@ -64,6 +64,7 @@ object WeatherClass {
 
         thread {
             json = JSONObject(run("https://api.weather.gov/points/$latitude,$longitude"))
+            Log.d("WEATHERSTUFF", "lat: $latitude lng: $longitude")
             json = JSONObject(run(json.getJSONObject("properties").getString(property)))
 
             callback.invoke(json)

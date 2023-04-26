@@ -4,9 +4,11 @@ import android.app.Activity
 import android.graphics.Bitmap
 import android.util.Log
 import com.example.firstdemo.Weather.WeatherClass.getWeatherData
+import com.example.firstdemo.Weather.WeatherParser
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.PolyUtil
+import com.google.maps.android.SphericalUtil
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
@@ -68,7 +70,6 @@ object RoutingClass {
         val polyline = routes.getJSONObject(0).getString("geometry")
 
         val steps = routes.getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps")
-//        val totDistance = routes.getJSONObject(0).getDouble("distance")
 
         path = PolyUtil.decode(polyline)
         checkCondOfRoute(googleMap, duration, activity, steps)
@@ -88,12 +89,8 @@ object RoutingClass {
 
     private fun checkCondOfRoute(googleMap: GoogleMap, duration: Int, activity: Activity, steps: JSONArray) {
 
-        val numSegments = numWaypoints + 1;
-        // Find first segment of flattened path list, subtract one to not allow index go out of bounds (so segmentIdx != path.size)
-        val segmentIdx = floorDiv(path.size, numSegments)
-
         // Split time based on numSplits
-        val segmentTime = floorDiv(duration, numSegments)
+        val segmentTime = floorDiv(duration, numWaypoints)
 
         val locations = getLocations(steps)
 
@@ -107,10 +104,19 @@ object RoutingClass {
 
             getWeatherData(locations[i], hour, "shortForecast") { result ->
                 val locIcon =
-                    Bitmap.createScaledBitmap((activity as MainActivity).getWeatherImage(result), 150, 150, false)
+                    Bitmap.createScaledBitmap(
+                        WeatherParser(
+                            result,
+                            activity.applicationContext
+                        ).img, 150, 150, false
+                    )
+
                 activity.runOnUiThread {
-                    googleMap.addMarker(MarkerOptions().position(locations[i]).title(result).icon(
-                        BitmapDescriptorFactory.fromBitmap(locIcon)))
+                    googleMap.addMarker(
+                        MarkerOptions().position(locations[i]).title(result).icon(
+                            BitmapDescriptorFactory.fromBitmap(locIcon)
+                        )
+                    )
                 }
             }
         }
@@ -118,69 +124,63 @@ object RoutingClass {
 
     private fun getLocations(steps: JSONArray) : List<LatLng> {
 
-        var multiplier = 1.0
+        // Master list of coordinates
+        val coordsList = mutableListOf<LatLng>()
 
-        val coordsSet = mutableListOf<LatLng>()
-        val distWCoords = mutableListOf<Pair<Double,Pair<LatLng, LatLng>>>()        // Distance paired with 'from' coords and 'to' coords
+        // List of distances with it's corresponding 'to' and 'from' coordinates
+        val distWCoords = mutableListOf<Pair<Double,Pair<LatLng, LatLng>>>()
+
+        // Output list of waypoint locations
         val output: MutableList<LatLng> = ArrayList()
 
-        var x1 = originLat
-        var y1 = originLng
+        // Total distance of route
+        var totDistance = 0.0
 
+        // Initialize coordsList with origin coordinates
+        coordsList.add(LatLng(originLat, originLng))
 
-        // Go through all steps of the route given from the directions
-        for (i in 0 until steps.length() - 1) {
+        // For each step in a route, find the coordinates at each intersection
+        for (i in 1 until steps.length()) {
 
+            // Get the array of intersections and the length of the array
             val intersections = steps.getJSONObject(i).getJSONArray("intersections")
             val intersectionsLength = intersections.length()
 
-            for (w in 0..intersectionsLength - 1) {
+            // Add the coordinate of each intersection into coordsList
+            for (w in 0 until intersectionsLength) {
                 val long = intersections.getJSONObject(w).getJSONArray("location").getDouble(0)
                 val lat = intersections.getJSONObject(w).getJSONArray("location").getDouble(1)
 
-                coordsSet.add(LatLng(lat, long))
+                coordsList.add(LatLng(lat, long))
+
+                // At each coordinate, find the distance between the current coordinate and the most
+                // recent coordinate, add to totDistance and log values in distWCoords
+                val distance = distance(coordsList[coordsList.size - 2], coordsList[coordsList.size - 1])
+                totDistance += distance
+
+                distWCoords.add(Pair(distance, Pair(coordsList[coordsList.size - 2], coordsList[coordsList.size - 1])))
             }
         }
 
-        var totDistance = 0.0
-        for (i in 1..coordsSet.count()-1) {
-            val distance = distance(coordsSet[i-1], coordsSet[i])
-            totDistance += distance
+        // Find the default segmentSize for route
+        val segmentSize = totDistance / numWaypoints
 
-            distWCoords.add(Pair(distance, Pair(coordsSet[i-1], coordsSet[i])))
-        }
+        // Used to keep track of running total of distances (Offset for weird bug with first location
+        var sum = ((segmentSize * 4) / 5)
 
-        val segmentSize = totDistance / (numWaypoints + 1)
-        var sum = segmentSize / 2
-
+        // At each set of coordinates, sum up the corresponding distance
         for (item in distWCoords) {
+            sum += item.first
 
-            val dist = item.first
-            sum += dist
-
-            if (sum >= segmentSize || (dist / segmentSize) > 1) {
-                if (dist / segmentSize > 1) {
-                    multiplier = dist / segmentSize
-                    sum -= segmentSize
-                } else {
-                    sum -= segmentSize
-                }
+            // If
+            if (sum >= segmentSize) {
+                Log.d("ROUTINGSTUFF", "sum: $sum    segmentSize: $segmentSize")
+                sum -= segmentSize
 
                 val x2 = item.second.second.latitude
                 val y2 = item.second.second.longitude
 
-                var count = 1
-                while (count <= multiplier) {
-                    val newx = (x1 + ((count / (multiplier + 1)) * (x2 - x1)))
-                    val newy = (y1 + ((count / (multiplier + 1)) * (y2 - y1)))
-                    output.add(LatLng(newx, newy))
-
-                    count += 1;
-                }
-
-                x1 = x2
-                y1 = y2
-                multiplier = 1.0
+                output.add(LatLng(x2, y2))
             }
         }
 
