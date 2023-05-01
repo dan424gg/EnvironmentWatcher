@@ -174,10 +174,6 @@ class WeatherParser(val weatherInfo: String, val context: Context) {
             }
         }
 
-        //val regex = substrings.joinToString("|").toRegex()
-
-        //iconType is a matchResult object
-        //val iconType = regex.find(weatherString)?.value
         Log.d("Aidan", "weatherString: $weatherString")
 
         if (iconType == null) {
