@@ -12,70 +12,57 @@ import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
+//import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 
 object LocationClass {
-    private lateinit var locationCallback : LocationCallback
-    private lateinit var locationRequest : LocationRequest
     private var longitude = 0.0
     private var latitude = 0.0
-    //private lateinit var context : Activity
 
 
+    // Function called by external classes to access the location
     @RequiresApi(Build.VERSION_CODES.M)
-    public fun calling(that: Activity, map: GoogleMap): LatLng {
+    public fun calling(that: Activity): LatLng {
         Log.d("DEBUG", "Reached location code")
 
-        //context = that;
-
-        locationRequest = LocationRequest.create()
-        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        locationRequest.interval = 20000
-        //getLocation()
-
-        locationCallback = object : LocationCallback(){
-            override fun onLocationResult(locationResult: LocationResult) {
-                locationResult ?: return
-                for (location in locationResult.locations){
-                    longitude = location.longitude
-                    latitude = location.latitude
-                    Log.d("DEBUG", "Updated location")
-                    Log.d("DEBUG", latitude.toString())
-                }
-            }
-        }
-        Log.d("DEBUG", "Reached second activity 2")
-
+        // Calls the main location function to update the global variables
+        // and then sleeps to keep it from returning to the main activity too soon
         getLocation(that)
         Thread.sleep(500)
-        //return latitude to longitude
+
+        // Returns location as a LatLng
         return LatLng(latitude, longitude)
     }
-
+    // Function that checks location permissions and updates the global location variables
     @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.M)
     private fun getLocation(context: Activity){
         Log.d("DEBUG", "Reached getLocation")
-        //val act : TextView = findViewById(R.id.)
+
+        // Use a client to access the location API
         val client = LocationServices.getFusedLocationProviderClient(context)
 
+        // Make sure the app was granted the needed permissions
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED
             ||
             ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
             != PackageManager.PERMISSION_GRANTED){
             Log.d("DEBUG", "Reached Ask Permission")
+
+            // Get permissions if needed
             ActivityCompat.requestPermissions(context, arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ), 1)
         }else{
-            client.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+            // Get the most recent location
             client.lastLocation.addOnSuccessListener {
                 if(it != null) {
                     Log.d("DEBUG", "Reached Update location")
+
+                    // If the location was obtained properly (no errors), update the location
                     latitude = it.latitude
                     longitude = it.longitude
                     Log.d("DEBUG", latitude.toString())

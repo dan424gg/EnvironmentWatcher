@@ -2,7 +2,6 @@ package com.example.firstdemo
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -10,14 +9,12 @@ import android.graphics.BitmapFactory
 import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -25,7 +22,6 @@ import com.example.firstdemo.Location.LocationClass
 import com.example.firstdemo.Weather.WeatherClass
 import com.example.firstdemo.Weather.WeatherParser
 import com.example.firstdemo.databinding.ActivityMainBinding
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -33,13 +29,13 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
-    private var lastLocation = Pair(0.0, 0.0)
-    private var lastWeather = "Forecast goes here!"
+    //private var lastLocation = Pair(0.0, 0.0)
+    //private var lastWeather = "Forecast goes here!"
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMainBinding
-    var changeViewToCurLocation = true
+    private var changeViewToCurLocation = true
     private lateinit var curLocation: LatLng
-    private var weather = "Forecast goes here!"
+    //private var weather = "Forecast goes here!"
 
 
     @SuppressLint("MissingPermission")
@@ -72,7 +68,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             val startLocationInput = findViewById<EditText>(R.id.startLocation)
             val endLocationInput = findViewById<EditText>(R.id.endLocation)
 
-            // Initalize the default start and destination values
+            // Initialize the default start and destination values
             var start = curLocation
             var destination = LatLng(0.0, 0.0)
 
@@ -130,7 +126,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     // Performs operations related to the map once it is ready
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onMapReady(googleMap: GoogleMap) {
-        // Set the global mMap variable to point to the now initalized googleMap
+        // Set the global mMap variable to point to the now initialized googleMap
         mMap = googleMap
 
         // Request permissions and enable the button to recenter the map
@@ -151,7 +147,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 Log.d("DEBUG", "Entered thread")
 
                 // Get the user's current location and then wait to let the location return
-                curLocation = LocationClass.calling(this, mMap)
+                curLocation = LocationClass.calling(this)
                 Log.d("DEBUG", "Location: $curLocation")
                 Thread.sleep(500)
 
@@ -167,10 +163,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                         // Find the weather icon corresponding to the user's current location to use
                         // as the image for the user marker
-                        //val userIcon =
-                        //    Bitmap.createScaledBitmap(getWeatherImage(weather), 150, 150, false)
-                        val userIcon = WeatherParser(weather, this).img
-                        Bitmap.createScaledBitmap(userIcon, 150, 150, false)
+
+                        val Icon = WeatherParser(weather, this).img
+                        val userIcon = Bitmap.createScaledBitmap(Icon, 150, 150, false)
 
                         // Display a notification for testing purposes
                         //NotificationClass.sendNotification(this, weather, weather, userIcon)
@@ -186,6 +181,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                                 changeViewToCurLocation = false
                             }
 
+
+
                             // Check if the user's marker has already been created
                             if(!markerCreated) {
                                 // If not, create a marker using the already created icon and place
@@ -193,7 +190,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                                 userMarker = mMap.addMarker(
                                     MarkerOptions().position(curLocation).icon(
                                         BitmapDescriptorFactory.fromBitmap(userIcon)
-                                    )
+                                    ).anchor(0.5f,0.5f)
                                 )!!
 
                                 // Flip the boolean so that redundant markers will not be created
@@ -292,9 +289,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.M)
     private fun enableLocationButton(){
-        // Set up the location client
-        val client = LocationServices.getFusedLocationProviderClient(this)
-
         // Make sure that the app has permission to access the user's permissions
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED
