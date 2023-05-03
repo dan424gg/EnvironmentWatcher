@@ -18,6 +18,7 @@ import android.widget.EditText
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.example.firstdemo.Alerts.AlertPing
 import com.example.firstdemo.Location.LocationClass
 import com.example.firstdemo.Weather.WeatherClass
 import com.example.firstdemo.Weather.WeatherParser
@@ -140,6 +141,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         lateinit var userMarker: Marker
         var markerCreated = false
 
+
         // Use a thread so that other processes do not have to wait for the location or weather
         Thread {
             // Use an infinite loop to run as long as the app is active
@@ -153,6 +155,21 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 // Make sure that the location has been updated to avoid errors in future sections
                 if(curLocation.latitude != 0.0) {
+
+                    //begin alert debug
+                    val answer = AlertPing.getAlertData(curLocation, this) {response ->
+                        if (response != null) {
+                            
+                            Log.d("ALERT", "$response")
+
+                        } else
+                        {
+                            Log.d("ALERT", "null response")
+                        }
+                    }
+
+                    print(answer)
+
                     Log.d("DEBUG", "Inside weather")
                     // Get the weather using the shortForecast and continue to the rest of the operations
                     WeatherClass.getWeatherData(curLocation, 0, "shortForecast") { weather ->
@@ -164,8 +181,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         // Find the weather icon corresponding to the user's current location to use
                         // as the image for the user marker
 
-                        val Icon = WeatherParser(weather, this).img
-                        val userIcon = Bitmap.createScaledBitmap(Icon, 150, 150, false)
+                        val icon = WeatherParser(weather, this).img
+                        val userIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
 
                         // Display a notification for testing purposes
                         //NotificationClass.sendNotification(this, weather, weather, userIcon)
