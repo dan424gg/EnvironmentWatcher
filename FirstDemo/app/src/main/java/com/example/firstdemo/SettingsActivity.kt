@@ -16,12 +16,10 @@ class SettingsActivity : AppCompatActivity() {
                 .commit()
         }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        //PreferenceManager.getDefaultSharedPreferences(applicationContext)
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        finish()
-        return true
-    }
     class SettingsFragment : PreferenceFragmentCompat() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)

@@ -1,14 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="reply_entries">
-        <item>At all times </item>
-        <item>Only when in App</item>
-        <item>Never</item>
+    <!-- Alert Preference -->
+    <string-array name="alert_entries">
+        <item>Ashfall</item>
+        <item>Avalanche</item>
+        <item>Extreme Heat</item>
+        <item>Extreme Cold</item>
+        <item>Fire</item>
+        <item>Flood</item>
+        <item>Hurricane</item>
+        <item>Severe Thunderstorm</item>
     </string-array>
 
-    <string-array name="reply_values">
-        <item>All times, </item>
-        <item>Only in App,</item>
-        <item>Never</item>
+    <string-array name="alert_values">
+        <item>ashfall</item>
+        <item>avalanche</item>
+        <item>extreme_heat</item>
+        <item>extreme_cold</item>
+        <item>fire</item>
+        <item>flood</item>
+        <item>hurricane</item>
+        <item>severe_thunderstorm</item>
+    </string-array>
+
+    <!-- Weather Type Preference -->
+    <string-array name="weather_entries">
+        <item>Light Rain</item>
+        <item>Rain</item>
+        <item>Snow</item>
+        <item>Thunderstorm</item>
+        <item>Thunder Showers</item>
+        <item>Windy</item>
+        <item>Tornado</item>
+        <item>Dust</item>
+        <item>Fog</item>
+    </string-array>
+
+    <string-array name="weather_values">
+        <item>light_rain</item>
+        <item>rain</item>
+        <item>snow</item>
+        <item>thunderstorm</item>
+        <item>thunder_showers</item>
+        <item>windy</item>
+        <item>tornado</item>
+        <item>dust</item>
+        <item>fog</item>
     </string-array>
 </resources>

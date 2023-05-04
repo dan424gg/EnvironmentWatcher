@@ -162,8 +162,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         // Find the weather icon corresponding to the user's current location to use
                         // as the image for the user marker
 
-                        val Icon = WeatherParser(weather, this).img
-                        val userIcon = Bitmap.createScaledBitmap(Icon, 150, 150, false)
+                        val icon = WeatherParser(weather, this).img
+                        val userIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
 
                         // Display a notification for testing purposes
                         //NotificationClass.sendNotification(this, weather, weather, userIcon)
