@@ -2,17 +2,25 @@ package com.example.firstdemo
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.location.Address
 import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import androidx.annotation.RequiresApi
@@ -39,7 +47,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
     @SuppressLint("MissingPermission")
-    @RequiresApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         // Initialize the app
         super.onCreate(savedInstanceState)
@@ -57,6 +65,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+
+        // Get the inputs from the text fields
+        val startLocationInput = findViewById<AutoCompleteTextView>(R.id.startLocation)
+        val endLocationInput = findViewById<AutoCompleteTextView>(R.id.endLocation)
+
+        // Autocompletes text user inputs in source and destination fields
+        setSearchResults(startLocationInput)
+        setSearchResults(endLocationInput)
+
         // Create a value to access the button to get directions
         val dirButton: Button = findViewById(R.id.dirButton)
 
@@ -64,9 +81,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         dirButton.setOnClickListener{
             Log.d("DEBUG", "Directions clicked")
 
-            // Get the inputs from the text fields
-            val startLocationInput = findViewById<EditText>(R.id.startLocation)
-            val endLocationInput = findViewById<EditText>(R.id.endLocation)
+
 
             // Initialize the default start and destination values
             var start = curLocation
@@ -206,6 +221,73 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }.start()
     }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun setSearchResults(editTextCity: AutoCompleteTextView) {
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1,
+            mutableListOf<String>())
+        editTextCity.setAdapter(adapter)
+        editTextCity.threshold = 1
+
+        editTextCity.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                fetchCities(s.toString()) { cities ->
+                    adapter.clear()
+                    adapter.addAll(cities)
+                    adapter.notifyDataSetChanged()
+                }
+            }
+        })
+
+        // Used to allow user to press "Enter" key to exit keyboard
+        // Note: doesn't seem to work
+        editTextCity.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                // User pressed the "Enter" key, hide the keyboard
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(editTextCity.windowToken, 0)
+                return@setOnEditorActionListener true
+            }
+            return@setOnEditorActionListener false
+        }
+    }
+
+
+    // Gets list of suggested cities to be displayed to the user
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun fetchCities(query: String, listener: (List<String>) -> Unit) {
+        val geocoder = Geocoder(this)
+        var addressList = emptyList<Address>()
+        val cities = mutableListOf<String>()
+
+        geocoder.getFromLocationName(query, 10, object : Geocoder.GeocodeListener {
+            override fun onGeocode(addresses: MutableList<Address>) {
+                addresses.let {
+                    addressList = it
+                    for (address in addressList) {
+                        if (address.countryCode.equals("US")) {
+                            val city = "${address.locality}, ${address.adminArea}"
+                            if (city != null && address.locality != null && !cities.contains(city)) {
+                                cities.add(city)
+                            }
+                        }
+                        listener(cities)
+                    }
+                }
+            }
+
+            override fun onError(p0: String?) {
+                Log.e("Geocode error", "$p0")
+            }
+        })
+    }
+
+
+
+
+
 
     // Function to take the input addresses and convert them to coordinates
     private fun locNameToLatLng(loc : String) : LatLng {
