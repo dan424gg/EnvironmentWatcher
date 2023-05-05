@@ -157,13 +157,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 if(curLocation.latitude != 0.0) {
 
                     //begin alert debug
-                    val answer = AlertPing.getAlertData(curLocation, this) {response ->
+                    val answer = AlertPing.getAlertData(curLocation) {response ->
                         if (response != null) {
                             
                             Log.d("ALERT", "$response")
 
-                        } else
-                        {
+                        } else {
                             Log.d("ALERT", "null response")
                         }
                     }
