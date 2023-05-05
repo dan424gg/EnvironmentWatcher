@@ -1,6 +1,8 @@
 package com.example.firstdemo
 
 import android.app.Activity
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.example.firstdemo.Weather.WeatherClass
 import com.google.android.gms.maps.GoogleMap
 import com.google.maps.android.PolyUtil
@@ -137,6 +139,8 @@ object RoutingGoogleClass {
     }
 
     // Convert current time to seconds
+
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun curTimeToSeconds() : Double {
 
         val curTime = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME).split(":")
