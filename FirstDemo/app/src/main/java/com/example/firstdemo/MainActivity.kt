@@ -232,7 +232,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Deletes text the user typed if a selection has not been made and the user clicks on
         // another field
         editTextCity.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus && editTextCity.text.toString().isEmpty()) {
+            if (!hasFocus && editTextCity.text.toString().isNotEmpty()) {
                 editTextCity.setText("")
             }
         }
