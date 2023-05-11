@@ -90,9 +90,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
             // Destination was given by the user
             } else {
-                if (startAddress == null) {
-                    start = curLocation
+                start = if (startAddress != null) {
+                    LatLng(startAddress!!.latitude, startAddress!!.longitude)
+                } else {
+                    curLocation
                 }
+
                 destination = LatLng(destAddress.longitude, destAddress.latitude)
 
                 // Creating LatLngBounds obj to create a "bounds" for what is displayed on the map
@@ -222,21 +225,47 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun setSearchResults(editTextCity: AutoCompleteTextView, isStartAddress : Boolean) {
+        // Used to update list of autocomplete cities
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1,
             mutableListOf<String>())
+
         editTextCity.setAdapter(adapter)
         editTextCity.threshold = 1
+
         // Stores location information for each address
-        lateinit var addressesInfo : MutableList<Address>
+        var addressesInfo = mutableListOf<Address>()
 
-        // Deletes text the user typed if a selection has not been made and the user clicks on
-        // another field
-        editTextCity.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus && editTextCity.text.toString().isNotEmpty()) {
-                editTextCity.setText("")
+        // Updates list of autocomplete cities displayed to user
+        editTextCity.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                Log.d("test01", "in textChangedListener")
+                fetchCities(s.toString()) { addresses ->
+                    // Store addresses location info
+                    addressesInfo = addresses
+                    Log.d("test01", "addressesInfo: $addressesInfo")
+
+                    val cities = mutableListOf<String>()
+
+                    // Get addresses in the format "City, State"
+                    for (address in addressesInfo) {
+                        Log.d("test01", "address: $address")
+                        val city = "${address.locality}, ${address.adminArea}"
+                        Log.d("test01", "city: $city")
+                        cities.add(city)
+                        Log.d("test01", "city added: $city")
+                    }
+
+                    adapter.clear()
+                    adapter.addAll(cities)
+                    Log.d("test01", "cities added: ")
+                    adapter.notifyDataSetChanged()
+                }
             }
-        }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
 
+        // Sets the value of the start or destination if an item in the autocomplete list is selected
         editTextCity.setOnItemClickListener { parent, _, position, _ ->
             val location = parent.getItemAtPosition(position).toString()
             Log.d("test01", "Selected city: $location")
@@ -261,29 +290,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             hideKeyboard()
         }
 
-        editTextCity.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {}
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                fetchCities(s.toString()) { addresses ->
-                    // Store addresses location info
-                    addressesInfo = addresses
-
-                    lateinit var cities : MutableList<String>
-
-                    // Get addresses in the format "City, State"
-                    for (address in addressesInfo) {
-                        val city = "${address.locality}, ${address.adminArea}"
-                        cities.add(city)
-                    }
-
-                    adapter.clear()
-                    adapter.addAll(cities)
-                    adapter.notifyDataSetChanged()
-                }
-            }
-        })
-
         // Used to allow user to press "Enter" key to exit keyboard
         // Note: doesn't seem to work
         editTextCity.setOnEditorActionListener { _, actionId, _ ->
@@ -297,27 +303,26 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-
     // Gets list of suggested cities to be displayed to the user
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun fetchCities(query: String, listener: (MutableList<Address>) -> Unit) {
+        Log.d("test01", "in fetchCities")
         val geocoder = Geocoder(this)
-        var addressList = emptyList<Address>()
-        //val cities = mutableListOf<String>()
-        val validAddresses = mutableListOf<Address>()
 
         geocoder.getFromLocationName(query, 10, object : Geocoder.GeocodeListener {
             override fun onGeocode(addresses: MutableList<Address>) {
+                Log.d("test01", "OnGeocode called")
+                val validAddresses = mutableListOf<Address>()
+
                 addresses.let {
-                    addressList = it
-                    for (address in addressList) {
+                    for (address in it) {
                         if (address.countryCode.equals("US")) {
-                            //val city = "${address.locality}, ${address.adminArea}"
                             // Make sure a city corresponds with the state
                             if (address.locality != null && !validAddresses.contains(address)) {
                                 validAddresses.add(address)
                             }
                         }
+                        Log.d("test01", "passing valid addresses to listener: $validAddresses")
                         listener(validAddresses)
                     }
                 }
