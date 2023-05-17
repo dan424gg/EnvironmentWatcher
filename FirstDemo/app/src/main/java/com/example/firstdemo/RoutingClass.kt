@@ -5,11 +5,13 @@ import android.graphics.Bitmap
 import android.util.Log
 import com.example.firstdemo.Weather.WeatherClass.getWeatherData
 import com.example.firstdemo.Weather.WeatherParser
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.PolyUtil
 import com.google.maps.android.SphericalUtil
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import okhttp3.OkHttpClient
@@ -41,6 +43,22 @@ object RoutingClass {
     private var numWaypoints : Int = 5
 
     fun calling(googleMap: GoogleMap, origin: LatLng, destination: LatLng, activity: Activity) {
+
+        val routeBounds = LatLngBounds.builder()
+        routeBounds.include(origin).include(destination)
+
+        googleMap.addMarker(MarkerOptions().position(origin).title("Origin"))
+        googleMap.addMarker(MarkerOptions().position(destination).title("Destination"))
+
+        // Move the camera to the optimal point to show both bounds of the route
+        googleMap.moveCamera(
+            CameraUpdateFactory.newLatLngBounds(
+                routeBounds.build(),
+                1000,
+                1000,
+                0
+            )
+        )
 
         // deconstruct LatLng objects to use in URL
         originLat = origin.latitude

@@ -35,8 +35,12 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+
+    var generated = false
+
     //private var lastLocation = Pair(0.0, 0.0)
     //private var lastWeather = "Forecast goes here!"
     private lateinit var mMap: GoogleMap
@@ -45,8 +49,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var curLocation: LatLng
     //private var startAddress : Address? = null
     //private lateinit var destAddress : Address
-    private var startCitySelected = false
-    private var destCitySelected = false
+//    private var startCitySelected = false
+//    private var destCitySelected = false
     //private val cities = arrayOf("hi", "bye")
 
     //private var weather = "Forecast goes here!"
@@ -86,55 +90,34 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Create a value to access the button to get directions
         val dirButton: Button = findViewById(R.id.dirButton)
 
-
         // Find directions when the button is pushed
         dirButton.setOnClickListener {
             Log.d("DEBUG", "Directions clicked")
+
             // Set destination coordinates
-            if (destLocationInput.toString().isEmpty()) {
+            while (destLocationInput.text.toString() == "") {
                 // Show pop-up saying that destination is required
-
-            } else {
-                getCityCoords(destLocationInput.toString()) { coords ->
-                    destination = coords
-                }
             }
 
+            getCityCoords(startLocationInput.text.toString(), destLocationInput.text.toString()) { coords ->
+                start = coords.first
+                destination = coords.second
 
-            // Set start coordinates
-            if (startLocationInput.toString().isEmpty()) {
-                start = curLocation
-            } else {
-                getCityCoords(startLocationInput.toString()) { coords ->
-                    start = coords
+                // Creating LatLngBounds obj to create a "bounds" for what is displayed on the map
+                if (destination != LatLng(0.0, 0.0) && start != LatLng(0.0, 0.0)) {
+                    // Set the bounds of the route to the start and the destination
+
+                    Log.d("hail", "made it before clear")
+//                    if (generated) { mMap.clear() }
+//                    else { generated = true }
+
+                    // Add markers to the start point and destination
+                    Log.d("hail", "${mMap}")
+
+
+                    // Calculate the optimal route for the user's requested directions
+                    RoutingClass.calling(mMap, start, destination, this)
                 }
-            }
-
-            //Thread.sleep(500)
-
-            // Creating LatLngBounds obj to create a "bounds" for what is displayed on the map
-            if (destination != LatLng(0.0, 0.0) && start != LatLng(0.0, 0.0)) {
-                // Set the bounds of the route to the start and the destination
-                val routeBounds = LatLngBounds.builder()
-                routeBounds.include(start).include(destination)
-
-                mMap.clear()
-                // Add markers to the start point and destination
-                mMap.addMarker(MarkerOptions().position(start).title("Origin"))
-                mMap.addMarker(MarkerOptions().position(destination).title("Destination"))
-
-                // Move the camera to the optimal point to show both bounds of the route
-                mMap.moveCamera(
-                    CameraUpdateFactory.newLatLngBounds(
-                        routeBounds.build(),
-                        1000,
-                        1000,
-                        0
-                    )
-                )
-
-                // Calculate the optimal route for the user's requested directions
-                RoutingClass.calling(mMap, start, destination, this)
             }
         }
     }
@@ -178,22 +161,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         Thread {
             // Use an infinite loop to run as long as the app is active
             while (true) {
-                Log.d("DEBUG", "Entered thread")
 
                 // Get the user's current location and then wait to let the location return
                 curLocation = LocationClass.calling(this)
-                Log.d("DEBUG", "Location: $curLocation")
                 Thread.sleep(500)
 
                 // Make sure that the location has been updated to avoid errors in future sections
                 if(curLocation.latitude != 0.0) {
-                    Log.d("DEBUG", "Inside weather")
                     // Get the weather using the shortForecast and continue to the rest of the operations
                     WeatherClass.getWeatherData(curLocation, 0, "shortForecast") { weather ->
-
-                        Log.d("weatherresult", weather)
-
-
 
                         // Find the weather icon corresponding to the user's current location to use
                         // as the image for the user marker
@@ -209,13 +185,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                             // If the map is currently set to follow the user, keep the camera moving
                             // with them.
                             if (changeViewToCurLocation) {
-                                Log.d("DEBUG", "Camera update")
                                 mMap.moveCamera(CameraUpdateFactory.newLatLng(curLocation))
                                 mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
                                 changeViewToCurLocation = false
                             }
-
-
 
                             // Check if the user's marker has already been created
                             if(!markerCreated) {
@@ -251,97 +224,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         editTextCity.setAdapter(adapter)
         editTextCity.threshold = 1
-
-        // Updates list of autocomplete cities displayed to user
-        /*
-        editTextCity.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {}
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (isStartAddress && startCitySelected) {
-                    startCitySelected = false
-                } else if (!isStartAddress && destCitySelected) {
-                    destCitySelected = false
-                }
-
-                /*
-                Log.d("test01", "in textChangedListener")
-                fetchCity(s.toString()) { addresses ->
-                    // Store addresses location info
-                    addressesInfo = addresses
-                    Log.d("test01", "addressesInfo: $addressesInfo")
-
-                    val cities = mutableListOf<String>()
-
-                    // Get addresses in the format "City, State" and put into cities
-                    for (address in addresses) {
-                        Log.d("test01", "address: $address")
-                        val city = "${address.locality}, ${address.adminArea}"
-                        cities.add(city)
-                    }
-
-                    adapter.clear()
-
-                    // Updating autocomplete search results
-                    adapter.addAll(cities)
-                    Log.d("test01", "cities added: $cities")
-                    adapter.notifyDataSetChanged()
-                    
-                }
-                
-                 */
-            }
-        })
-
-        /*
-        // Sets the value of the start or destination if an item in the autocomplete list is selected
-        editTextCity.setOnItemClickListener { parent, _, position, _ ->
-            val location = parent.getItemAtPosition(position).toString()
-            Log.d("test01", "Selected city: $location")
-
-            val cityState = location.split(",")
-
-            // Get latitude and longitude from selected address
-            for (addressInfo in addressesInfo) {
-                // Looks for matching city and state
-                if (addressInfo.locality.equals(cityState[0]) &&
-                    addressInfo.adminArea.equals(cityState[1])) {
-                    // Store address info with location coordinates in listener
-                    if (isStartAddress) {
-                        startCitySelected = true
-                        startAddress = addressInfo
-                        Log.d("test01", "startAddress: $startAddress")
-                    } else {
-                        destCitySelected = true
-                        destAddress = addressInfo
-                        Log.d("test01", "destAddress: $destAddress")
-                    }
-                }
-            }
-            hideKeyboard()
-        }
-
-         */
-
-        // Used to allow user to press "Enter" key to exit keyboard
-        // Note: doesn't seem to work
-        editTextCity.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                // User pressed the "Enter" key, hide the keyboard
-                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(editTextCity.windowToken, 0)
-                return@setOnEditorActionListener true
-            }
-            return@setOnEditorActionListener false
-        }
-
-         */
     }
 
     // Gets list of suggested cities to be displayed to the user
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun fetchCity(query: String, listener: (Address?) -> Unit) {
-        Log.d("test01", "in fetchCity")
+        Log.d("test01", "$query")
         val geocoder = Geocoder(this)
 
         geocoder.getFromLocationName(query, 1, object : Geocoder.GeocodeListener {
@@ -351,10 +239,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 var address : Address? = null
 
                 if (addresses.isNotEmpty()) {
+                    Log.d("test01", "addresses is not empty!")
                     address = addresses[0]
                 }
-                listener(address)
-
+                Log.d("test01", "$address")
+                listener.invoke(address)
             }
 
             override fun onError(p0: String?) {
@@ -365,19 +254,40 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     // Returns the first city that most closely matches the user's input
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private fun getCityCoords (input : String, listener: (LatLng) -> Unit) {
-        fetchCity(input) { address ->
-            if (address != null && address.countryCode.equals("US") && address.locality != null &&
-                address.hasLatitude() && address.hasLongitude()) {
-                Log.d("test01", "passing address to listener: $address")
-                listener(LatLng(address.latitude, address.longitude))
+    private fun getCityCoords (start : String, destination : String, listener: (Pair<LatLng, LatLng>) -> Unit) {
+        var startCoords = LatLng(0.0,0.0)
+        var destinationCoords = LatLng(0.0,0.0)
+
+        fetchCity(destination) { destinationAddress ->
+            destinationCoords =
+                if (destinationAddress != null &&
+//                    destinationAddress.countryCode.equals("US") && destinationAddress.locality != null &&
+                    destinationAddress.hasLatitude() && destinationAddress.hasLongitude()
+                ) {
+                    LatLng(destinationAddress.latitude, destinationAddress.longitude)
+                } else {
+                    LatLng(1.0, 1.0)
+                }
+
+            if (start == "") {
+                startCoords = curLocation
             } else {
-                listener(LatLng(0.0, 0.0))
+                fetchCity(start) { startAddress ->
+                    startCoords =
+                        if (startAddress != null &&
+//                            startAddress.countryCode.equals("US") && startAddress.locality != null &&
+                            startAddress.hasLatitude() && startAddress.hasLongitude()
+                        ) {
+
+                            LatLng(startAddress.latitude, startAddress.longitude)
+                        } else {
+                            LatLng(1.0, 1.0)
+                        }
+                }
             }
+            listener.invoke(Pair(startCoords, destinationCoords))
         }
-
     }
-
 
     private fun hideKeyboard() {
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -494,5 +404,4 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             enableLocationButton()
         }
     }
-
 }
