@@ -21,7 +21,14 @@ object NameToCoordinates {
         var startCoords = LatLng(0.0,0.0)
         var destinationCoords = LatLng(0.0,0.0)
 
+        // Get the coordinates based on the location string
+        //
+        // We want to get the startCoords inside of fectchCity callback for the destination because if we never get
+        // destinationCoords, app won't function, but if it is successful then we can go on and get startCoords
         fetchCity(destination, activity) { destinationAddress ->
+            
+            // If destinationAddress is valid, set it as destinationCoords
+            // else, set equal to (1.0, 1.0) for debugging
             destinationCoords =
                 if (destinationAddress != null &&
 //                    destinationAddress.countryCode.equals("US") && destinationAddress.locality != null &&
@@ -32,6 +39,8 @@ object NameToCoordinates {
                     LatLng(1.0, 1.0)
                 }
 
+            // If nothing is passed to the start input field, set startCoords to the user's current location
+            // else, do same as getting destinationCoords
             if (start == "") {
                 startCoords = activity.curLocation
             } else {
@@ -57,6 +66,7 @@ object NameToCoordinates {
     private fun fetchCity(query: String, activity: MainActivity, listener: (Address?) -> Unit) {
         val geocoder = Geocoder(activity)
 
+        // Get a single set of coordinates based on query string
         geocoder.getFromLocationName(query, 1, object : Geocoder.GeocodeListener {
             override fun onGeocode(addresses: MutableList<Address>) {
                 var address : Address? = null
@@ -73,6 +83,8 @@ object NameToCoordinates {
     }
 
     // Function to take the input addresses and convert them to coordinates
+    //
+    // ONLY FOR API < TIRAMISU
     private fun locNameToLatLng(loc : String, activity: MainActivity) : LatLng {
         // Access the geocoder
         val geocoder = Geocoder(activity)
