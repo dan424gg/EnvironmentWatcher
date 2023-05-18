@@ -11,14 +11,10 @@ import android.location.Address
 import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
@@ -26,7 +22,8 @@ import android.widget.Button
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.example.firstdemo.Location.LocationClass
+import com.example.firstdemo.Location.CurrentLocation
+import com.example.firstdemo.Location.NameToCoordinates
 import com.example.firstdemo.Weather.WeatherClass
 import com.example.firstdemo.Weather.WeatherParser
 import com.example.firstdemo.databinding.ActivityMainBinding
@@ -35,26 +32,13 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    var generated = false
-
-    //private var lastLocation = Pair(0.0, 0.0)
-    //private var lastWeather = "Forecast goes here!"
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMainBinding
     private var changeViewToCurLocation = true
-    private lateinit var curLocation: LatLng
-    //private var startAddress : Address? = null
-    //private lateinit var destAddress : Address
-//    private var startCitySelected = false
-//    private var destCitySelected = false
-    //private val cities = arrayOf("hi", "bye")
-
-    //private var weather = "Forecast goes here!"
-
+    lateinit var curLocation: LatLng
 
     @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -84,36 +68,47 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val cities = resources.getStringArray(R.array.USCities)
 
         // Autocompletes text user inputs in source and destination fields
-        setSearchResults(startLocationInput, cities)
-        setSearchResults(destLocationInput, cities)
+        setupAutoComplete(startLocationInput, cities)
+        setupAutoComplete(destLocationInput, cities)
 
         // Create a value to access the button to get directions
         val dirButton: Button = findViewById(R.id.dirButton)
 
         // Find directions when the button is pushed
         dirButton.setOnClickListener {
-            Log.d("DEBUG", "Directions clicked")
 
             // Set destination coordinates
             while (destLocationInput.text.toString() == "") {
                 // Show pop-up saying that destination is required
             }
 
-            getCityCoords(startLocationInput.text.toString(), destLocationInput.text.toString()) { coords ->
+            NameToCoordinates.getCityCoords(startLocationInput.text.toString(), destLocationInput.text.toString(), this) { coords ->
                 start = coords.first
                 destination = coords.second
 
                 // Creating LatLngBounds obj to create a "bounds" for what is displayed on the map
                 if (destination != LatLng(0.0, 0.0) && start != LatLng(0.0, 0.0)) {
-                    // Set the bounds of the route to the start and the destination
+                    runOnUiThread {
+                        mMap.clear()
 
-                    Log.d("hail", "made it before clear")
-//                    if (generated) { mMap.clear() }
-//                    else { generated = true }
+                        // Set the bounds of the route to the start and the destination
+                        val routeBounds = LatLngBounds.builder()
+                        routeBounds.include(start).include(destination)
 
-                    // Add markers to the start point and destination
-                    Log.d("hail", "${mMap}")
+                        // Add markers to the start point and destination
+                        mMap.addMarker(MarkerOptions().position(start).title("Origin"))
+                        mMap.addMarker(MarkerOptions().position(destination).title("Destination"))
 
+//                     Move the camera to the optimal point to show both bounds of the route
+                        mMap.moveCamera(
+                            CameraUpdateFactory.newLatLngBounds(
+                                routeBounds.build(),
+                                1000,
+                                1000,
+                                0
+                            )
+                        )
+                    }
 
                     // Calculate the optimal route for the user's requested directions
                     RoutingClass.calling(mMap, start, destination, this)
@@ -132,10 +127,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     // Handle item selection
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.settingsOption) {
-            Log.d("DEBUG","Settings clicked")
             val settingsIntent = Intent(this, SettingsActivity::class.java)
             startActivity(settingsIntent)
-            Log.d("DEBUG","Settings clicked")
         }
         return true
     }
@@ -163,7 +156,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             while (true) {
 
                 // Get the user's current location and then wait to let the location return
-                curLocation = LocationClass.calling(this)
+                curLocation = CurrentLocation.calling(this)
                 Thread.sleep(500)
 
                 // Make sure that the location has been updated to avoid errors in future sections
@@ -217,115 +210,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private fun setSearchResults(editTextCity: AutoCompleteTextView, cities : Array<String>) {
+    private fun setupAutoComplete(editTextCity: AutoCompleteTextView, cities : Array<String>) {
         // Used to update list of autocomplete cities
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1,
             cities)
 
         editTextCity.setAdapter(adapter)
         editTextCity.threshold = 1
-    }
-
-    // Gets list of suggested cities to be displayed to the user
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private fun fetchCity(query: String, listener: (Address?) -> Unit) {
-        Log.d("test01", "$query")
-        val geocoder = Geocoder(this)
-
-        geocoder.getFromLocationName(query, 1, object : Geocoder.GeocodeListener {
-            override fun onGeocode(addresses: MutableList<Address>) {
-                Log.d("test01", "OnGeocode called")
-
-                var address : Address? = null
-
-                if (addresses.isNotEmpty()) {
-                    Log.d("test01", "addresses is not empty!")
-                    address = addresses[0]
-                }
-                Log.d("test01", "$address")
-                listener.invoke(address)
-            }
-
-            override fun onError(p0: String?) {
-                Log.e("Geocode error", "$p0")
-            }
-        })
-    }
-
-    // Returns the first city that most closely matches the user's input
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private fun getCityCoords (start : String, destination : String, listener: (Pair<LatLng, LatLng>) -> Unit) {
-        var startCoords = LatLng(0.0,0.0)
-        var destinationCoords = LatLng(0.0,0.0)
-
-        fetchCity(destination) { destinationAddress ->
-            destinationCoords =
-                if (destinationAddress != null &&
-//                    destinationAddress.countryCode.equals("US") && destinationAddress.locality != null &&
-                    destinationAddress.hasLatitude() && destinationAddress.hasLongitude()
-                ) {
-                    LatLng(destinationAddress.latitude, destinationAddress.longitude)
-                } else {
-                    LatLng(1.0, 1.0)
-                }
-
-            if (start == "") {
-                startCoords = curLocation
-            } else {
-                fetchCity(start) { startAddress ->
-                    startCoords =
-                        if (startAddress != null &&
-//                            startAddress.countryCode.equals("US") && startAddress.locality != null &&
-                            startAddress.hasLatitude() && startAddress.hasLongitude()
-                        ) {
-
-                            LatLng(startAddress.latitude, startAddress.longitude)
-                        } else {
-                            LatLng(1.0, 1.0)
-                        }
-                }
-            }
-            listener.invoke(Pair(startCoords, destinationCoords))
-        }
-    }
-
-    private fun hideKeyboard() {
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
-    }
-
-    // Function to take the input addresses and convert them to coordinates
-    private fun locNameToLatLng(loc : String) : LatLng {
-        // Access the geocoder
-        val geocoder = Geocoder(this)
-
-        // Use the geocoder to get an address list from the address name
-        val addressList = geocoder.getFromLocationName(loc, 1)
-
-        /*
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            /*addressList = geocoder.getFromLocationName(startLocStr, 1,
-                Geocoder.GeocodeListener())
-
-             */
-        } else {
-            addressList = geocoder.getFromLocationName(startLocStr, 1)
-        }
-
-         */
-        // Make sure that the address list was valid and not empty
-        if (addressList != null) {
-            if (addressList.isNotEmpty()) {
-                Log.d("DEBUG", "Address list: $addressList")
-                // If it worked, return the coordinates of the address
-                return LatLng(addressList[0].latitude, addressList[0].longitude)
-            } else {
-                // Handle case where no results were found
-            }
-        }
-
-        // Otherwise, return the origin as a failsafe
-        return LatLng(0.0, 0.0)
     }
 
     // Get an image corresponding to the input weather string

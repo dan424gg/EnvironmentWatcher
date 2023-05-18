@@ -44,22 +44,6 @@ object RoutingClass {
 
     fun calling(googleMap: GoogleMap, origin: LatLng, destination: LatLng, activity: Activity) {
 
-        val routeBounds = LatLngBounds.builder()
-        routeBounds.include(origin).include(destination)
-
-        googleMap.addMarker(MarkerOptions().position(origin).title("Origin"))
-        googleMap.addMarker(MarkerOptions().position(destination).title("Destination"))
-
-        // Move the camera to the optimal point to show both bounds of the route
-        googleMap.moveCamera(
-            CameraUpdateFactory.newLatLngBounds(
-                routeBounds.build(),
-                1000,
-                1000,
-                0
-            )
-        )
-
         // deconstruct LatLng objects to use in URL
         originLat = origin.latitude
         originLng = origin.longitude
@@ -190,9 +174,7 @@ object RoutingClass {
         for (item in distWCoords) {
             sum += item.first
 
-            // If
             if (sum >= segmentSize) {
-                Log.d("ROUTINGSTUFF", "sum: $sum    segmentSize: $segmentSize")
                 sum -= segmentSize
 
                 val x2 = item.second.second.latitude
@@ -205,7 +187,7 @@ object RoutingClass {
         return output
     }
 
-    fun distance(coord1: LatLng, coord2: LatLng): Double {
+    private fun distance(coord1: LatLng, coord2: LatLng): Double {
 
         return sqrt((coord2.latitude - coord1.latitude).pow(2) + (coord2.longitude - coord1.longitude).pow(2))
     }
