@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Switch
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -30,22 +31,29 @@ class SettingsActivity : AppCompatActivity() {
 
 
         // PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        val sharedPreferences: SharedPreferences =
+            PreferenceManager.getDefaultSharedPreferences(applicationContext)
 
         val locPermissionListener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
-            if(key == "location" && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                changeLocation()
-                sharedPreferences.edit().putBoolean("location",
-                    ActivityCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED
-                ).apply()
+            Log.d("DEBUG", "FIRST CHECK----------------")
+            if (key == "location" && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                val locationEnabled = sharedPreferences.getBoolean("location", false)
+                Log.d("DEBUG", "SECOND CHECK----------------")
+                if (locationEnabled) {
+                    requestLocationPermissions()
+                } else {
+                    revokeLocationPermissions()
+                }
             }
         }
+
+        sharedPreferences.registerOnSharedPreferenceChangeListener(locPermissionListener)
 
         //PreferenceManager.getDefaultSharedPreferences(applicationContext)
     }
 
     override fun onSupportNavigateUp(): Boolean {
+        //sharedPreferences.unregisterOnSharedPreferenceChangeListener(locPermissionListener)
         finish()
         return true
     }
@@ -63,6 +71,24 @@ class SettingsActivity : AppCompatActivity() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun requestLocationPermissions() {
+        if (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                1
+            )
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun revokeLocationPermissions() {
+        packageManager.removePermission(Manifest.permission.ACCESS_FINE_LOCATION)
+        packageManager.removePermission(Manifest.permission.ACCESS_COARSE_LOCATION)
     }
 
 }

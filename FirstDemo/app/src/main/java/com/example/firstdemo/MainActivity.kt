@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Find directions when the button is pushed
         dirButton.setOnClickListener{
-            Log.d("DEBUG", "Directions clicked")
+            //Log.d("DEBUG", "Directions clicked")
 
             // Get the inputs from the text fields
             val startLocationInput = findViewById<EditText>(R.id.startLocation)
@@ -130,10 +130,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     // Handle item selection
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.settingsOption) {
-            Log.d("DEBUG","Settings clicked")
+            //Log.d("DEBUG","Settings clicked")
             val settingsIntent = Intent(this, SettingsActivity::class.java)
             startActivity(settingsIntent)
-            Log.d("DEBUG","Settings clicked")
+            //Log.d("DEBUG","Settings clicked")
         }
         return true
     }
@@ -158,20 +158,20 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         Thread {
             // Use an infinite loop to run as long as the app is active
             while (true) {
-                Log.d("DEBUG", "Entered thread")
+                //Log.d("DEBUG", "Entered thread")
 
                 // Get the user's current location and then wait to let the location return
                 curLocation = LocationClass.calling(this)
-                Log.d("DEBUG", "Location: $curLocation")
+                //Log.d("DEBUG", "Location: $curLocation")
                 Thread.sleep(500)
 
                 // Make sure that the location has been updated to avoid errors in future sections
                 if(curLocation.latitude != 0.0) {
-                    Log.d("DEBUG", "Inside weather")
+                    //Log.d("DEBUG", "Inside weather")
                     // Get the weather using the shortForecast and continue to the rest of the operations
                     WeatherClass.getWeatherData(curLocation, 0, "shortForecast") { weather ->
 
-                        Log.d("weatherresult", weather)
+                        //Log.d("weatherresult", weather)
 
 
 
@@ -189,7 +189,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                             // If the map is currently set to follow the user, keep the camera moving
                             // with them.
                             if (changeViewToCurLocation) {
-                                Log.d("DEBUG", "Camera update")
+                                //Log.d("DEBUG", "Camera update")
                                 mMap.moveCamera(CameraUpdateFactory.newLatLng(curLocation))
                                 mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
                                 changeViewToCurLocation = false
@@ -246,7 +246,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Make sure that the address list was valid and not empty
         if (addressList != null) {
             if (addressList.isNotEmpty()) {
-                Log.d("DEBUG", "Address list: $addressList")
+                //Log.d("DEBUG", "Address list: $addressList")
                 // If it worked, return the coordinates of the address
                 return LatLng(addressList[0].latitude, addressList[0].longitude)
             } else {
@@ -263,7 +263,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Initialize a bitmap variable to return
         lateinit var bitmap: Bitmap
 
-        Log.d("DEBUG", "In displayWeather: $curWeather")
+        //Log.d("DEBUG", "In displayWeather: $curWeather")
         // Create a dictionary mapping keys relating to weather to the corresponding images
         val badWeather = mapOf(
             "cloudy" to R.drawable.cloudy, "sunny" to R.drawable.sunny,
