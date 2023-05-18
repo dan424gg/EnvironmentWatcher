@@ -1,38 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <androidx.preference.PreferenceCategory android:title="@string/WeatherSettings">
-        <androidx.preference.SwitchPreferenceCompat
-            android:key="rain"
-            android:title="@string/rainSettings" />
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    </androidx.preference.PreferenceCategory>
+    <PreferenceCategory app:title="Permissions">
+        <SwitchPreferenceCompat
+            app:key="location"
+            app:title="Enable Location Tracking"
+            app:defaultValue="false"/>
+    </PreferenceCategory>
+    <PreferenceCategory app:title="Notifications">
 
-    <androidx.preference.PreferenceCategory android:title="@string/PermissionSettings">
+        <SwitchPreferenceCompat
+            app:key="notifications"
+            app:title="Enable Notifications" />
 
-        <androidx.preference.SwitchPreferenceCompat
-            android:key="Internet access"
-            android:title="@string/internetSett" />
-        <!--
-        <androidx.preference.SwitchPreferenceCompat
-            android:dependency="Notifications"
-            android:key="attachment"
-            android:summaryOff="@string/attachment_summary_off"
-            android:summaryOn="@string/attachment_summary_on"
-            android:title="@string/alerts" />
-        -->
-        <androidx.preference.ListPreference
-            android:defaultValue="reply"
-            android:entries="@array/reply_entries"
-            android:entryValues="@array/reply_values"
-            android:key="reply"
-            android:title="@string/locationSettings" />
-    </androidx.preference.PreferenceCategory>
-    <!--
-    <androidx.preference.PreferenceCategory android:title="@string/misc">
-        <androidx.preference.EditTextPreference
-            android:key="look you can type too"
-            android:title="type here"
-            />
-    </androidx.preference.PreferenceCategory>
-    -->
-</androidx.preference.PreferenceScreen>
+        <MultiSelectListPreference
+            app:key="notify_types"
+            app:title="Alert Types"
+            app:entries="@array/alert_entries"
+            app:entryValues="@array/alert_values"
+            app:useSimpleSummaryProvider="true" />
+
+        <MultiSelectListPreference
+            app:key="weather_list"
+            app:title="Weather Types"
+            app:entries="@array/weather_entries"
+            app:entryValues="@array/weather_values"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

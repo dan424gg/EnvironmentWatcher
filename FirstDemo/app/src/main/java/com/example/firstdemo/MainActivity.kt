@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityMainBinding
     private var changeViewToCurLocation = true
     lateinit var curLocation: LatLng
+    private var markerCreated = false
 
     @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -59,7 +60,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        
+
         // Get the inputs from the text fields
         val startLocationInput = findViewById<AutoCompleteTextView>(R.id.startLocation)
         val destLocationInput = findViewById<AutoCompleteTextView>(R.id.endLocation)
@@ -104,6 +105,26 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         val routeBounds = LatLngBounds.builder()
                         routeBounds.include(start).include(destination)
 
+                mMap.clear()
+                markerCreated = false
+                // Add markers to the start point and destination
+                mMap.addMarker(MarkerOptions().position(start).title("Origin"))
+
+
+                WeatherClass.getWeatherData(curLocation, 0, "shortForecast") { weather ->
+
+                    // Find the weather at the destination
+                    var icon = WeatherParser(weather, this).img
+                    var destIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
+
+                    runOnUiThread {
+                        mMap.addMarker(
+                            MarkerOptions().position(destination).icon(
+                                BitmapDescriptorFactory.fromBitmap(destIcon)
+                            ).anchor(0.5f, 0.5f).title("Destination")
+                        )!!
+                    }
+                }
                         // Add markers to the start point and destination
                         mMap.addMarker(MarkerOptions().position(start).title("Origin"))
                         mMap.addMarker(MarkerOptions().position(destination).title("Destination"))
@@ -162,7 +183,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Prepare a variable to represent the marker for the user's location and
         // prepare another variable to make sure that it does not get created more than once.
         lateinit var userMarker: Marker
-        var markerCreated = false
 
         // Use a thread so that other processes do not have to wait for the location or weather
         Thread {
@@ -181,8 +201,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         // Find the weather icon corresponding to the user's current location to use
                         // as the image for the user marker
 
-                        val Icon = WeatherParser(weather, this).img
-                        val userIcon = Bitmap.createScaledBitmap(Icon, 150, 150, false)
+                        var icon = WeatherParser(weather, this).img
+                        var userIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
 
                         // Display a notification for testing purposes
                         //NotificationClass.sendNotification(this, weather, weather, userIcon)
@@ -212,6 +232,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                                 // Other wise, check if the user has moved and update the marker's
                                 // position (and icon if the weather has changed) if so
                             }else if(userMarker.position != curLocation){
+                                if (userIcon == null) userIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
                                 userMarker.position= curLocation
                                 userMarker.setIcon(BitmapDescriptorFactory.fromBitmap(userIcon))
 
