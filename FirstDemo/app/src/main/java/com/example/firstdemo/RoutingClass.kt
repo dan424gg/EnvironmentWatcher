@@ -5,11 +5,13 @@ import android.graphics.Bitmap
 import android.util.Log
 import com.example.firstdemo.Weather.WeatherClass.getWeatherData
 import com.example.firstdemo.Weather.WeatherParser
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.PolyUtil
 import com.google.maps.android.SphericalUtil
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import okhttp3.OkHttpClient
@@ -172,9 +174,7 @@ object RoutingClass {
         for (item in distWCoords) {
             sum += item.first
 
-            // If
             if (sum >= segmentSize) {
-                Log.d("ROUTINGSTUFF", "sum: $sum    segmentSize: $segmentSize")
                 sum -= segmentSize
 
                 val x2 = item.second.second.latitude
@@ -187,7 +187,7 @@ object RoutingClass {
         return output
     }
 
-    fun distance(coord1: LatLng, coord2: LatLng): Double {
+    private fun distance(coord1: LatLng, coord2: LatLng): Double {
 
         return sqrt((coord2.latitude - coord1.latitude).pow(2) + (coord2.longitude - coord1.longitude).pow(2))
     }
