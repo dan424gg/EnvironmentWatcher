@@ -79,16 +79,21 @@ object WeatherClass {
 
         //TODO: handle timeouts (.isSuccessful doesn't handle timeouts, so the app crashes)
         //maybe put this on a loop, in the event of a timeout??
-        okHttpClient.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) {
-                if (response.toString().contains("code=500")) {
-                    Log.d("hailhydra", "caught code 500!!")
-                    return run(url)
-                } else {
-                    throw IOException("$response")
+        try {
+            okHttpClient.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) {
+                    if (response.toString().contains("code=500")) {
+                        Log.d("hail", "caught code 500!!")
+                        return run(url)
+                    } else {
+                        throw IOException("$response")
+                    }
                 }
+                return response.body!!.string()
             }
-            return response.body!!.string()
+        } catch (e: Exception) {
+            Log.d("hail", "caught an exception")
+            return ""
         }
     }
 }
