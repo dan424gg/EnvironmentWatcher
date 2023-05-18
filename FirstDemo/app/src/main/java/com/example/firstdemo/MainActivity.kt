@@ -99,37 +99,36 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     hideKeyboard()
 
                     runOnUiThread {
+                        
                         mMap.clear()
 
                         // Set the bounds of the route to the start and the destination
                         val routeBounds = LatLngBounds.builder()
                         routeBounds.include(start).include(destination)
 
-                mMap.clear()
-                markerCreated = false
-                // Add markers to the start point and destination
-                mMap.addMarker(MarkerOptions().position(start).title("Origin"))
-
-
-                WeatherClass.getWeatherData(curLocation, 0, "shortForecast") { weather ->
-
-                    // Find the weather at the destination
-                    var icon = WeatherParser(weather, this).img
-                    var destIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
-
-                    runOnUiThread {
-                        mMap.addMarker(
-                            MarkerOptions().position(destination).icon(
-                                BitmapDescriptorFactory.fromBitmap(destIcon)
-                            ).anchor(0.5f, 0.5f).title("Destination")
-                        )!!
-                    }
-                }
+                        mMap.clear()
+                        markerCreated = false
                         // Add markers to the start point and destination
                         mMap.addMarker(MarkerOptions().position(start).title("Origin"))
-                        mMap.addMarker(MarkerOptions().position(destination).title("Destination"))
 
-//                     Move the camera to the optimal point to show both bounds of the route
+
+                        WeatherClass.getWeatherData(curLocation, 0, "shortForecast") { weather ->
+
+                            // Find the weather at the destination
+                            var icon = WeatherParser(weather, this).img
+                            var destIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
+
+                            runOnUiThread {
+                                mMap.addMarker(
+                                    MarkerOptions().position(destination).icon(
+                                        BitmapDescriptorFactory.fromBitmap(destIcon)
+                                    ).anchor(0.5f, 0.5f).title("Destination")
+                                )!!
+                            }
+                        }
+        //                         mMap.addMarker(MarkerOptions().position(destination).title("Destination"))
+
+        //                     Move the camera to the optimal point to show both bounds of the route
                         mMap.moveCamera(
                             CameraUpdateFactory.newLatLngBounds(
                                 routeBounds.build(),
