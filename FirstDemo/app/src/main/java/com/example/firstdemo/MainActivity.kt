@@ -7,14 +7,13 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.location.Address
-import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
@@ -24,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.firstdemo.Location.CurrentLocation
 import com.example.firstdemo.Location.NameToCoordinates
+import com.example.firstdemo.Location.RoutingClass
 import com.example.firstdemo.Weather.WeatherClass
 import com.example.firstdemo.Weather.WeatherParser
 import com.example.firstdemo.databinding.ActivityMainBinding
@@ -32,6 +32,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -80,6 +81,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             // Set destination coordinates
             while (destLocationInput.text.toString() == "") {
                 // Show pop-up saying that destination is required
+                Snackbar.make(
+                    findViewById(R.id.mainView),
+                    "R.string.email_sent",
+                    Snackbar.LENGTH_SHORT
+                ).show()
             }
 
             NameToCoordinates.getCityCoords(startLocationInput.text.toString(), destLocationInput.text.toString(), this) { coords ->
@@ -88,6 +94,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 // Creating LatLngBounds obj to create a "bounds" for what is displayed on the map
                 if (destination != LatLng(0.0, 0.0) && start != LatLng(0.0, 0.0)) {
+
+                    hideKeyboard()
+
                     runOnUiThread {
                         mMap.clear()
 
@@ -115,6 +124,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
         }
+    }
+
+    private fun hideKeyboard() {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
     }
 
     // Initialize map menu on UI

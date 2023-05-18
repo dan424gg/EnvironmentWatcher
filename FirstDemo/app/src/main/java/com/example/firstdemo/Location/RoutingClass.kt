@@ -1,17 +1,13 @@
-package com.example.firstdemo
+package com.example.firstdemo.Location
 
 import android.app.Activity
 import android.graphics.Bitmap
-import android.util.Log
 import com.example.firstdemo.Weather.WeatherClass.getWeatherData
 import com.example.firstdemo.Weather.WeatherParser
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.PolyUtil
-import com.google.maps.android.SphericalUtil
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import okhttp3.OkHttpClient
