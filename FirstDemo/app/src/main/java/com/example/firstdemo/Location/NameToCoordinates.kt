@@ -23,8 +23,8 @@ object NameToCoordinates {
 
         // Get the coordinates based on the location string
         //
-        // We want to get the startCoords inside of fectchCity callback for the destination because if we never get
-        // destinationCoords, app won't function, but if it is successful then we can go on and get startCoords
+        // We want to have the startCoords callback inside of the destinationCoords callback to have a sequential process
+        // and to make sure the function doesn't return before all coordinates have been found
         fetchCity(destination, activity) { destinationAddress ->
             
             // If destinationAddress is valid, set it as destinationCoords
