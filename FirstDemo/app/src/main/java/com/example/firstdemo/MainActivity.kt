@@ -5,8 +5,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -64,6 +66,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Get the inputs from the text fields
         val startLocationInput = findViewById<AutoCompleteTextView>(R.id.startLocation)
         val destLocationInput = findViewById<AutoCompleteTextView>(R.id.endLocation)
+
+        when (applicationContext.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
+            Configuration.UI_MODE_NIGHT_YES -> run {
+                startLocationInput.background = getDrawable(R.drawable.edit_text_bg_night)
+                destLocationInput.background = getDrawable(R.drawable.edit_text_bg_night)
+            }
+            else -> run{
+
+                startLocationInput.background = getDrawable(R.drawable.edit_text_background)
+                destLocationInput.background = getDrawable(R.drawable.edit_text_background)
+            }
+        }
 
         lateinit var start: LatLng
         lateinit var destination: LatLng
