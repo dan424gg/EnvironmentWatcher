@@ -4,7 +4,7 @@
         <SwitchPreferenceCompat
             app:key="location"
             app:title="Enable Location Tracking"
-            app:defaultValue="true"/>
+            app:defaultValue="false"/>
     </PreferenceCategory>
     <PreferenceCategory app:title="Notifications">
 

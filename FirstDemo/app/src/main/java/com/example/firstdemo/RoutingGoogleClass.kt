@@ -139,11 +139,13 @@ object RoutingGoogleClass {
     }
 
     // Convert current time to seconds
-
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun curTimeToSeconds() : Double {
 
-        val curTime = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME).split(":")
+        val curTime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME).split(":")
+        } else {
+            TODO("VERSION.SDK_INT < O")
+        }
         val minutes = curTime[0].toFloat() * 60.0
         val curSeconds = (minutes * 60.0) + (curTime[1].toFloat() * 60.0) + curTime[2].toFloat()
 

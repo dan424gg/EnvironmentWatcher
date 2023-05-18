@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityMainBinding
     private var changeViewToCurLocation = true
     private lateinit var curLocation: LatLng
+    private var markerCreated = false
     //private var weather = "Forecast goes here!"
 
 
@@ -91,9 +92,25 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 routeBounds.include(start).include(destination)
 
                 mMap.clear()
+                markerCreated = false
                 // Add markers to the start point and destination
                 mMap.addMarker(MarkerOptions().position(start).title("Origin"))
-                mMap.addMarker(MarkerOptions().position(destination).title("Destination"))
+
+
+                WeatherClass.getWeatherData(curLocation, 0, "shortForecast") { weather ->
+
+                    // Find the weather at the destination
+                    var icon = WeatherParser(weather, this).img
+                    var destIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
+
+                    runOnUiThread {
+                        mMap.addMarker(
+                            MarkerOptions().position(destination).icon(
+                                BitmapDescriptorFactory.fromBitmap(destIcon)
+                            ).anchor(0.5f, 0.5f).title("Destination")
+                        )!!
+                    }
+                }
 
                 // Move the camera to the optimal point to show both bounds of the route
                 mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(routeBounds.build(), 1000, 1000, 0))
@@ -137,7 +154,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Prepare a variable to represent the marker for the user's location and
         // prepare another variable to make sure that it does not get created more than once.
         lateinit var userMarker: Marker
-        var markerCreated = false
 
 
         // Use a thread so that other processes do not have to wait for the location or weather
@@ -178,8 +194,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         // Find the weather icon corresponding to the user's current location to use
                         // as the image for the user marker
 
-                        val icon = WeatherParser(weather, this).img
-                        val userIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
+                        var icon = WeatherParser(weather, this).img
+                        var userIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
 
                         // Display a notification for testing purposes
                         //NotificationClass.sendNotification(this, weather, weather, userIcon)
@@ -212,6 +228,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                                 // Other wise, check if the user has moved and update the marker's
                                 // position (and icon if the weather has changed) if so
                             }else if(userMarker.position != curLocation){
+                                if (userIcon == null) userIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
                                 userMarker.position= curLocation
                                 userMarker.setIcon(BitmapDescriptorFactory.fromBitmap(userIcon))
 
