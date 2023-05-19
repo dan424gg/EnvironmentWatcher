@@ -22,33 +22,28 @@ import kotlin.concurrent.thread
 object AlertPing {
     private val okHttpClient = OkHttpClient()
 
-    fun getAlertData(location: LatLng, callback: (result: String?) -> Unit) {
+    fun getAlertData(location: LatLng): String? {
         val latitude = location.latitude
         val longitude = location.longitude
 
-        lateinit var json : JSONObject
+        val request = Request.Builder()
+            .url("https://api.weather.gov/alerts/active?point=$latitude,$longitude")
+            .header("User-agent", "an agent")
+            .build()
 
-        Thread {
-            val request = Request.Builder()
-                .url("https://api.weather.gov/alerts/active?point=$latitude,$longitude")
-                .header("User-agent", "an agent")
-                .build()
+        return try {
+            val response = okHttpClient.newCall(request).execute()
+            val responseBody = response.body?.string()
+            response.close()
 
-            try {
-                val response = okHttpClient.newCall(request).execute()
-
-                callback(response.body?.string())
-
-
-                response.close()
-            } catch (e: Exception) {
-                callback(null)
-            }
-        }.start()
+            responseBody
+        } catch (e: Exception) {
+            null
+        }
     }
 
-    fun AlertSend(response: String?, context: Context, debugflag: Int = 0) {
-        if (response != null) {
+    fun alertSend(response: String?, context: Context) {
+        if (response != null && JSONObject(response).has("features")) {
             val features = JSONObject(response).getJSONArray("features")
 
             if (features.length() == 0) {
@@ -139,7 +134,7 @@ object AlertPing {
 
         val regex = substrings.joinToString(separator = "|")
         val iconType: String = regex.toRegex().find(input)?.value
-            //?: return BitmapFactory.decodeResource(context.resources, R.drawable.user_icon)
+        //?: return BitmapFactory.decodeResource(context.resources, R.drawable.user_icon)
             ?: return R.drawable.user_icon
 
         val image = alertImgs[iconType]
@@ -164,3 +159,4 @@ object AlertPing {
     }
 
 }
+
