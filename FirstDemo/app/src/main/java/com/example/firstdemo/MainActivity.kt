@@ -91,10 +91,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
         // Create a value to access the button to get directions
         val dirButton: Button = findViewById(R.id.dirButton)
 
+        // When a autocomplete choice is picked, hide keyboard
         startLocationInput.setOnDismissListener {
             hideKeyboard()
         }
 
+        // When a autocomplete choice is picked, hide keyboard
         destLocationInput.setOnDismissListener {
             hideKeyboard()
         }
@@ -107,7 +109,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
                 // Show pop-up saying that destination is required
                 Snackbar.make(
                     findViewById(R.id.mainView),
-                    "R.string.email_sent",
+                    "Don't forget a destination!",
                     Snackbar.LENGTH_SHORT
                 ).show()
             }
@@ -123,6 +125,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
 
                     var validity = true
 
+                    // LatLng(1.0,1.0) is returned for not valid start/dest
                     if (start == LatLng(1.0,1.0))
                     {
                         validity = false
@@ -226,6 +229,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
     override fun onMapReady(googleMap: GoogleMap) {
         // Set the global mMap variable to point to the now initialized googleMap
         mMap = googleMap
+
+        // Make map clickable
         mMap.setOnMapClickListener(this)
 
         // Request permissions and enable the button to recenter the map
