@@ -5,16 +5,17 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.location.Address
-import android.location.Geocoder
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
@@ -24,8 +25,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.firstdemo.Location.CurrentLocation
 import com.example.firstdemo.Location.NameToCoordinates
-import com.example.firstdemo.Alerts.AlertPing
-import com.example.firstdemo.Location.LocationClass
+import com.example.firstdemo.Location.RoutingClass
 import com.example.firstdemo.Weather.WeatherClass
 import com.example.firstdemo.Weather.WeatherParser
 import com.example.firstdemo.databinding.ActivityMainBinding
@@ -34,17 +34,15 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
-    //private var lastLocation = Pair(0.0, 0.0)
-    //private var lastWeather = "Forecast goes here!"
+
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMainBinding
     private var changeViewToCurLocation = true
     lateinit var curLocation: LatLng
     private var markerCreated = false
-    //private var weather = "Forecast goes here!"
-
 
     @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -69,6 +67,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val startLocationInput = findViewById<AutoCompleteTextView>(R.id.startLocation)
         val destLocationInput = findViewById<AutoCompleteTextView>(R.id.endLocation)
 
+        when (applicationContext.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
+            Configuration.UI_MODE_NIGHT_YES -> run {
+                startLocationInput.background = getDrawable(R.drawable.edit_text_bg_night)
+                destLocationInput.background = getDrawable(R.drawable.edit_text_bg_night)
+            }
+            else -> run{
+
+                startLocationInput.background = getDrawable(R.drawable.edit_text_background)
+                destLocationInput.background = getDrawable(R.drawable.edit_text_background)
+            }
+        }
+
         lateinit var start: LatLng
         lateinit var destination: LatLng
         val cities = resources.getStringArray(R.array.USCities)
@@ -86,6 +96,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             // Set destination coordinates
             while (destLocationInput.text.toString() == "") {
                 // Show pop-up saying that destination is required
+                Snackbar.make(
+                    findViewById(R.id.mainView),
+                    "R.string.email_sent",
+                    Snackbar.LENGTH_SHORT
+                ).show()
             }
 
             NameToCoordinates.getCityCoords(startLocationInput.text.toString(), destLocationInput.text.toString(), this) { coords ->
@@ -94,38 +109,40 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 // Creating LatLngBounds obj to create a "bounds" for what is displayed on the map
                 if (destination != LatLng(0.0, 0.0) && start != LatLng(0.0, 0.0)) {
+
+                    hideKeyboard()
+
                     runOnUiThread {
+                        
                         mMap.clear()
 
                         // Set the bounds of the route to the start and the destination
                         val routeBounds = LatLngBounds.builder()
                         routeBounds.include(start).include(destination)
 
+                        mMap.clear()
+                        markerCreated = false
                         // Add markers to the start point and destination
                         mMap.addMarker(MarkerOptions().position(start).title("Origin"))
-                        mMap.addMarker(MarkerOptions().position(destination).title("Destination"))
-                mMap.clear()
-                markerCreated = false
-                // Add markers to the start point and destination
-                mMap.addMarker(MarkerOptions().position(start).title("Origin"))
 
 
-                WeatherClass.getWeatherData(curLocation, 0, "shortForecast") { weather ->
+                        WeatherClass.getWeatherData(curLocation, 0, "shortForecast") { weather ->
 
-                    // Find the weather at the destination
-                    var icon = WeatherParser(weather, this).img
-                    var destIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
+                            // Find the weather at the destination
+                            var icon = WeatherParser(weather, this).img
+                            var destIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
 
-                    runOnUiThread {
-                        mMap.addMarker(
-                            MarkerOptions().position(destination).icon(
-                                BitmapDescriptorFactory.fromBitmap(destIcon)
-                            ).anchor(0.5f, 0.5f).title("Destination")
-                        )!!
-                    }
-                }
+                            runOnUiThread {
+                                mMap.addMarker(
+                                    MarkerOptions().position(destination).icon(
+                                        BitmapDescriptorFactory.fromBitmap(destIcon)
+                                    ).anchor(0.5f, 0.5f).title("Destination")
+                                )!!
+                            }
+                        }
+        //                         mMap.addMarker(MarkerOptions().position(destination).title("Destination"))
 
-//                     Move the camera to the optimal point to show both bounds of the route
+        //                     Move the camera to the optimal point to show both bounds of the route
                         mMap.moveCamera(
                             CameraUpdateFactory.newLatLngBounds(
                                 routeBounds.build(),
@@ -141,6 +158,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
         }
+    }
+
+    private fun hideKeyboard() {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
     }
 
     // Initialize map menu on UI
@@ -175,36 +197,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // prepare another variable to make sure that it does not get created more than once.
         lateinit var userMarker: Marker
 
-
         // Use a thread so that other processes do not have to wait for the location or weather
         Thread {
             // Use an infinite loop to run as long as the app is active
             while (true) {
-
                 // Get the user's current location and then wait to let the location return
                 curLocation = CurrentLocation.calling(this)
                 Thread.sleep(500)
 
                 // Make sure that the location has been updated to avoid errors in future sections
                 if(curLocation.latitude != 0.0) {
-
-                    //begin alert debug
-                    val answer = AlertPing.getAlertData(curLocation) {response ->
-                        if (response != null) {
-
-                            Log.d("ALERT", "$response")
-
-                        } else {
-                            Log.d("ALERT", "null response")
-                        }
-                    }
-
-                    print(answer)
-
-                    Log.d("DEBUG", "Inside weather")
                     // Get the weather using the shortForecast and continue to the rest of the operations
                     WeatherClass.getWeatherData(curLocation, 0, "shortForecast") { weather ->
-
                         // Find the weather icon corresponding to the user's current location to use
                         // as the image for the user marker
 
@@ -239,6 +243,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                                 // Other wise, check if the user has moved and update the marker's
                                 // position (and icon if the weather has changed) if so
                             }else if(userMarker.position != curLocation){
+                                if (userIcon == null) userIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
                                 userMarker.position= curLocation
                                 userMarker.setIcon(BitmapDescriptorFactory.fromBitmap(userIcon))
 
@@ -255,7 +260,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Used to update list of autocomplete cities
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1,
             cities)
-
         editTextCity.setAdapter(adapter)
         editTextCity.threshold = 1
     }
@@ -265,7 +269,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Initialize a bitmap variable to return
         lateinit var bitmap: Bitmap
 
-        Log.d("DEBUG", "In displayWeather: $curWeather")
+        //Log.d("DEBUG", "In displayWeather: $curWeather")
         // Create a dictionary mapping keys relating to weather to the corresponding images
         val badWeather = mapOf(
             "cloudy" to R.drawable.cloudy, "sunny" to R.drawable.sunny,
