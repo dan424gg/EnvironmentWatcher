@@ -62,7 +62,7 @@ object NameToCoordinates {
 
                 listener.invoke(Pair(startCoords, destinationCoords))
             }
-        }else{
+        } else {
             startCoords = locNameToLatLng(start, activity)
             destinationCoords = locNameToLatLng(destination, activity)
 

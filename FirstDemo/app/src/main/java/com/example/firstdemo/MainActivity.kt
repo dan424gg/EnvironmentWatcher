@@ -31,12 +31,13 @@ import com.example.firstdemo.Weather.WeatherParser
 import com.example.firstdemo.databinding.ActivityMainBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.material.snackbar.Snackbar
 
-class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMainBinding
@@ -90,6 +91,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Create a value to access the button to get directions
         val dirButton: Button = findViewById(R.id.dirButton)
 
+        startLocationInput.setOnDismissListener {
+            hideKeyboard()
+        }
+
+        destLocationInput.setOnDismissListener {
+            hideKeyboard()
+        }
+
         // Find directions when the button is pushed
         dirButton.setOnClickListener {
 
@@ -102,7 +111,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     Snackbar.LENGTH_SHORT
                 ).show()
             }
-            else {
+            else
+            {
                 NameToCoordinates.getCityCoords(
                     startLocationInput.text.toString(),
                     destLocationInput.text.toString(),
@@ -135,8 +145,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     if (validity)
                     {
-
-                        hideKeyboard()
                         runOnUiThread {
 
                             mMap.clear()
@@ -145,10 +153,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                             val routeBounds = LatLngBounds.builder()
                             routeBounds.include(start).include(destination)
 
-                            mMap.clear()
-                            markerCreated = false
                             // Add markers to the start point and destination
                             mMap.addMarker(MarkerOptions().position(start).title("Origin"))
+
+                            markerCreated = false
 
                             WeatherClass.getWeatherData(
                                 curLocation,
@@ -157,8 +165,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                             ) { weather ->
 
                                 // Find the weather at the destination
-                                var icon = WeatherParser(weather, this).img
-                                var destIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
+                                val icon = WeatherParser(weather, this).img
+                                val destIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
 
                                 runOnUiThread {
                                     mMap.addMarker(
@@ -168,9 +176,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                                     )!!
                                 }
                             }
-                            //                         mMap.addMarker(MarkerOptions().position(destination).title("Destination"))
 
-                            //                     Move the camera to the optimal point to show both bounds of the route
+                            // Move the camera to the optimal point to show both bounds of the route
                             mMap.moveCamera(
                                 CameraUpdateFactory.newLatLngBounds(
                                     routeBounds.build(),
@@ -187,6 +194,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
         }
+    }
+
+    override fun onMapClick(p0: LatLng) {
+        hideKeyboard()
     }
 
     private fun hideKeyboard() {
@@ -215,12 +226,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         // Set the global mMap variable to point to the now initialized googleMap
         mMap = googleMap
+        mMap.setOnMapClickListener(this)
 
         // Request permissions and enable the button to recenter the map
         enableLocationButton()
 
         // Prepare an intent to interface with notifications
-        //val notificationIntent = Intent(this, NotificationActivity::class.java)
+        // val notificationIntent = Intent(this, NotificationActivity::class.java)
 
         // Prepare a variable to represent the marker for the user's location and
         // prepare another variable to make sure that it does not get created more than once.
@@ -241,7 +253,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         // Find the weather icon corresponding to the user's current location to use
                         // as the image for the user marker
 
-                        var icon = WeatherParser(weather, this).img
+                        val icon = WeatherParser(weather, this).img
                         var userIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
 
                         // Display a notification for testing purposes
@@ -258,7 +270,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                             }
 
                             // Check if the user's marker has already been created
-                            if(!markerCreated) {
+                            if (!markerCreated) {
                                 // If not, create a marker using the already created icon and place
                                 // it at the user's location.
                                 userMarker = mMap.addMarker(
@@ -269,9 +281,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                                 // Flip the boolean so that redundant markers will not be created
                                 markerCreated = true
+
                                 // Other wise, check if the user has moved and update the marker's
                                 // position (and icon if the weather has changed) if so
-                            }else if(userMarker.position != curLocation){
+                            } else if(userMarker.position != curLocation) {
                                 if (userIcon == null) userIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
                                 userMarker.position= curLocation
                                 userMarker.setIcon(BitmapDescriptorFactory.fromBitmap(userIcon))

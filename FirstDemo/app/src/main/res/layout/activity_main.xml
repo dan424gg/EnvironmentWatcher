@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/mainView">
+    android:id="@+id/mainView"
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -17,7 +18,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:layout_editor_absoluteX="194dp"
-            tools:layout_editor_absoluteY="366dp" />
+            tools:layout_editor_absoluteY="366dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:clickable="true"
+            />
 
         <AutoCompleteTextView
             android:id="@+id/startLocation"
