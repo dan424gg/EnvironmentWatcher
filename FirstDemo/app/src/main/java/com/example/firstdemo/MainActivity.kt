@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         dirButton.setOnClickListener {
 
             // Set destination coordinates
-            while (destLocationInput.text.toString() == "") {
+            if (destLocationInput.text.toString() == "") {
                 // Show pop-up saying that destination is required
                 Snackbar.make(
                     findViewById(R.id.mainView),
@@ -102,59 +102,88 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     Snackbar.LENGTH_SHORT
                 ).show()
             }
+            else {
+                NameToCoordinates.getCityCoords(
+                    startLocationInput.text.toString(),
+                    destLocationInput.text.toString(),
+                    this
+                ) { coords ->
+                    start = coords.first
+                    destination = coords.second
 
-            NameToCoordinates.getCityCoords(startLocationInput.text.toString(), destLocationInput.text.toString(), this) { coords ->
-                start = coords.first
-                destination = coords.second
+                    var validity = true
 
-                // Creating LatLngBounds obj to create a "bounds" for what is displayed on the map
-                if (destination != LatLng(0.0, 0.0) && start != LatLng(0.0, 0.0)) {
-
-                    hideKeyboard()
-
-                    runOnUiThread {
-                        
-                        mMap.clear()
-
-                        // Set the bounds of the route to the start and the destination
-                        val routeBounds = LatLngBounds.builder()
-                        routeBounds.include(start).include(destination)
-
-                        mMap.clear()
-                        markerCreated = false
-                        // Add markers to the start point and destination
-                        mMap.addMarker(MarkerOptions().position(start).title("Origin"))
-
-
-                        WeatherClass.getWeatherData(curLocation, 0, "shortForecast") { weather ->
-
-                            // Find the weather at the destination
-                            var icon = WeatherParser(weather, this).img
-                            var destIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
-
-                            runOnUiThread {
-                                mMap.addMarker(
-                                    MarkerOptions().position(destination).icon(
-                                        BitmapDescriptorFactory.fromBitmap(destIcon)
-                                    ).anchor(0.5f, 0.5f).title("Destination")
-                                )!!
-                            }
-                        }
-        //                         mMap.addMarker(MarkerOptions().position(destination).title("Destination"))
-
-        //                     Move the camera to the optimal point to show both bounds of the route
-                        mMap.moveCamera(
-                            CameraUpdateFactory.newLatLngBounds(
-                                routeBounds.build(),
-                                1000,
-                                1000,
-                                0
-                            )
-                        )
+                    if (start == LatLng(1.0,1.0))
+                    {
+                        validity = false
+                        Snackbar.make(
+                            findViewById(R.id.mainView),
+                            "The start location that was supplied is not applicable!",
+                            Snackbar.LENGTH_SHORT
+                        ).show()
                     }
 
-                    // Calculate the optimal route for the user's requested directions
-                    RoutingClass.calling(mMap, start, destination, this)
+                    if (destination == LatLng(1.0,1.0))
+                    {
+                        validity = false
+                        Snackbar.make(
+                            findViewById(R.id.mainView),
+                            "The destination that was supplied is not applicable!",
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    if (validity)
+                    {
+
+                        hideKeyboard()
+                        runOnUiThread {
+
+                            mMap.clear()
+
+                            // Set the bounds of the route to the start and the destination
+                            val routeBounds = LatLngBounds.builder()
+                            routeBounds.include(start).include(destination)
+
+                            mMap.clear()
+                            markerCreated = false
+                            // Add markers to the start point and destination
+                            mMap.addMarker(MarkerOptions().position(start).title("Origin"))
+
+                            WeatherClass.getWeatherData(
+                                curLocation,
+                                0,
+                                "shortForecast"
+                            ) { weather ->
+
+                                // Find the weather at the destination
+                                var icon = WeatherParser(weather, this).img
+                                var destIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
+
+                                runOnUiThread {
+                                    mMap.addMarker(
+                                        MarkerOptions().position(destination).icon(
+                                            BitmapDescriptorFactory.fromBitmap(destIcon)
+                                        ).anchor(0.5f, 0.5f).title("Destination")
+                                    )!!
+                                }
+                            }
+                            //                         mMap.addMarker(MarkerOptions().position(destination).title("Destination"))
+
+                            //                     Move the camera to the optimal point to show both bounds of the route
+                            mMap.moveCamera(
+                                CameraUpdateFactory.newLatLngBounds(
+                                    routeBounds.build(),
+                                    1000,
+                                    1000,
+                                    0
+                                )
+                            )
+                        }
+
+                        // Calculate the optimal route for the user's requested directions
+                        RoutingClass.calling(mMap, start, destination, this)
+                    }
                 }
             }
         }

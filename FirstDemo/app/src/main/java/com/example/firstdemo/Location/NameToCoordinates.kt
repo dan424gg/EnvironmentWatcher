@@ -31,7 +31,8 @@ object NameToCoordinates {
                 // else, set equal to (1.0, 1.0) for debugging
                 destinationCoords =
                     if (destinationAddress != null &&
-//                    destinationAddress.countryCode.equals("US") && destinationAddress.locality != null &&
+                        destinationAddress.countryCode.equals("US") &&
+//                    destinationAddress.locality != null &&
                         destinationAddress.hasLatitude() && destinationAddress.hasLongitude()
                     ) {
                         LatLng(destinationAddress.latitude, destinationAddress.longitude)
@@ -42,12 +43,14 @@ object NameToCoordinates {
                 // If nothing is passed to the start input field, set startCoords to the user's current location
                 // else, do same as getting destinationCoords
                 if (start == "") {
+                    Log.d("hail", "made it")
                     startCoords = activity.curLocation
                 } else {
                     fetchCity(start, activity) { startAddress ->
                         startCoords =
                             if (startAddress != null &&
-//                            startAddress.countryCode.equals("US") && startAddress.locality != null &&
+                                startAddress.countryCode.equals("US") &&
+//                            startAddress.locality != null &&
                                 startAddress.hasLatitude() && startAddress.hasLongitude()
                             ) {
                                 LatLng(startAddress.latitude, startAddress.longitude)
@@ -56,13 +59,15 @@ object NameToCoordinates {
                             }
                     }
                 }
+
+                listener.invoke(Pair(startCoords, destinationCoords))
             }
         }else{
             startCoords = locNameToLatLng(start, activity)
             destinationCoords = locNameToLatLng(destination, activity)
-        }
 
-        listener.invoke(Pair(startCoords, destinationCoords))
+            listener.invoke(Pair(startCoords, destinationCoords))
+        }
     }
 
     // Gets list of suggested cities to be displayed to the user
