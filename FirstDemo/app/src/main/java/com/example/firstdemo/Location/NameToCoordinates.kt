@@ -11,7 +11,9 @@ import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.getSystemService
 import com.example.firstdemo.MainActivity
+import com.example.firstdemo.R
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.material.snackbar.Snackbar
 
 object NameToCoordinates {
 
@@ -29,15 +31,22 @@ object NameToCoordinates {
 
                 // If destinationAddress is valid, set it as destinationCoords
                 // else, set equal to (1.0, 1.0) for debugging
-                destinationCoords =
-                    if (destinationAddress != null &&
-                        destinationAddress.countryCode.equals("US") &&
-//                    destinationAddress.locality != null &&
-                        destinationAddress.hasLatitude() && destinationAddress.hasLongitude()
-                    ) {
-                        LatLng(destinationAddress.latitude, destinationAddress.longitude)
-                    } else {
-                        LatLng(1.0, 1.0)
+                    if (destinationAddress != null) {
+                        destinationCoords =
+                            if (destinationAddress.countryCode.equals("US")
+                                && destinationAddress.hasLatitude()
+                                && destinationAddress.hasLongitude())
+                            {
+                                LatLng(destinationAddress.latitude, destinationAddress.longitude)
+                            }
+                            else if (!destinationAddress.countryCode.equals("US"))
+                            {
+                                LatLng(1.0, 1.0)
+                            }
+                            else
+                            {
+                                LatLng(0.0,0.0)
+                            }
                     }
 
                 // If nothing is passed to the start input field, set startCoords to the user's current location
@@ -47,16 +56,23 @@ object NameToCoordinates {
                     startCoords = activity.curLocation
                 } else {
                     fetchCity(start, activity) { startAddress ->
-                        startCoords =
-                            if (startAddress != null &&
-                                startAddress.countryCode.equals("US") &&
-//                            startAddress.locality != null &&
-                                startAddress.hasLatitude() && startAddress.hasLongitude()
-                            ) {
-                                LatLng(startAddress.latitude, startAddress.longitude)
-                            } else {
-                                LatLng(1.0, 1.0)
-                            }
+                        if (startAddress != null) {
+                            startCoords =
+                                if (startAddress.countryCode.equals("US")
+                                    && startAddress.hasLatitude()
+                                    && startAddress.hasLongitude())
+                                {
+                                    LatLng(startAddress.latitude, startAddress.longitude)
+                                }
+                                else if (!startAddress.countryCode.equals("US"))
+                                {
+                                    LatLng(1.0,1.0)
+                                }
+                                else
+                                {
+                                    LatLng(0.0,0.0)
+                                }
+                        }
                     }
                 }
 
@@ -68,6 +84,56 @@ object NameToCoordinates {
 
             listener.invoke(Pair(startCoords, destinationCoords))
         }
+    }
+
+    // Do some error checking for coordinates
+    fun checkCoordinates(start: LatLng, dest: LatLng, activity: MainActivity): Boolean
+    {
+        var validity = true
+
+        // LatLng(0.0,0.0) is when start/dest is not valid
+        if (start == LatLng(0.0,0.0))
+        {
+            validity = false
+            Snackbar.make(
+                activity.findViewById(R.id.mainView),
+                "There seems to be an issue with the start location!",
+                Snackbar.LENGTH_SHORT
+            ).show()
+        }
+
+        if (dest == LatLng(0.0,0.0))
+        {
+            validity = false
+            Snackbar.make(
+                activity.findViewById(R.id.mainView),
+                "There seems to be an issue with the destination!",
+                Snackbar.LENGTH_SHORT
+            ).show()
+        }
+
+        // LatLng(1.0,1.0) is returned when start/dest is not in the US
+        if (start == LatLng(1.0,1.0))
+        {
+            validity = false
+            Snackbar.make(
+                activity.findViewById(R.id.mainView),
+                "The start location needs to be in the United States!",
+                Snackbar.LENGTH_SHORT
+            ).show()
+        }
+
+        if (dest == LatLng(1.0,1.0))
+        {
+            validity = false
+            Snackbar.make(
+                activity.findViewById(R.id.mainView),
+                "The destination needs to be in the United States!",
+                Snackbar.LENGTH_SHORT
+            ).show()
+        }
+
+        return validity
     }
 
     // Gets list of suggested cities to be displayed to the user

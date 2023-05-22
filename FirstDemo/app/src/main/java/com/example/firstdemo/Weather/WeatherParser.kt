@@ -120,6 +120,7 @@ class WeatherParser(val weatherInfo: String, val context: Context) {
             "Fog",
             "Cloud",
             "Breezy",
+            "Sunny"
         )
 
         val badWeather = mapOf(
@@ -137,6 +138,7 @@ class WeatherParser(val weatherInfo: String, val context: Context) {
 
             "Fair" to R.drawable.sun,
             "Clear" to R.drawable.sun,
+            "Sunny" to R.drawable.sun,
 
             "Cloud" to R.drawable.partly_cloudy,
 

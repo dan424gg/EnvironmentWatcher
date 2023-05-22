@@ -164,7 +164,7 @@ object RoutingClass {
         val segmentSize = totDistance / numWaypoints
 
         // Used to keep track of running total of distances (Offset for weird bug with first location
-        var sum = ((segmentSize * 4) / 5)
+        var sum = ((segmentSize * 4.5) / 5)
 
         // At each set of coordinates, sum up the corresponding distance
         for (item in distWCoords) {

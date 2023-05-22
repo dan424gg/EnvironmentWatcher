@@ -25,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.firstdemo.Location.CurrentLocation
 import com.example.firstdemo.Location.NameToCoordinates
+import com.example.firstdemo.Location.NameToCoordinates.checkCoordinates
 import com.example.firstdemo.Location.RoutingClass
 import com.example.firstdemo.Weather.WeatherClass
 import com.example.firstdemo.Weather.WeatherParser
@@ -123,30 +124,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
                     start = coords.first
                     destination = coords.second
 
-                    var validity = true
-
-                    // LatLng(1.0,1.0) is returned for not valid start/dest
-                    if (start == LatLng(1.0,1.0))
-                    {
-                        validity = false
-                        Snackbar.make(
-                            findViewById(R.id.mainView),
-                            "The start location that was supplied is not applicable!",
-                            Snackbar.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    if (destination == LatLng(1.0,1.0))
-                    {
-                        validity = false
-                        Snackbar.make(
-                            findViewById(R.id.mainView),
-                            "The destination that was supplied is not applicable!",
-                            Snackbar.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    if (validity)
+                    // Call another function to check the validity of the start and destination coordinates
+                    if (checkCoordinates(start, destination, this))
                     {
                         runOnUiThread {
 
