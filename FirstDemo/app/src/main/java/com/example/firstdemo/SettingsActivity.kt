@@ -33,7 +33,7 @@ class SettingsActivity : AppCompatActivity() {
         // PreferenceManager.getDefaultSharedPreferences(applicationContext)
         val sharedPreferences: SharedPreferences =
             PreferenceManager.getDefaultSharedPreferences(applicationContext)
-
+        /*
         val locPermissionListener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
             Log.d("DEBUG", "FIRST CHECK----------------")
             if (key == "location" && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -46,8 +46,9 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
+         */
 
-        sharedPreferences.registerOnSharedPreferenceChangeListener(locPermissionListener)
+        //sharedPreferences.registerOnSharedPreferenceChangeListener(locPermissionListener)
 
         //PreferenceManager.getDefaultSharedPreferences(applicationContext)
     }
@@ -58,6 +59,12 @@ class SettingsActivity : AppCompatActivity() {
         return true
     }
 
+    class SettingsFragment : PreferenceFragmentCompat() {
+        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+            setPreferencesFromResource(R.xml.root_preferences, rootKey)
+        }
+    }
+/*
     @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.M)
     private fun changeLocation(){
@@ -65,12 +72,6 @@ class SettingsActivity : AppCompatActivity() {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
         ), 1)
-    }
-
-    class SettingsFragment : PreferenceFragmentCompat() {
-        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-            setPreferencesFromResource(R.xml.root_preferences, rootKey)
-        }
     }
 
     @SuppressLint("MissingPermission")
@@ -90,5 +91,7 @@ class SettingsActivity : AppCompatActivity() {
         packageManager.removePermission(Manifest.permission.ACCESS_FINE_LOCATION)
         packageManager.removePermission(Manifest.permission.ACCESS_COARSE_LOCATION)
     }
+
+ */
 
 }

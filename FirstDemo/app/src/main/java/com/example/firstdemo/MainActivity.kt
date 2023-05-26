@@ -8,10 +8,8 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -22,6 +20,7 @@ import android.widget.AutoCompleteTextView
 import android.widget.Button
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.app.ActivityCompat
 import com.example.firstdemo.Location.CurrentLocation
 import com.example.firstdemo.Location.NameToCoordinates
@@ -44,7 +43,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var curLocation: LatLng
     private var markerCreated = false
 
-    @SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission", "UseCompatLoadingForDrawables")
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         // Initialize the app
@@ -66,16 +65,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Get the inputs from the text fields
         val startLocationInput = findViewById<AutoCompleteTextView>(R.id.startLocation)
         val destLocationInput = findViewById<AutoCompleteTextView>(R.id.endLocation)
+        val navSwitch: SwitchCompat = findViewById(R.id.navigation)
 
         when (applicationContext.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
             Configuration.UI_MODE_NIGHT_YES -> run {
                 startLocationInput.background = getDrawable(R.drawable.edit_text_bg_night)
                 destLocationInput.background = getDrawable(R.drawable.edit_text_bg_night)
+                navSwitch.background = getDrawable(R.drawable.edit_text_bg_night)
             }
             else -> run{
 
                 startLocationInput.background = getDrawable(R.drawable.edit_text_background)
                 destLocationInput.background = getDrawable(R.drawable.edit_text_background)
+                navSwitch.background = getDrawable(R.drawable.edit_text_background)
             }
         }
 
@@ -157,8 +159,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                             ) { weather ->
 
                                 // Find the weather at the destination
-                                var icon = WeatherParser(weather, this).img
-                                var destIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
+                                val icon = WeatherParser(weather, this).img
+                                val destIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
 
                                 runOnUiThread {
                                     mMap.addMarker(
@@ -185,6 +187,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         RoutingClass.calling(mMap, start, destination, this)
                     }
                 }
+            }
+        }
+
+        navSwitch.setOnClickListener{
+            if(navSwitch.isChecked){
+                startLocationInput.visibility = View.VISIBLE
+                destLocationInput.visibility = View.VISIBLE
+                dirButton.visibility = View.VISIBLE
+            }else{
+                startLocationInput.visibility = View.INVISIBLE
+                destLocationInput.visibility = View.INVISIBLE
+                dirButton.visibility = View.INVISIBLE
             }
         }
     }
@@ -241,7 +255,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         // Find the weather icon corresponding to the user's current location to use
                         // as the image for the user marker
 
-                        var icon = WeatherParser(weather, this).img
+                        val icon = WeatherParser(weather, this).img
                         var userIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
 
                         // Display a notification for testing purposes

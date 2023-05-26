@@ -28,7 +28,8 @@
             android:background="@drawable/edit_text_background"
             android:completionHint="Select a Start location"
             android:completionThreshold="1"
-            android:hint=" Start Location"
+            android:hint="@string/start_location"
+            android:visibility="invisible"
             app:layout_constraintBottom_toTopOf="@+id/guideline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -42,7 +43,8 @@
             android:background="@drawable/edit_text_background"
             android:completionHint="Select a Destination"
             android:completionThreshold="1"
-            android:hint=" Destination"
+            android:hint="@string/destination"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline" />
@@ -52,7 +54,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="480dp"
-            android:text="Show Weather on Route"
+            android:text="@string/show_weather_on_route"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
@@ -64,6 +67,18 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.1" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/navigation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="600dp"
+            android:background="@drawable/edit_text_background"
+            android:text="@string/enable_navigation"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

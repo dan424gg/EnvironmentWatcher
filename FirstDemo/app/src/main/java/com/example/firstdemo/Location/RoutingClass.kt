@@ -113,7 +113,7 @@ object RoutingClass {
                     googleMap.addMarker(
                         MarkerOptions().position(locations[i]).title(result).icon(
                             BitmapDescriptorFactory.fromBitmap(locIcon)
-                        )
+                        ).anchor(0.5f, 0.5f)
                     )
                 }
             }

@@ -19,4 +19,8 @@
     <string name="rainSettings">Receive rain notifications</string>
     <string name="internetSett">Allow app to have internet access</string>
     <string name="WeatherUpdateChannelName">Weather Updates</string>
+    <string name="start_location"> Start Location</string>
+    <string name="destination"> Destination</string>
+    <string name="show_weather_on_route"> Show Weather on Route</string>
+    <string name="enable_navigation"> Enable Navigation</string>
 </resources>

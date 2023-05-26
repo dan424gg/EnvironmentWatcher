@@ -55,6 +55,7 @@ object WeatherClass {
         val longitude = location.longitude
         lateinit var json : JSONObject
 
+        // Still need to fix the water error
         thread {
             json = JSONObject(run("https://api.weather.gov/points/$latitude,$longitude"))
             Log.d("WEATHERSTUFF", "lat: $latitude lng: $longitude")
