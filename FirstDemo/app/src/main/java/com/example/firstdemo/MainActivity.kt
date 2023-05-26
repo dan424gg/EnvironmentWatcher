@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMainBinding
     private var changeViewToCurLocation = true
-    lateinit var curLocation: LatLng
+    var curLocation = LatLng(0.0,0.0)
     private var markerCreated = false
 
     @SuppressLint("MissingPermission")
@@ -225,59 +225,59 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
         // Use a thread so that other processes do not have to wait for the location or weather
         Thread {
             // Use an infinite loop to run as long as the app is active
-            while (true) {
+            while (curLocation == LatLng(0.0,0.0)) {
                 // Get the user's current location and then wait to let the location return
                 curLocation = CurrentLocation.calling(this)
-                Thread.sleep(500)
+//                Thread.sleep(500)
+            }
 
                 // Make sure that the location has been updated to avoid errors in future sections
-                if(curLocation.latitude != 0.0) {
-                    // Get the weather using the shortForecast and continue to the rest of the operations
-                    WeatherClass.getWeatherData(curLocation, 0, "shortForecast") { weather ->
-                        // Find the weather icon corresponding to the user's current location to use
-                        // as the image for the user marker
+            if (curLocation.latitude != 0.0) {
+                // Get the weather using the shortForecast and continue to the rest of the operations
+                WeatherClass.getWeatherData(curLocation, 0, "shortForecast") { weather ->
+                    // Find the weather icon corresponding to the user's current location to use
+                    // as the image for the user marker
 
-                        val icon = WeatherParser(weather, this).img
-                        var userIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
+                    val icon = WeatherParser(weather, this).img
+                    var userIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
 
-                        // Display a notification for testing purposes
-                        //NotificationClass.sendNotification(this, weather, weather, userIcon)
+                    // Display a notification for testing purposes
+                    //NotificationClass.sendNotification(this, weather, weather, userIcon)
 
-                        // Run necessary processes on the ui thread
-                        runOnUiThread {
-                            // If the map is currently set to follow the user, keep the camera moving
-                            // with them.
-                            if (changeViewToCurLocation) {
-                                mMap.moveCamera(CameraUpdateFactory.newLatLng(curLocation))
-                                mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
-                                changeViewToCurLocation = false
-                            }
+                    // Run necessary processes on the ui thread
+                    runOnUiThread {
+                        // If the map is currently set to follow the user, keep the camera moving
+                        // with them.
+                        if (changeViewToCurLocation) {
+                            mMap.moveCamera(CameraUpdateFactory.newLatLng(curLocation))
+                            mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
+                            changeViewToCurLocation = false
+                        }
 
-                            // Check if the user's marker has already been created
-                            if (!markerCreated) {
-                                // If not, create a marker using the already created icon and place
-                                // it at the user's location.
-                                userMarker = mMap.addMarker(
-                                    MarkerOptions().position(curLocation).icon(
-                                        BitmapDescriptorFactory.fromBitmap(userIcon)
-                                    ).anchor(0.5f,0.5f)
-                                )!!
+                        // Check if the user's marker has already been created
+                        if (!markerCreated) {
+                            // If not, create a marker using the already created icon and place
+                            // it at the user's location.
+                            userMarker = mMap.addMarker(
+                                MarkerOptions().position(curLocation).icon(
+                                    BitmapDescriptorFactory.fromBitmap(userIcon)
+                                ).anchor(0.5f,0.5f)
+                            )!!
 
-                                // Flip the boolean so that redundant markers will not be created
-                                markerCreated = true
+                            // Flip the boolean so that redundant markers will not be created
+                            markerCreated = true
 
-                                // Other wise, check if the user has moved and update the marker's
-                                // position (and icon if the weather has changed) if so
-                            } else if(userMarker.position != curLocation) {
-                                if (userIcon == null) userIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
-                                userMarker.position= curLocation
-                                userMarker.setIcon(BitmapDescriptorFactory.fromBitmap(userIcon))
-
-                            }
+                            // Other wise, check if the user has moved and update the marker's
+                            // position (and icon if the weather has changed) if so
+                        } else if(userMarker.position != curLocation) {
+                            if (userIcon == null) userIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
+                            userMarker.position= curLocation
+                            userMarker.setIcon(BitmapDescriptorFactory.fromBitmap(userIcon))
                         }
                     }
                 }
             }
+//            }
         }.start()
     }
 

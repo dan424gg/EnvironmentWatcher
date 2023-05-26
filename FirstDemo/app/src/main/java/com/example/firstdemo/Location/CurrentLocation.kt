@@ -16,16 +16,17 @@ object CurrentLocation {
     private var longitude = 0.0
     private var latitude = 0.0
 
-
     // Function called by external classes to access the location
     @RequiresApi(Build.VERSION_CODES.M)
-    public fun calling(that: Activity): LatLng {
+    fun calling(that: Activity): LatLng {
         Log.d("DEBUG", "Reached location code")
 
         // Calls the main location function to update the global variables
         // and then sleeps to keep it from returning to the main activity too soon
-        getLocation(that)
-        Thread.sleep(500)
+        getLocation(that) {
+            latitude = it.latitude
+            longitude = it.longitude
+        }
 
         // Returns location as a LatLng
         return LatLng(latitude, longitude)
@@ -33,7 +34,7 @@ object CurrentLocation {
     // Function that checks location permissions and updates the global location variables
     @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun getLocation(context: Activity){
+    private fun getLocation(context: Activity, listener: (LatLng) -> Unit) {
         Log.d("DEBUG", "Reached getLocation")
 
         // Use a client to access the location API
@@ -55,13 +56,11 @@ object CurrentLocation {
         }else{
             // Get the most recent location
             client.lastLocation.addOnSuccessListener {
-                if(it != null) {
+                if (it != null) {
                     Log.d("DEBUG", "Reached Update location")
 
                     // If the location was obtained properly (no errors), update the location
-                    latitude = it.latitude
-                    longitude = it.longitude
-                    Log.d("DEBUG", latitude.toString())
+                    listener.invoke(LatLng(it.latitude, it.longitude))
                 }
             }
         }
