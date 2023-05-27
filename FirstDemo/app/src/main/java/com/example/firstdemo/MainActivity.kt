@@ -10,6 +10,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -22,6 +23,9 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.app.ActivityCompat
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.example.firstdemo.Alerts.AlertWorker
 import com.example.firstdemo.Location.CurrentLocation
 import com.example.firstdemo.Location.NameToCoordinates
 import com.example.firstdemo.Location.RoutingClass
@@ -241,6 +245,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Prepare a variable to represent the marker for the user's location and
         // prepare another variable to make sure that it does not get created more than once.
         lateinit var userMarker: Marker
+
+        //creating the notifications worker
+        Log.d("Aidan", "Creating MainLoopWorker")
+        val periodicWorkRequest =
+            PeriodicWorkRequestBuilder<AlertWorker>(5, TimeUnit.SECONDS)
+                .build()
+
+        // Enqueue the periodic work request
+        WorkManager.getInstance(this).enqueue(periodicWorkRequest)
+
 
         // Use a thread so that other processes do not have to wait for the location or weather
         val executor = Executors.newSingleThreadScheduledExecutor()
