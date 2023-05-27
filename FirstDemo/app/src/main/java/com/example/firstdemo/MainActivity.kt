@@ -34,6 +34,8 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.material.snackbar.Snackbar
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -241,12 +243,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         lateinit var userMarker: Marker
 
         // Use a thread so that other processes do not have to wait for the location or weather
-        Thread {
-            // Use an infinite loop to run as long as the app is active
-            while (true) {
+        val executor = Executors.newSingleThreadScheduledExecutor()
+        // Use a thread so that other processes do not have to wait for the location or weather
+        executor.scheduleAtFixedRate (
+            {
                 // Get the user's current location and then wait to let the location return
                 curLocation = CurrentLocation.calling(this)
-                Thread.sleep(500)
 
                 // Make sure that the location has been updated to avoid errors in future sections
                 if(curLocation.latitude != 0.0) {
@@ -294,9 +296,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         }
                     }
                 }
-            }
-        }.start()
+            }, 0, 10, TimeUnit.SECONDS)
     }
+
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun setupAutoComplete(editTextCity: AutoCompleteTextView, cities : Array<String>) {

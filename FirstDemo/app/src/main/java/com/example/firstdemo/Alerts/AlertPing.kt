@@ -102,6 +102,7 @@ object AlertPing {
             "Hurricane",
             "Storm",
             "Tornado",
+            "Sunny",
         )
 
         val alertImgs = mapOf(
@@ -135,6 +136,7 @@ object AlertPing {
             "Storm" to R.drawable.bad_thunderstorm,
 
             "Tornado" to R.drawable.tornado,
+
         )
 
         val regex = substrings.joinToString(separator = "|")

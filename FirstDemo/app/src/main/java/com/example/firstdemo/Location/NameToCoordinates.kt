@@ -17,7 +17,7 @@ object NameToCoordinates {
 
     // Returns the first city that most closely matches the user's input
     fun getCityCoords (start : String, destination : String, activity: MainActivity, listener: (Pair<LatLng, LatLng>) -> Unit) {
-        var startCoords = LatLng(0.0,0.0)
+        var startCoords = activity.curLocation
         var destinationCoords = LatLng(0.0,0.0)
 
         // Get the coordinates based on the location string
@@ -42,10 +42,7 @@ object NameToCoordinates {
 
                 // If nothing is passed to the start input field, set startCoords to the user's current location
                 // else, do same as getting destinationCoords
-                if (start == "") {
-                    Log.d("hail", "made it")
-                    startCoords = activity.curLocation
-                } else {
+                if(start != "") {
                     fetchCity(start, activity) { startAddress ->
                         startCoords =
                             if (startAddress != null &&

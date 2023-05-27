@@ -13,8 +13,8 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 
 object CurrentLocation {
-    private var longitude = 0.0
-    private var latitude = 0.0
+    public var longitude = 0.0
+    public var latitude = 0.0
 
 
     // Function called by external classes to access the location
