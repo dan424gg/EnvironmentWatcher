@@ -52,7 +52,6 @@ object NameToCoordinates {
                 // If nothing is passed to the start input field, set startCoords to the user's current location
                 // else, do same as getting destinationCoords
                 if (start == "") {
-                    Log.d("hail", "made it")
                     startCoords = activity.curLocation
                 } else {
                     fetchCity(start, activity) { startAddress ->
@@ -62,6 +61,8 @@ object NameToCoordinates {
                                     && startAddress.hasLatitude()
                                     && startAddress.hasLongitude())
                                 {
+                                    Log.d("hail", "made it")
+
                                     LatLng(startAddress.latitude, startAddress.longitude)
                                 }
                                 else if (!startAddress.countryCode.equals("US"))
