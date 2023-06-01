@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.android.gms.maps.model.LatLng
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import kotlin.concurrent.thread
@@ -23,9 +24,14 @@ object WeatherClass {
     fun getWeatherData(location: LatLng, hour: Int = 0, property: String = "detailedForecast", callback: (result: String) -> Unit) {
 
         getNWSPropertyJSON(location, "forecastHourly") { json ->
-//            val content = json.getJSONObject("properties").getJSONObject("elevation").getDouble("value").toString()   // For debugging
-            val period = json.getJSONObject("properties").getJSONArray("periods").getString(hour)
-            val content = JSONObject(period).getString(property)
+            var content = "Unknown"
+            try {
+                val period =
+                    json.getJSONObject("properties").getJSONArray("periods").getString(hour)
+                content = JSONObject(period).getString(property)
+            } catch(e: JSONException){
+                Log.d("DEBUG", "Caught JSON error")
+            }
 
             callback.invoke(content)
         }
@@ -55,13 +61,20 @@ object WeatherClass {
         val longitude = location.longitude
         lateinit var json : JSONObject
 
-        // Still need to fix the water error
         thread {
-            json = JSONObject(run("https://api.weather.gov/points/$latitude,$longitude"))
-            Log.d("WEATHERSTUFF", "lat: $latitude lng: $longitude")
-            json = JSONObject(run(json.getJSONObject("properties").getString(property)))
+            try {
+                json = JSONObject(run("https://api.weather.gov/points/$latitude,$longitude"))
+                Log.d("WEATHERSTUFF", "lat: $latitude lng: $longitude")
+                json = JSONObject(run(json.getJSONObject("properties").getString(property)))
 
-            callback.invoke(json)
+                callback.invoke(json)
+            } catch (e: JSONException) {
+                // Catch the error to stop the crashing
+                Log.d("DEBUG", "Caught JSON error")
+
+                json = JSONObject()
+                callback.invoke(json)
+            }
         }
     }
 

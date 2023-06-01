@@ -41,7 +41,7 @@ import com.google.android.material.snackbar.Snackbar
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMainBinding
@@ -90,6 +90,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         lateinit var start: LatLng
         lateinit var destination: LatLng
         val cities = resources.getStringArray(R.array.USCities)
+
+        // When a autocomplete choice is picked, hide keyboard
+        startLocationInput.setOnDismissListener {
+            hideKeyboard()
+        }
+
+        // When a autocomplete choice is picked, hide keyboard
+        destLocationInput.setOnDismissListener {
+            hideKeyboard()
+        }
 
         // Autocompletes text user inputs in source and destination fields
         setupAutoComplete(startLocationInput, cities)
@@ -159,7 +169,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                             mMap.addMarker(MarkerOptions().position(start).title("Origin"))
 
                             WeatherClass.getWeatherData(
-                                curLocation,
+                                destination,
                                 0,
                                 "shortForecast"
                             ) { weather ->
@@ -214,6 +224,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
     }
 
+    override fun onMapClick(p0: LatLng) {
+        hideKeyboard()
+    }
+
     // Initialize map menu on UI
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater
@@ -235,6 +249,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         // Set the global mMap variable to point to the now initialized googleMap
         mMap = googleMap
+
+
+        // Make map clickable
+        mMap.setOnMapClickListener(this)
 
         // Request permissions and enable the button to recenter the map
         enableLocationButton()

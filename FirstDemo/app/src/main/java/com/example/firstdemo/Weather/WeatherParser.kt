@@ -186,7 +186,7 @@ class WeatherParser(val weatherInfo: String, val context: Context) {
 
         if (iconType == null) {
             Log.d("Aidan", "iconType is null, using default")
-            return BitmapFactory.decodeResource(context.resources, R.drawable.user_icon)
+            return BitmapFactory.decodeResource(context.resources, R.drawable.unknown)
         } else {
             Log.d("Aidan", "iconType: $iconType")
         }
@@ -204,7 +204,7 @@ class WeatherParser(val weatherInfo: String, val context: Context) {
                        hopefully this will never appear, but if it does do more testing
                      */
                 Log.d("weatherObject", "bitmap not made");
-                BitmapFactory.decodeResource(context.resources, R.drawable.user_icon)
+                BitmapFactory.decodeResource(context.resources, R.drawable.unknown)
         }
 
 
