@@ -153,7 +153,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
 
                     if (validity)
                     {
-
                         hideKeyboard()
                         runOnUiThread {
 
@@ -166,7 +165,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
                             mMap.clear()
                             markerCreated = false
                             // Add markers to the start point and destination
-                            mMap.addMarker(MarkerOptions().position(start).title("Origin"))
+//                            mMap.addMarker(MarkerOptions().position(start).title("Origin"))
 
                             WeatherClass.getWeatherData(
                                 destination,

@@ -24,13 +24,16 @@ object WeatherClass {
     fun getWeatherData(location: LatLng, hour: Int = 0, property: String = "detailedForecast", callback: (result: String) -> Unit) {
 
         getNWSPropertyJSON(location, "forecastHourly") { json ->
-            var content = "Unknown"
+            var content = location.toString()
+
             try {
                 val period =
                     json.getJSONObject("properties").getJSONArray("periods").getString(hour)
                 content = JSONObject(period).getString(property)
             } catch(e: JSONException){
-                Log.d("DEBUG", "Caught JSON error")
+                Log.d("hail", json.toString())
+                Log.d("hail", "Caught JSON error")
+                Log.d("hail", json.getLong("status").toString())
             }
 
             callback.invoke(content)
