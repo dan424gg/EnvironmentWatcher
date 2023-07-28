@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -234,11 +235,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
         return super.onCreateOptionsMenu(menu)
     }
 
-    // Handle item selection
+    // Handle hamburger item selection
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.settingsOption) {
             val settingsIntent = Intent(this, SettingsActivity::class.java)
             startActivity(settingsIntent)
+        } else if (item.itemId == R.id.aboutOption) {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://environment-watcher-61187.web.app/")))
         }
         return true
     }
@@ -305,7 +308,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
                             }
 
                             // Check if the user's marker has already been created
-                            if(!markerCreated) {
+                            if (!markerCreated) {
                                 // If not, create a marker using the already created icon and place
                                 // it at the user's location.
                                 userMarker = mMap.addMarker(
@@ -318,9 +321,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
                                 markerCreated = true
                                 // Other wise, check if the user has moved and update the marker's
                                 // position (and icon if the weather has changed) if so
-                            }else if(userMarker.position != curLocation){
+                            } else if (userMarker.position != curLocation) {
                                 if (userIcon == null) userIcon = Bitmap.createScaledBitmap(icon, 150, 150, false)
-                                userMarker.position= curLocation
+                                userMarker.position = curLocation
                                 userMarker.setIcon(BitmapDescriptorFactory.fromBitmap(userIcon))
 
                             }
@@ -330,7 +333,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
             }, 0, 10, TimeUnit.SECONDS)
     }
 
-
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun setupAutoComplete(editTextCity: AutoCompleteTextView, cities : Array<String>) {
         // Used to update list of autocomplete cities
@@ -338,46 +340,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
             cities)
         editTextCity.setAdapter(adapter)
         editTextCity.threshold = 1
-    }
-
-    // Get an image corresponding to the input weather string
-    fun getWeatherImage(curWeather: String): Bitmap {
-        // Initialize a bitmap variable to return
-        lateinit var bitmap: Bitmap
-
-        //Log.d("DEBUG", "In displayWeather: $curWeather")
-        // Create a dictionary mapping keys relating to weather to the corresponding images
-        val badWeather = mapOf(
-            "cloudy" to R.drawable.cloudy, "sunny" to R.drawable.sunny,
-            "rain" to R.drawable.rain, "clear" to R.drawable.sunny
-        )
-
-        // Initialize a variable to make sure that a corresponding image was found
-        var badWeatherExists = false
-
-        // Check if forecast is in list of weather types
-        for (weatherType in badWeather.keys) {
-            // See if the weather type being checked matches the current weather
-            if (curWeather.contains(weatherType, ignoreCase = true)) {
-                badWeather[weatherType]?.let {
-                    // Flip the bad weather variable so that the default bitmap will not be returned
-                    badWeatherExists = true
-
-                    // Assign the bitmap to image corresponding to the current weather
-                    bitmap = BitmapFactory.decodeResource(resources, it)
-                }
-                break
-            }
-        }
-
-        // If no corresponding weather images were found, use a default image
-        if (!badWeatherExists) {
-            // icon default is lightning for testing
-            bitmap = BitmapFactory.decodeResource(resources, R.drawable.lightning)
-        }
-
-        // Return the set bitmap
-        return bitmap
     }
 
     // Function to get permission to let google maps access the user's location and enable
