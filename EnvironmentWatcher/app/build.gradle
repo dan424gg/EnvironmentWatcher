@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.firstdemo'
+    namespace 'com.ew.firstdemo'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.firstdemo"
+        applicationId "com.ew.firstdemo"
         minSdk 21
         targetSdk 33
         versionCode 1
@@ -27,7 +27,7 @@ android {
 
         debug {
             applicationIdSuffix ".debug"
-            debuggable true
+            debuggable false
         }
     }
     compileOptions {
