@@ -1,6 +1,6 @@
-package com.example.firstdemo.Notifications
+package com.ew.firstdemo.Notifications
 
-import com.example.firstdemo.R
+import com.ew.firstdemo.R
 
 enum class WeatherTypes(val type: String) {
 

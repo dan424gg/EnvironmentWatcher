@@ -1,19 +1,10 @@
-package com.example.firstdemo
+package com.ew.firstdemo
 
-import android.Manifest
-import android.annotation.SuppressLint
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.widget.Switch
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
-import androidx.preference.SwitchPreferenceCompat
 
 class SettingsActivity : AppCompatActivity() {
 

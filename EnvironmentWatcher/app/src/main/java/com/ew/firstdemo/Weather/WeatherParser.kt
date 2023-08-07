@@ -1,11 +1,10 @@
-package com.example.firstdemo.Weather
+package com.ew.firstdemo.Weather
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
-import com.example.firstdemo.R
-import org.json.JSONObject
+import com.ew.firstdemo.R
 
 class WeatherParser(val weatherInfo: String, val context: Context) {
     //stored values

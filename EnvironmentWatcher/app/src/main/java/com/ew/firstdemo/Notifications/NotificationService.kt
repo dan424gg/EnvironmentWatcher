@@ -1,4 +1,4 @@
-package com.example.firstdemo.Notifications
+package com.ew.firstdemo.Notifications
 
 import android.app.Service
 import android.content.Intent

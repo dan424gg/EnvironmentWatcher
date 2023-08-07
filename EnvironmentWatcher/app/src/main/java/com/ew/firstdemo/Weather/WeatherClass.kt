@@ -1,4 +1,4 @@
-package com.example.firstdemo.Weather
+package com.ew.firstdemo.Weather
 
 import android.util.Log
 import com.google.android.gms.maps.model.LatLng

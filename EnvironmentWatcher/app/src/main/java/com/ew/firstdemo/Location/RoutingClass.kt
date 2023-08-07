@@ -1,9 +1,9 @@
-package com.example.firstdemo.Location
+package com.ew.firstdemo.Location
 
 import android.app.Activity
 import android.graphics.Bitmap
-import com.example.firstdemo.Weather.WeatherClass.getWeatherData
-import com.example.firstdemo.Weather.WeatherParser
+import com.ew.firstdemo.Weather.WeatherClass.getWeatherData
+import com.ew.firstdemo.Weather.WeatherParser
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.PolyUtil
@@ -92,7 +92,7 @@ object RoutingClass {
 
         val locations = getLocations(steps)
 
-        for (i in 1 until locations.size) {
+        for (i in locations.indices) {
 
             // Add cur time to segmentTime
             val futureTime = (segmentTime * i)
