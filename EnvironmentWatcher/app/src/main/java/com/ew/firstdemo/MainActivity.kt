@@ -54,9 +54,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
         setContentView(binding.root)
 
         // Create the channel to allow utilize notifications
-        NotificationClass.makeNotificationChannel(
-            this, "default", getString(R.string.WeatherUpdateChannelName), "Current weather", 3
-        )
+//        NotificationClass.makeNotificationChannel(
+//            this, "default", getString(R.string.WeatherUpdateChannelName), "Current weather", 3
+//        )
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -206,12 +206,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
         return super.onCreateOptionsMenu(menu)
     }
 
-    // Handle autocomplete item selection
+    // Handle menu item selection
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.settingsOption) {
-            val settingsIntent = Intent(this, SettingsActivity::class.java)
-            startActivity(settingsIntent)
-        } else if (item.itemId == R.id.aboutOption) {
+//        if (item.itemId == R.id.settingsOption) {
+//            val settingsIntent = Intent(this, SettingsActivity::class.java)
+//            startActivity(settingsIntent)
+//        } else
+        if (item.itemId == R.id.aboutOption) {
             startActivity(
                 Intent(
                     Intent.ACTION_VIEW, Uri.parse("https://environment-watcher-61187.web.app/")
