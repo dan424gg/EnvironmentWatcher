@@ -59,7 +59,7 @@ object NameToCoordinates {
                 } else {
                     listener.invoke(
                         Pair(
-                            activity.curLocation, destinationCoords
+                            LatLng(48.754902, -122.478119), destinationCoords
                         )
                     )
                 }
