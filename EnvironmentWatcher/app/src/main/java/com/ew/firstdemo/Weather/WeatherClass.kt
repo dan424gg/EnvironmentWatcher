@@ -30,10 +30,8 @@ object WeatherClass {
                 val period =
                     json.getJSONObject("properties").getJSONArray("periods").getString(hour)
                 content = JSONObject(period).getString(property)
-            } catch(e: JSONException){
-                Log.d("hail", json.toString())
-                Log.d("hail", "Caught JSON error")
-                Log.d("hail", json.getLong("status").toString())
+            } catch(e: JSONException) {
+                Log.d("hail", "getWeatherData error: $e")
             }
 
             callback.invoke(content)
@@ -45,7 +43,6 @@ object WeatherClass {
         var content = "Insert weather"
 
         getNWSPropertyJSON(location, "forecastHourly") { json ->
-            Log.d("DEBUG", "Inside weather")
 //            val content = json.getJSONObject("properties").getJSONObject("elevation").getDouble("value").toString()   // For debugging
             val period = json.getJSONObject("properties").getJSONArray("periods").getString(hour)
             content = JSONObject(period).getString(property)
@@ -57,7 +54,7 @@ object WeatherClass {
     /* Get a specific JSON object from the list of 'properties' given by the initial NWS request
      *      property: specify property wanted
      *
-     * Deprecates need for two separate functions to get a specific property
+     * takes away need for two separate functions to get a specific property
      */
     private fun getNWSPropertyJSON(location: LatLng, property: String, callback: (result: JSONObject) -> Unit) {
         val latitude = location.latitude
@@ -66,14 +63,21 @@ object WeatherClass {
 
         thread {
             try {
-                json = JSONObject(run("https://api.weather.gov/points/$latitude,$longitude"))
-                Log.d("WEATHERSTUFF", "lat: $latitude lng: $longitude")
-                json = JSONObject(run(json.getJSONObject("properties").getString(property)))
+                json = run("https://api.weather.gov/points/$latitude,$longitude")?.let {
+                    JSONObject(
+                        it
+                    )
+                }!!
+
+                json = run(json.getJSONObject("properties").getString(property))?.let {
+                    JSONObject(
+                        it
+                    )
+                }!!
 
                 callback.invoke(json)
             } catch (e: JSONException) {
                 // Catch the error to stop the crashing
-                Log.d("DEBUG", "Caught JSON error")
 
                 json = JSONObject()
                 callback.invoke(json)
@@ -81,7 +85,7 @@ object WeatherClass {
         }
     }
 
-    private fun run(url : String) : String {
+    private fun run(url : String) : String? {
         val request = Request.Builder()
             .url(url)
             .header("User-agent", "an agent")
@@ -102,8 +106,8 @@ object WeatherClass {
                 return response.body!!.string()
             }
         } catch (e: Exception) {
-            Log.d("hail", "caught an exception")
-            return ""
+            Log.d("hail", "run in WeatherClass error: $e")
+            return null
         }
     }
 }

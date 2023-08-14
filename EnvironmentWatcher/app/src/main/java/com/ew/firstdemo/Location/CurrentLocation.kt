@@ -8,17 +8,22 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 //import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 
-object CurrentLocation {
+object CurrentLocation : ViewModel(){
+    private val _curLocation = MutableLiveData(LatLng(0.0, 0.0))
+    val curLocation: LiveData<LatLng?> = _curLocation
+
     private var output: LatLng? = null
 
     // Function that checks location permissions and updates the global location variables
     @SuppressLint("MissingPermission")
-    @RequiresApi(Build.VERSION_CODES.M)
-    fun getLocation(context: Activity): LatLng? {
+    fun getLocation(context: Activity, callback: (curLocation: LatLng?) -> Unit) {
 
         // Use a client to access the location API
         val client = LocationServices.getFusedLocationProviderClient(context)
@@ -37,8 +42,8 @@ object CurrentLocation {
             // Get the most recent location
             client.lastLocation.addOnSuccessListener {
                 if (it != null) { output = LatLng(it.latitude, it.longitude) }
+                callback.invoke(output)
             }
         }
-    return output
     }
 }

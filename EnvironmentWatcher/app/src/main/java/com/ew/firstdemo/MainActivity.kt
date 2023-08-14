@@ -15,26 +15,31 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.app.ActivityCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.ew.firstdemo.Location.CurrentLocation
 import com.ew.firstdemo.Location.NameToCoordinates
 import com.ew.firstdemo.Location.RoutingClass
 import com.ew.firstdemo.Weather.WeatherClass
 import com.ew.firstdemo.Weather.WeatherParser
 import com.ew.firstdemo.databinding.ActivityMainBinding
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.material.snackbar.Snackbar
+import java.io.Serializable
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -43,6 +48,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMainBinding
     private var createdRoute = false
+    val viewModel by viewModels<CurrentLocation>()
+
     var curLocation: LatLng? = null
 
     @SuppressLint("MissingPermission", "UseCompatLoadingForDrawables")
@@ -50,8 +57,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
     override fun onCreate(savedInstanceState: Bundle?) {
         // Initialize the app
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+//        installSplashScreen().apply {
+//            this.setKeepOnScreenCondition{
+//
+//            }
+//        }
+        setContentView(R.layout.activity_main)
+
+//        val bundle = intent.getBundleExtra("curLocation")
+//        curLocation = bundle?.getParcelable("curLocation", LatLng::class.java)
 
         // Create the channel to allow utilize notifications
 //        NotificationClass.makeNotificationChannel(
@@ -228,12 +242,34 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
     }
 
     // Performs operations related to the map once it is ready
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun onMapReady(googleMap: GoogleMap) {
         // Set the global mMap variable to point to the now initialized googleMap
         mMap = googleMap
-
         mMap.setOnMapClickListener(this)
+
+        CurrentLocation.getLocation(this) { curLocation ->
+            // should be able to quickly display user's current location!
+            WeatherClass.getWeatherData(curLocation!!, 0, "shortForecast") { weather ->
+
+                // Find the weather icon corresponding to the user's current location to use
+                // as the image for the user marker
+                val userIcon = Bitmap.createScaledBitmap(
+                    WeatherParser(weather, this).img, 150, 150, false
+                )
+
+                runOnUiThread {
+                    /* if the route isn't created, follow user's current location and
+                 * update weather if needed */
+                    mMap.addMarker(
+                        MarkerOptions().position(curLocation!!).icon(
+                            BitmapDescriptorFactory.fromBitmap(userIcon)
+                        ).anchor(0.5f, 0.5f).title("Current Location")
+                    )!!
+                    mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(curLocation!!))
+                }
+            }
+        }
 
         // Request permissions and enable the button to recenter the map
         enableLocationButton()
@@ -245,38 +281,41 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
         executor.scheduleAtFixedRate(
             {
                 // Get the user's current location and then wait to let the location return
-                curLocation = CurrentLocation.getLocation(this)
+                CurrentLocation.getLocation(this) {
+                    curLocation = it
 
-                // Make sure that the location has been updated to avoid errors in future sections
-                if (curLocation != null) {
+                    // Make sure that the location has been updated to avoid errors in future sections
+                    if (curLocation != null) {
 
-                    // Get the weather using the shortForecast and continue to the rest of the operations
-                    WeatherClass.getWeatherData(curLocation!!, 0, "shortForecast") { weather ->
+                        // Get the weather using the shortForecast and continue to the rest of the operations
+                        WeatherClass.getWeatherData(curLocation!!, 0, "shortForecast") { weather ->
 
-                        // Find the weather icon corresponding to the user's current location to use
-                        // as the image for the user marker
-                        val userIcon = Bitmap.createScaledBitmap(
-                            WeatherParser(weather, this).img, 150, 150, false
-                        )
+                            // Find the weather icon corresponding to the user's current location to use
+                            // as the image for the user marker
+                            val userIcon = Bitmap.createScaledBitmap(
+                                WeatherParser(weather, this).img, 150, 150, false
+                            )
 
-                        runOnUiThread {
-                            /* if the route isn't created, follow user's current location and
-                             * update weather if needed */
-                            if (!createdRoute) {
-                                mMap.clear()
-                                mMap.addMarker(
-                                    MarkerOptions().position(curLocation!!).icon(
-                                        BitmapDescriptorFactory.fromBitmap(userIcon)
-                                    ).anchor(0.5f, 0.5f).title("Current Location")
-                                )!!
-                                mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
-                                mMap.moveCamera(CameraUpdateFactory.newLatLng(curLocation!!))
+                            runOnUiThread {
+                                /* if the route isn't created, follow user's current location and
+                                 * update weather if needed */
+                                if (!createdRoute) {
+                                    mMap.clear()
+                                    mMap.addMarker(
+                                        MarkerOptions().position(curLocation!!).icon(
+                                            BitmapDescriptorFactory.fromBitmap(userIcon)
+                                        ).anchor(0.5f, 0.5f).title("Current Location")
+                                    )!!
+                                    mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
+                                    mMap.moveCamera(CameraUpdateFactory.newLatLng(curLocation!!))
+                                }
                             }
                         }
                     }
                 }
             }, 0, 10, TimeUnit.SECONDS
         )
+
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -292,7 +331,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
     // Function to get permission to let google maps access the user's location and enable
     // the recenter button
     @SuppressLint("MissingPermission")
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun enableLocationButton() {
         // Make sure that the app has permission to access the user's permissions
         if (ActivityCompat.checkSelfPermission(
@@ -320,7 +358,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
     }
 
     // Function that is called when user grants app permission
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
