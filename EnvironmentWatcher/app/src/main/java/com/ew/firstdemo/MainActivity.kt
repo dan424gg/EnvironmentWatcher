@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
         mapFragment.getMapAsync(this)
 
         // start and destination coords placeholders
-        lateinit var start: LatLng
+        var start: LatLng? = null
         lateinit var destination: LatLng
 
         // Get the inputs from the text fields
@@ -131,7 +131,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
                 NameToCoordinates.getCityCoords(
                     startLocationInput.text.toString(), destLocationInput.text.toString(), this
                 ) { coords ->
-                    start = coords.first!!
+                    start = coords.first
                     destination = coords.second
 
                     if (start == LatLng(1.0, 1.0)) {
@@ -147,17 +147,20 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
                             Snackbar.LENGTH_SHORT
                         ).show()
                     } else {
+                        if (start == null) {
+                            start = viewModel.curLocation.value
+                        }
+
                         hideKeyboard()
 
                         runOnUiThread {
 
                             createdRoute = true
-
                             mMap.clear()
 
                             // Set the bounds of the route to the start and the destination
                             val routeBounds = LatLngBounds.builder()
-                            routeBounds.include(start).include(destination)
+                            routeBounds.include(start!!).include(destination)
                             mMap.moveCamera(
                                 CameraUpdateFactory.newLatLngBounds(
                                     routeBounds.build(), 1000, 1000, 0
@@ -185,7 +188,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
                         }
 
                         // Calculate the optimal route for the user's requested directions
-                        RoutingClass.calling(mMap, start, destination, this)
+                        RoutingClass.calling(mMap, start!!, destination, this)
                     }
                 }
             }
@@ -238,13 +241,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
     }
 
     // Performs operations related to the map once it is ready
+    @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
         // Set the global mMap variable to point to the now initialized googleMap
         mMap = googleMap
         mMap.setOnMapClickListener(this)
 
         viewModel.curLocation.observe(this) { curLocation ->
-            if (!viewModel.isLoading.value!!) {
+            if (!viewModel.isLoading.value!! && !createdRoute) {
+                mMap.clear()
+                mMap.isMyLocationEnabled = true
+                mMap.uiSettings.isMyLocationButtonEnabled = true
+
                 WeatherClass.getWeatherData(curLocation!!, 0, "shortForecast") { weather ->
 
                     // Find the weather icon corresponding to the user's current location to use
@@ -255,19 +263,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
 
                     runOnUiThread {
                         mMap.addMarker(
-                            MarkerOptions().position(curLocation!!).icon(
+                            MarkerOptions().position(curLocation).icon(
                                 BitmapDescriptorFactory.fromBitmap(userIcon)
                             ).anchor(0.5f, 0.5f).title("Current Location")
                         )!!
                         mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(curLocation!!))
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(curLocation))
                     }
                 }
             }
         }
-
-        // Request permissions and enable the button to recenter the map
-        enableLocationButton()
 
         // Use a thread so that other processes do not have to wait for the location or weather
         val executor = Executors.newSingleThreadScheduledExecutor()
@@ -276,33 +281,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
         executor.scheduleAtFixedRate(
             {
                 viewModel.getLocation(this)
-//                if (curLocation != LatLng(0.0, 0.0)) {
-//
-//                    // Get the weather using the shortForecast and continue to the rest of the operations
-//                    WeatherClass.getWeatherData(curLocation!!, 0, "shortForecast") { weather ->
-//
-//                        // Find the weather icon corresponding to the user's current location to use
-//                        // as the image for the user marker
-//                        val userIcon = Bitmap.createScaledBitmap(
-//                            WeatherParser(weather, this).img, 150, 150, false
-//                        )
-//
-//                        runOnUiThread {
-//                            /* if the route isn't created, follow user's current location and
-//                             * update weather if needed */
-//                            if (!createdRoute) {
-//                                mMap.clear()
-//                                mMap.addMarker(
-//                                    MarkerOptions().position(curLocation!!).icon(
-//                                        BitmapDescriptorFactory.fromBitmap(userIcon)
-//                                    ).anchor(0.5f, 0.5f).title("Current Location")
-//                                )!!
-//                                mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
-//                                mMap.moveCamera(CameraUpdateFactory.newLatLng(curLocation!!))
-//                            }
-//                        }
-//                    }
-//                }
             }, 0, 10, TimeUnit.SECONDS
         )
 

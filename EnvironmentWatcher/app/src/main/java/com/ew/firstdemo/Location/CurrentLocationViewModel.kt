@@ -30,6 +30,15 @@ object CurrentLocationViewModel : ViewModel() {
         // Use a client to access the location API
         val client = LocationServices.getFusedLocationProviderClient(context)
 
+        // Get the most recent location
+        client.lastLocation.addOnSuccessListener {
+            if (it != null) {
+                _curLocation.value = LatLng(it.latitude, it.longitude)
+                sleep(2000)
+                _isLoading.value = false
+            }
+        }
+
         // Make sure the app was granted the needed permissions
         if (ActivityCompat.checkSelfPermission(
                 context,
@@ -47,15 +56,6 @@ object CurrentLocationViewModel : ViewModel() {
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 ), 1
             )
-        }
-
-        // Get the most recent location
-        client.lastLocation.addOnSuccessListener {
-            if (it != null) {
-                _curLocation.value = LatLng(it.latitude, it.longitude)
-                sleep(2000)
-                _isLoading.value = false
-            }
         }
     }
 }

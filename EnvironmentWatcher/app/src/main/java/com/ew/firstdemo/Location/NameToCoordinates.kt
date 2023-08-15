@@ -3,7 +3,7 @@ package com.ew.firstdemo.Location
 import android.location.Address
 import android.location.Geocoder
 import android.os.Build
-import android.util.Log
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import com.ew.firstdemo.MainActivity
 import com.google.android.gms.maps.model.LatLng
@@ -59,7 +59,7 @@ object NameToCoordinates {
                 } else {
                     listener.invoke(
                         Pair(
-                            LatLng(48.754902, -122.478119), destinationCoords
+                            null, destinationCoords
                         )
                     )
                 }
