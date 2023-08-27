@@ -7,12 +7,12 @@ plugins {
 }
 
 android {
-    namespace 'com.ew.firstdemo'
+    namespace 'com.ew.firstDemo'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.ew.firstdemo"
-        minSdk 23
+        applicationId "com.ew.firstDemo"
+        minSdk 33
         targetSdk 33
         versionCode 1
         versionName "1.0"
