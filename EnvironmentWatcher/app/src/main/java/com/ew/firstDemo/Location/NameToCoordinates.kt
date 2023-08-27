@@ -12,7 +12,6 @@ import kotlin.coroutines.resume
 object NameToCoordinates {
 
     // Returns the first city that most closely matches the user's input
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     suspend fun getCoordinates(
         location: String
     ): Result<LatLng?> {

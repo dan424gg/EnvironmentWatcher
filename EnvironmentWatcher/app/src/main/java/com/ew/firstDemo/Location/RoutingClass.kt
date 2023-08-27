@@ -26,7 +26,6 @@ object RoutingClass {
     private var numWaypoints: Int = 5
 
     // Get routes
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     suspend fun getRouteInfo(origin: LatLng, destination: LatLng): RouteData? {
 
         val urlDirections =
@@ -52,7 +51,6 @@ object RoutingClass {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private suspend fun checkCondOfRoute(duration: Int, steps: JSONArray): List<LocationData>? {
         val tempRouteInfo: MutableList<LocationData> = emptyList<LocationData>().toMutableList()
 

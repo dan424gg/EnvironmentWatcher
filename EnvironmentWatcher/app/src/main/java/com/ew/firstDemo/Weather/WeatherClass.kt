@@ -25,7 +25,6 @@ object WeatherClass {
      *
      * Method calls 'getNWSPropertyJSON' which is another callback function.
      */
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     suspend fun getWeatherData(
         location: LatLng,
         hour: Int = 0,
@@ -60,7 +59,6 @@ object WeatherClass {
      *
      * takes away need for two separate functions to get a specific property
      */
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     suspend private fun getNWSPropertyJSON(
         location: LatLng,
         property: String
@@ -97,8 +95,6 @@ object WeatherClass {
             .header("User-agent", "an agent")
             .build()
 
-        //TODO: handle timeouts (.isSuccessful doesn't handle timeouts, so the app crashes)
-        //maybe put this on a loop, in the event of a timeout??
         try {
             okHttpClient.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {

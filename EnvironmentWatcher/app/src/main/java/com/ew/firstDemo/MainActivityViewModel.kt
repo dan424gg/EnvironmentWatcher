@@ -27,12 +27,6 @@ class MainActivityViewModel() : ViewModel() {
     private val _locationState = MutableStateFlow(LocationState())
     val locationState: StateFlow<LocationState> = _locationState
 
-//    init {
-//        viewModelScope.launch {
-//            getCurrentLocationInfo()
-//        }
-//    }
-
     suspend fun getCurrentLocationInfo() {
         viewModelScope.launch {
             val location = LocationState()
@@ -98,12 +92,14 @@ class MainActivityViewModel() : ViewModel() {
             }
         }
 
-        _locationState.emit(
-            tempLocationState.copy(
-                route = RoutingClass.getRouteInfo(startCoordinates, endCoordinates),
-                isLoading = false
+        viewModelScope.launch {
+            _locationState.emit(
+                tempLocationState.copy(
+                    route = RoutingClass.getRouteInfo(startCoordinates, endCoordinates),
+                    isLoading = false
+                )
             )
-        )
+        }
     }
 
     private suspend fun getWeatherInfo(coords: LatLng): String {

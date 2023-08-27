@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -18,12 +17,12 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
+import android.widget.ProgressBar
+import android.widget.RelativeLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
@@ -38,7 +37,7 @@ import com.google.android.gms.maps.model.*
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import java.security.KeyStore.LoadStoreParameter
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
@@ -95,6 +94,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
         // initialize button variables
         val navSwitch: SwitchCompat = findViewById(R.id.navigation)
         val dirButton: Button = findViewById(R.id.dirButton)
+        val loadingPanel: ProgressBar = findViewById(R.id.loadingPanel)
 
         // get array of cities for autocomplete
         val cities = resources.getStringArray(R.array.USCities)
@@ -131,12 +131,23 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
                 createdRoute = true
                 startLocationInput.visibility = View.VISIBLE
                 destLocationInput.visibility = View.VISIBLE
-                dirButton.visibility = View.VISIBLE
+                dirButton!!.visibility = View.VISIBLE
             } else {
                 createdRoute = false
                 startLocationInput.visibility = View.INVISIBLE
                 destLocationInput.visibility = View.INVISIBLE
-                dirButton.visibility = View.INVISIBLE
+                dirButton!!.visibility = View.INVISIBLE
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.locationState.collect {
+                if (viewModel.locationState.value.isLoading && createdRoute) {
+                    // show loading screen
+                    loadingPanel.visibility = View.VISIBLE;
+                } else {
+                    loadingPanel.visibility = View.GONE;
+                }
             }
         }
     }
