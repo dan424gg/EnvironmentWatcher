@@ -1,13 +1,17 @@
 package com.ew.firstdemo.Weather
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
+import com.ew.firstdemo.MainActivityViewModel.Result
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
-import kotlin.concurrent.thread
 
 object WeatherClass {
 
@@ -21,34 +25,34 @@ object WeatherClass {
      *
      * Method calls 'getNWSPropertyJSON' which is another callback function.
      */
-    fun getWeatherData(location: LatLng, hour: Int = 0, property: String = "detailedForecast", callback: (result: String) -> Unit) {
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    suspend fun getWeatherData(
+        location: LatLng,
+        hour: Int = 0,
+        property: String = "detailedForecast"
+    ): Result<String> {
 
-        getNWSPropertyJSON(location, "forecastHourly") { json ->
-            var content = location.toString()
+        return withContext(Dispatchers.IO)
+        {
+            when (val json = getNWSPropertyJSON(location, "forecastHourly")) {
+                is Result.Success<JSONObject> -> {
+                    try {
+                        val period =
+                            json.data!!.getJSONObject("properties").getJSONArray("periods").getString(hour)
+                        val content = JSONObject(period).getString(property)
+                        Result.Success(content)
+                    } catch (e: JSONException) {
+                        Log.d("hail", "getWeatherData error: $e")
+                        Result.Error(e.toString())
+                    }
+                }
 
-            try {
-                val period =
-                    json.getJSONObject("properties").getJSONArray("periods").getString(hour)
-                content = JSONObject(period).getString(property)
-            } catch(e: JSONException) {
-                Log.d("hail", "getWeatherData error: $e")
+                is Result.Error<JSONObject> -> {
+                    Result.Error(json.message!!)
+                }
             }
 
-            callback.invoke(content)
         }
-    }
-
-
-    fun getWeatherData(location: LatLng, hour: Int = 0, property: String = "detailedForecast") : String {
-        var content = "Insert weather"
-
-        getNWSPropertyJSON(location, "forecastHourly") { json ->
-//            val content = json.getJSONObject("properties").getJSONObject("elevation").getDouble("value").toString()   // For debugging
-            val period = json.getJSONObject("properties").getJSONArray("periods").getString(hour)
-            content = JSONObject(period).getString(property)
-        }
-
-        return content
     }
 
     /* Get a specific JSON object from the list of 'properties' given by the initial NWS request
@@ -56,12 +60,16 @@ object WeatherClass {
      *
      * takes away need for two separate functions to get a specific property
      */
-    private fun getNWSPropertyJSON(location: LatLng, property: String, callback: (result: JSONObject) -> Unit) {
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    suspend private fun getNWSPropertyJSON(
+        location: LatLng,
+        property: String
+    ): Result<JSONObject> {
         val latitude = location.latitude
         val longitude = location.longitude
-        lateinit var json : JSONObject
+        lateinit var json: JSONObject
 
-        thread {
+        return withContext(Dispatchers.IO) {
             try {
                 json = run("https://api.weather.gov/points/$latitude,$longitude")?.let {
                     JSONObject(
@@ -75,17 +83,15 @@ object WeatherClass {
                     )
                 }!!
 
-                callback.invoke(json)
+                Result.Success(json)
             } catch (e: JSONException) {
-                // Catch the error to stop the crashing
-
-                json = JSONObject()
-                callback.invoke(json)
+                Log.d("hail", "getNWSPropertyJSON error: " + e.toString())
+                Result.Error(e.toString())
             }
         }
     }
 
-    private fun run(url : String) : String? {
+    private fun run(url: String): String? {
         val request = Request.Builder()
             .url(url)
             .header("User-agent", "an agent")

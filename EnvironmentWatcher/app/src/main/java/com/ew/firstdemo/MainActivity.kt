@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
@@ -25,181 +24,138 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.app.ActivityCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.ew.firstdemo.Location.CurrentLocationViewModel
-import com.ew.firstdemo.Location.NameToCoordinates
-import com.ew.firstdemo.Location.RoutingClass
-import com.ew.firstdemo.Weather.WeatherClass
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+//import com.ew.firstdemo.Location.RoutingClass
 import com.ew.firstdemo.Weather.WeatherParser
-import com.ew.firstdemo.databinding.ActivityMainBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.material.snackbar.Snackbar
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
     private lateinit var mMap: GoogleMap
-    private lateinit var binding: ActivityMainBinding
     private var createdRoute = false
-    val viewModel by viewModels<CurrentLocationViewModel>()
+    val viewModel by viewModels<MainActivityViewModel>()
 
     @SuppressLint("MissingPermission", "UseCompatLoadingForDrawables")
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Initialize the app
         super.onCreate(savedInstanceState)
-        viewModel.getLocation(this)
-
-        /* initialize splash screen */
         installSplashScreen().apply {
             this.setKeepOnScreenCondition {
-                viewModel.isLoading.value!!
+                viewModel.locationState.value.isLoading
             }
         }
 
-        setContentView(R.layout.activity_main)
+        // Make sure the app was granted the needed permissions
+        if (ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // Get permissions if needed
+            ActivityCompat.requestPermissions(
+                this, arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ), 1
+            )
+        }
 
-        // Create the channel to allow utilize notifications
-//        NotificationClass.makeNotificationChannel(
-//            this, "default", getString(R.string.WeatherUpdateChannelName), "Current weather", 3
-//        )
+        setContentView(R.layout.activity_main)
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        // start and destination coords placeholders
-        var start: LatLng? = null
-        lateinit var destination: LatLng
+        // initialize button variables
+        val navSwitch: SwitchCompat = findViewById(R.id.navigation)
+        val dirButton: Button = findViewById(R.id.dirButton)
+
+        // get array of cities for autocomplete
+        val cities = resources.getStringArray(R.array.USCities)
 
         // Get the inputs from the text fields
         val startLocationInput = findViewById<AutoCompleteTextView>(R.id.startLocation)
         val destLocationInput = findViewById<AutoCompleteTextView>(R.id.endLocation)
 
-        // initialize button variables
-        val navSwitch: SwitchCompat = findViewById(R.id.navigation)
-        val dirButton: Button = findViewById(R.id.dirButton)
-
-        // handle light/night time configuration
-        when (applicationContext.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
-            Configuration.UI_MODE_NIGHT_YES -> run {
-                startLocationInput.background = getDrawable(R.drawable.edit_text_bg_night)
-                destLocationInput.background = getDrawable(R.drawable.edit_text_bg_night)
-                navSwitch.background = getDrawable(R.drawable.edit_text_bg_night)
-            }
-
-            else -> run {
-
-                startLocationInput.background = getDrawable(R.drawable.edit_text_background)
-                destLocationInput.background = getDrawable(R.drawable.edit_text_background)
-                navSwitch.background = getDrawable(R.drawable.edit_text_background)
-            }
-        }
-
-        // get array of cities for autocomplete
-        val cities = resources.getStringArray(R.array.USCities)
-
         // Autocompletes text user inputs in source and destination fields
         setupAutoComplete(startLocationInput, cities)
         setupAutoComplete(destLocationInput, cities)
 
-        // When a autocomplete choice is picked, hide keyboard
+        // When an autocomplete choice is picked, hide keyboard
         startLocationInput.setOnDismissListener {
             hideKeyboard()
         }
 
-        // When a autocomplete choice is picked, hide keyboard
+        // When an autocomplete choice is picked, hide keyboard
         destLocationInput.setOnDismissListener {
             hideKeyboard()
         }
 
         // Find directions when the button is pushed
         dirButton.setOnClickListener {
+            lifecycleScope.launch {
+                viewModel.getRoute(
+                    startLocationInput.text.toString(), destLocationInput.text.toString()
+                )
 
-            // Set destination coordinates
-            if (destLocationInput.text.toString() == "") {
-                // Show pop-up saying that destination is required
-                Snackbar.make(
-                    findViewById(R.id.mainView), "A destination is required!", Snackbar.LENGTH_SHORT
-                ).show()
-            } else {
-                Log.d("hail", startLocationInput.text.toString())
-                NameToCoordinates.getCityCoords(
-                    startLocationInput.text.toString(), destLocationInput.text.toString(), this
-                ) { coords ->
-                    start = coords.first
-                    destination = coords.second
-
-                    if (start == LatLng(1.0, 1.0)) {
-                        Snackbar.make(
-                            findViewById(R.id.mainView),
-                            "The start location that was supplied is not applicable!",
-                            Snackbar.LENGTH_SHORT
-                        ).show()
-                    } else if (destination == LatLng(1.0, 1.0)) {
-                        Snackbar.make(
-                            findViewById(R.id.mainView),
-                            "The destination that was supplied is not applicable!",
-                            Snackbar.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        if (start == null) {
-                            start = viewModel.curLocation.value
-                        }
-
-                        hideKeyboard()
-
-                        runOnUiThread {
-
-                            createdRoute = true
-                            mMap.clear()
-
-                            // Set the bounds of the route to the start and the destination
-                            val routeBounds = LatLngBounds.builder()
-                            routeBounds.include(start!!).include(destination)
-                            mMap.moveCamera(
-                                CameraUpdateFactory.newLatLngBounds(
-                                    routeBounds.build(), 1000, 1000, 0
-                                )
-                            )
-
-                            // based on weather data for the destination, display it on the map
-                            WeatherClass.getWeatherData(
-                                destination, 0, "shortForecast"
-                            ) { weather ->
-
-                                // Find the weather at the destination
-                                val destIcon = Bitmap.createScaledBitmap(
-                                    WeatherParser(weather, this).img, 150, 150, false
-                                )
-
-                                runOnUiThread {
-                                    mMap.addMarker(
-                                        MarkerOptions().position(destination).icon(
-                                            BitmapDescriptorFactory.fromBitmap(destIcon)
-                                        ).anchor(0.5f, 0.5f).title("Destination")
-                                    )!!
-                                }
-                            }
-                        }
-
-                        // Calculate the optimal route for the user's requested directions
-                        RoutingClass.calling(mMap, start!!, destination, this)
-                    }
-                }
+//                if (state.error != null) {
+//                    Snackbar.make(
+//                        findViewById(R.id.mainView), state.error!!, Snackbar.LENGTH_SHORT
+//                    ).show()
+//                    return@launch
+//                }
+//
+//                val route = state.route!!
+//                mMap.clear()
+//                mMap.addPolyline(
+//                    PolylineOptions().addAll(route.path!!).color(
+//                        android.graphics.Color.BLUE
+//                    )
+//                )
+//
+//                for (location in route.routeInfo!!) {
+//                    val locIcon = Bitmap.createScaledBitmap(
+//                        WeatherParser(
+//                            location.weather!!, this@MainActivity
+//                        ).img, 150, 150, false
+//                    )
+//                    mMap.addMarker(
+//                        MarkerOptions().position(location.coordinates!!).title(location.weather!!)
+//                            .icon(
+//                                BitmapDescriptorFactory.fromBitmap(locIcon)
+//                            ).anchor(0.5f, 0.5f)
+//                    )
+//                }
+//
+//                val routeBounds = LatLngBounds.builder()
+//                routeBounds.include(route.routeInfo?.first()?.coordinates!!)
+//                    .include(route.routeInfo?.last()?.coordinates!!)
+//                mMap.moveCamera(
+//                    CameraUpdateFactory.newLatLngBounds(
+//                        routeBounds.build(), 1000, 1000, 0
+//                    )
+//                )
             }
         }
 
         navSwitch.setOnClickListener {
             if (navSwitch.isChecked) {
+                createdRoute = true
                 startLocationInput.visibility = View.VISIBLE
                 destLocationInput.visibility = View.VISIBLE
                 dirButton.visibility = View.VISIBLE
             } else {
+                createdRoute = false
                 startLocationInput.visibility = View.INVISIBLE
                 destLocationInput.visibility = View.INVISIBLE
                 dirButton.visibility = View.INVISIBLE
@@ -241,49 +197,81 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
     }
 
     // Performs operations related to the map once it is ready
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
         // Set the global mMap variable to point to the now initialized googleMap
         mMap = googleMap
         mMap.setOnMapClickListener(this)
 
-        viewModel.curLocation.observe(this) { curLocation ->
-            if (!viewModel.isLoading.value!! && !createdRoute) {
-                mMap.clear()
-                mMap.isMyLocationEnabled = true
-                mMap.uiSettings.isMyLocationButtonEnabled = true
-
-                WeatherClass.getWeatherData(curLocation!!, 0, "shortForecast") { weather ->
-
-                    // Find the weather icon corresponding to the user's current location to use
-                    // as the image for the user marker
+        lifecycleScope.launch {
+            viewModel.locationState.collect {
+                if (!createdRoute && !viewModel.locationState.value.isLoading) {
+                    val state = viewModel.locationState.value.curLocation!!
                     val userIcon = Bitmap.createScaledBitmap(
-                        WeatherParser(weather, this).img, 150, 150, false
+                        WeatherParser(state.weather!!, this@MainActivity).img, 150, 150, false
+                    )
+                    mMap.clear()
+                    mMap.isMyLocationEnabled = true
+                    mMap.uiSettings.isMyLocationButtonEnabled = true
+                    mMap.addMarker(
+                        MarkerOptions().position(state.coordinates!!).icon(
+                            BitmapDescriptorFactory.fromBitmap(userIcon)
+                        ).anchor(0.5f, 0.5f).title("Current Location")
+                    )!!
+                    mMap.moveCamera(CameraUpdateFactory.zoomTo(12f))
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(state.coordinates!!))
+                } else if (!viewModel.locationState.value.isLoading) {
+                    if (it.error != null) {
+                        Snackbar.make(
+                            findViewById(R.id.mainView), it.error!!, Snackbar.LENGTH_SHORT
+                        ).show()
+                        return@collect
+                    }
+
+                    val route = it.route!!
+                    mMap.clear()
+                    mMap.addPolyline(
+                        PolylineOptions().addAll(route.path!!).color(
+                            android.graphics.Color.BLUE
+                        )
                     )
 
-                    runOnUiThread {
+                    for (location in route.routeInfo!!) {
+                        val locIcon = Bitmap.createScaledBitmap(
+                            WeatherParser(
+                                location.weather!!, this@MainActivity
+                            ).img, 150, 150, false
+                        )
                         mMap.addMarker(
-                            MarkerOptions().position(curLocation).icon(
-                                BitmapDescriptorFactory.fromBitmap(userIcon)
-                            ).anchor(0.5f, 0.5f).title("Current Location")
-                        )!!
-                        mMap.moveCamera(CameraUpdateFactory.zoomTo(10f))
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(curLocation))
+                            MarkerOptions().position(location.coordinates!!).title(location.weather!!)
+                                .icon(
+                                    BitmapDescriptorFactory.fromBitmap(locIcon)
+                                ).anchor(0.5f, 0.5f)
+                        )
                     }
+
+                    val routeBounds = LatLngBounds.builder()
+                    routeBounds.include(route.path!!.first())
+                        .include(route.path!!.last())
+                    mMap.moveCamera(
+                        CameraUpdateFactory.newLatLngBounds(
+                            routeBounds.build(), 1000, 1000, 0
+                        )
+                    )
                 }
             }
         }
 
-        // Use a thread so that other processes do not have to wait for the location or weather
-        val executor = Executors.newSingleThreadScheduledExecutor()
-
-        // Use a thread so that other processes do not have to wait for the location or weather
-        executor.scheduleAtFixedRate(
-            {
-                viewModel.getLocation(this)
-            }, 0, 10, TimeUnit.SECONDS
-        )
-
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                while (!createdRoute) {
+                    Log.d("test", "updated location")
+                    viewModel.getCurrentLocationInfo()
+                    delay(10000L)
+                }
+            }
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -300,27 +288,27 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapCli
     // the recenter button
     @SuppressLint("MissingPermission")
     private fun enableLocationButton() {
-        // Make sure that the app has permission to access the user's permissions
-        if (ActivityCompat.checkSelfPermission(
-                this, Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
-                this, Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-
-            // If not, get them
-            ActivityCompat.requestPermissions(
-                this, arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ), 1
-            )
-
-        } else {
-            // Otherwise, enable the location features
-            mMap.isMyLocationEnabled = true
-            mMap.uiSettings.isMyLocationButtonEnabled = true
-        }
+//        // Make sure that the app has permission to access the user's permissions
+//        if (ActivityCompat.checkSelfPermission(
+//                this, Manifest.permission.ACCESS_FINE_LOCATION
+//            ) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
+//                this, Manifest.permission.ACCESS_COARSE_LOCATION
+//            ) != PackageManager.PERMISSION_GRANTED
+//        ) {
+//
+//            // If not, get them
+//            ActivityCompat.requestPermissions(
+//                this, arrayOf(
+//                    Manifest.permission.ACCESS_FINE_LOCATION,
+//                    Manifest.permission.ACCESS_COARSE_LOCATION
+//                ), 1
+//            )
+//
+//        } else {
+//            // Otherwise, enable the location features
+//            mMap.isMyLocationEnabled = true
+//            mMap.uiSettings.isMyLocationButtonEnabled = true
+//        }
     }
 
     // Function that is called when user grants app permission

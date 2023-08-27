@@ -1,132 +1,95 @@
 package com.ew.firstdemo.Location
 
-import android.app.Activity
-import android.graphics.Bitmap
+import android.os.Build
+import android.util.Log
+import com.ew.firstdemo.MainActivityViewModel.Result
+import androidx.annotation.RequiresApi
 import com.ew.firstdemo.Weather.WeatherClass.getWeatherData
-import com.ew.firstdemo.Weather.WeatherParser
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.PolyUtil
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PolylineOptions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONArray
 import org.json.JSONObject
+import java.lang.Exception
 import java.lang.Math.floorDiv
-//import java.lang.Math.sqrt
-import kotlin.concurrent.thread
 import kotlin.math.*
 
-/* when you zoom in, show more waypoints
-    at "normal" zoom, show waypoints for a range of every 100 miles
-    when you zoom in, show more precise waypoints
-        zoom goes to 22
-
-   have UI based around map view
- */
 object RoutingClass {
 
     private val client = OkHttpClient()
-    private var path: List<LatLng> = ArrayList()
-    private var originLat: Double = 0.0
-    private var originLng: Double = 0.0
-    private var destLat: Double = 0.0
-    private var destLng: Double = 0.0
+    private var routeData = RouteData()
 
     // Number of segments in route
-    private var numWaypoints : Int = 5
+    private var numWaypoints: Int = 5
 
-    fun calling(googleMap: GoogleMap, origin: LatLng, destination: LatLng, activity: Activity) {
+    // Get routes
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    suspend fun getRouteInfo(origin: LatLng, destination: LatLng): RouteData? {
 
-        // deconstruct LatLng objects to use in URL
-        originLat = origin.latitude
-        originLng = origin.longitude
-        destLat = destination.latitude
-        destLng = destination.longitude
-
-        // construct URL
         val urlDirections =
-            "https://api.mapbox.com/directions/v5/mapbox/driving/$originLng,$originLat;$destLng,$destLat?steps=true&geometries=polyline&access_token=pk.eyJ1IjoiZGFuNDI0Z2ciLCJhIjoiY2xlZXF2cDBsMDB5NjN6dWwwM2F3YWc1ZCJ9.7pQJfMN_gPpJNBJ2PqqnzQ"
+            "https://api.mapbox.com/directions/v5/mapbox/driving/${origin.longitude},${origin.latitude};${destination.longitude},${destination.latitude}?steps=true&geometries=polyline&access_token=pk.eyJ1IjoiZGFuNDI0Z2ciLCJhIjoiY2xlZXF2cDBsMDB5NjN6dWwwM2F3YWc1ZCJ9.7pQJfMN_gPpJNBJ2PqqnzQ"
 
-        thread {
-            getJSONObject(urlDirections) { json ->
+        when (val result = getJSONObject(urlDirections)) {
+            is Result.Success<JSONObject> -> {
+                // Parse JSON object into noteworthy objects
+                val routes = result.data!!.getJSONArray("routes")
+                val duration = routes.getJSONObject(0).getInt("duration")
+                val polyline = routes.getJSONObject(0).getString("geometry")
+                val steps =
+                    routes.getJSONObject(0).getJSONArray("legs").getJSONObject(0)
+                        .getJSONArray("steps")
+                routeData.path = PolyUtil.decode(polyline)
+                routeData.routeInfo = checkCondOfRoute(duration, steps)
+                return routeData
+            }
 
-                getRouteInfo(json, googleMap, activity)
-                displayRoute(googleMap, activity)
+            is Result.Error<JSONObject> -> {
+                return null
             }
         }
     }
 
-    // Get routes
-    private fun getRouteInfo(json: JSONObject, googleMap: GoogleMap, activity: Activity) {
-
-        // Parse JSON object into noteworthy objects
-        val routes = json.getJSONArray("routes")
-        val duration = routes.getJSONObject(0).getInt("duration")
-        val polyline = routes.getJSONObject(0).getString("geometry")
-
-        val steps = routes.getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps")
-
-        path = PolyUtil.decode(polyline)
-        checkCondOfRoute(googleMap, duration, activity, steps)
-    }
-
-    private fun displayRoute(googleMap: GoogleMap, activity: Activity) {
-
-        // On each segment of path, update UI map with path
-        activity.runOnUiThread {
-            googleMap.addPolyline(
-                PolylineOptions().addAll(path).color(
-                    android.graphics.Color.BLUE
-                )
-            )
-        }
-    }
-
-    private fun checkCondOfRoute(googleMap: GoogleMap, duration: Int, activity: Activity, steps: JSONArray) {
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private suspend fun checkCondOfRoute(duration: Int, steps: JSONArray): List<LocationData>? {
+        val tempRouteInfo: MutableList<LocationData> = emptyList<LocationData>().toMutableList()
 
         // Split time based on numSplits
         val segmentTime = floorDiv(duration, numWaypoints)
-
         val locations = getLocations(steps)
 
         for (i in locations.indices) {
-
             // Add cur time to segmentTime
             val futureTime = (segmentTime * i)
 
             // Round futureTime to nearest hour
             val hour = round((futureTime / 60.0) / 60.0).toInt()
 
-            getWeatherData(locations[i], hour, "shortForecast") { result ->
-                val locIcon =
-                    Bitmap.createScaledBitmap(
-                        WeatherParser(
-                            result,
-                            activity.applicationContext
-                        ).img, 150, 150, false
-                    )
+            when (val weather = getWeatherData(locations[i], hour, "shortForecast")) {
+                is Result.Success<String> -> {
+                    tempRouteInfo.add(LocationData(locations[i], weather.data))
+                }
 
-                activity.runOnUiThread {
-                    googleMap.addMarker(
-                        MarkerOptions().position(locations[i]).title(result).icon(
-                            BitmapDescriptorFactory.fromBitmap(locIcon)
-                        ).anchor(0.5f, 0.5f)
-                    )
+                is Result.Error<String> -> {
+                    Log.d("hail", "inside checkCondOfRoute" + weather.message)
+                    return null
                 }
             }
         }
+
+        return tempRouteInfo
     }
 
-    private fun getLocations(steps: JSONArray) : List<LatLng> {
+    private fun getLocations(steps: JSONArray): List<LatLng> {
 
         // Master list of coordinates
         val coordsList = mutableListOf<LatLng>()
 
         // List of distances with it's corresponding 'to' and 'from' coordinates
-        val distWCoords = mutableListOf<Pair<Double,Pair<LatLng, LatLng>>>()
+        val distWCoords = mutableListOf<Pair<Double, Pair<LatLng, LatLng>>>()
 
         // Output list of waypoint locations
         val output: MutableList<LatLng> = ArrayList()
@@ -135,7 +98,14 @@ object RoutingClass {
         var totDistance = 0.0
 
         // Initialize coordsList with origin coordinates
-        coordsList.add(LatLng(originLat, originLng))
+        coordsList.add(
+            LatLng(
+                steps.getJSONObject(0).getJSONArray("intersections").getJSONObject(0)
+                    .getJSONArray("location").getDouble(1),
+                steps.getJSONObject(0).getJSONArray("intersections").getJSONObject(0)
+                    .getJSONArray("location").getDouble(0)
+            )
+        )
 
         // For each step in a route, find the coordinates at each intersection
         for (i in 1 until steps.length()) {
@@ -153,10 +123,16 @@ object RoutingClass {
 
                 // At each coordinate, find the distance between the current coordinate and the most
                 // recent coordinate, add to totDistance and log values in distWCoords
-                val distance = distance(coordsList[coordsList.size - 2], coordsList[coordsList.size - 1])
+                val distance =
+                    distance(coordsList[coordsList.size - 2], coordsList[coordsList.size - 1])
                 totDistance += distance
 
-                distWCoords.add(Pair(distance, Pair(coordsList[coordsList.size - 2], coordsList[coordsList.size - 1])))
+                distWCoords.add(
+                    Pair(
+                        distance,
+                        Pair(coordsList[coordsList.size - 2], coordsList[coordsList.size - 1])
+                    )
+                )
             }
         }
 
@@ -185,21 +161,30 @@ object RoutingClass {
 
     private fun distance(coord1: LatLng, coord2: LatLng): Double {
 
-        return sqrt((coord2.latitude - coord1.latitude).pow(2) + (coord2.longitude - coord1.longitude).pow(2))
+        return sqrt(
+            (coord2.latitude - coord1.latitude).pow(2) + (coord2.longitude - coord1.longitude).pow(
+                2
+            )
+        )
     }
 
-    fun getJSONObject(url : String, callback: (result: JSONObject) -> Unit) {
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    suspend fun getJSONObject(url: String): Result<JSONObject> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val string: String
+                val request = Request.Builder()
+                    .url(url)
+                    .build()
 
-        val string : String
-        val request = Request.Builder()
-            .url(url)
-            .build()
-
-        client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) throw java.io.IOException("$response")
-            string = response.body!!.string()
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) throw java.io.IOException("$response")
+                    string = response.body!!.string()
+                }
+                Result.Success(JSONObject(string))
+            } catch (e: Exception) {
+                Result.Error(e.toString())
+            }
         }
-
-        callback.invoke(JSONObject(string))
     }
 }
