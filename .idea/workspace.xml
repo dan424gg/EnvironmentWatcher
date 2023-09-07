@@ -1,13 +1,244 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AndroidLayouts">
+    <shared>
+      <config />
+    </shared>
+  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d31a130f-3a37-44ac-8cf1-7ffb4c126e98" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/EnvironmentWatcher.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/EnvironmentWatcher.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/EnvironmentWatcher.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_activity_activity_1_6_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_activity_activity_ktx_1_5_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_activity_activity_ktx_1_6_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_annotation_annotation_1_3_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_annotation_annotation_experimental_1_3_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_appcompat_appcompat_1_6_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_appcompat_appcompat_resources_1_6_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_arch_core_core_common_2_1_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_arch_core_core_runtime_2_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_arch_core_core_runtime_2_1_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_cardview_cardview_1_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_collection_collection_1_1_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_collection_collection_ktx_1_1_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_concurrent_concurrent_futures_1_0_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_constraintlayout_constraintlayout_2_1_4_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_coordinatorlayout_coordinatorlayout_1_1_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_core_core_1_9_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_core_core_ktx_1_7_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_core_core_ktx_1_9_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_cursoradapter_cursoradapter_1_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_customview_customview_1_1_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_databinding_viewbinding_7_3_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_documentfile_documentfile_1_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_drawerlayout_drawerlayout_1_1_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_dynamicanimation_dynamicanimation_1_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_fragment_fragment_1_5_4_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_fragment_fragment_ktx_1_5_4_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_interpolator_interpolator_1_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_legacy_legacy_support_core_utils_1_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_common_2_5_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_livedata_2_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_livedata_core_2_5_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_livedata_core_ktx_2_5_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_runtime_2_5_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_runtime_ktx_2_5_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_viewmodel_2_5_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_viewmodel_ktx_2_5_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_viewmodel_savedstate_2_5_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_loader_loader_1_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_localbroadcastmanager_localbroadcastmanager_1_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_navigation_navigation_common_2_5_3_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_navigation_navigation_common_ktx_2_5_3_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_navigation_navigation_fragment_2_5_3_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_navigation_navigation_fragment_ktx_2_5_3_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_navigation_navigation_runtime_2_5_3_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_navigation_navigation_runtime_ktx_2_5_3_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_navigation_navigation_ui_2_5_3_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_navigation_navigation_ui_ktx_2_5_3_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_print_print_1_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_recyclerview_recyclerview_1_1_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_savedstate_savedstate_1_2_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_savedstate_savedstate_ktx_1_2_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_slidingpanelayout_slidingpanelayout_1_2_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_annotation_1_0_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_core_1_5_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_espresso_espresso_core_3_5_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_espresso_espresso_idling_resource_3_5_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_ext_junit_1_1_5_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_monitor_1_6_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_runner_1_5_2_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_services_storage_1_4_2_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_tracing_tracing_1_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_transition_transition_1_2_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_transition_transition_1_4_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_vectordrawable_vectordrawable_1_1_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_vectordrawable_vectordrawable_animated_1_1_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_versionedparcelable_versionedparcelable_1_1_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_viewpager2_viewpager2_1_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_viewpager_viewpager_1_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_material_material_1_7_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_code_findbugs_jsr305_2_0_2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_guava_listenablefuture_1_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_squareup_javawriter_2_1_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__javax_inject_javax_inject_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__junit_junit_4_13_2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_hamcrest_hamcrest_core_1_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_hamcrest_hamcrest_integration_1_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_hamcrest_hamcrest_library_1_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_jetbrains_annotations_13_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_jetbrains_kotlin_kotlin_stdlib_1_7_20.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_jetbrains_kotlin_kotlin_stdlib_common_1_7_20.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_jetbrains_kotlin_kotlin_stdlib_jdk7_1_7_20.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_jetbrains_kotlin_kotlin_stdlib_jdk8_1_7_20.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_jetbrains_kotlinx_kotlinx_coroutines_android_1_6_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_1_6_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/app/EnvironmentWatcher.app.androidTest.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/app/EnvironmentWatcher.app.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/app/EnvironmentWatcher.app.main.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/app/EnvironmentWatcher.app.unitTest.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/.idea/.name" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/.idea/androidTestResultsUserPreferences.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/.idea/codeStyles/Project.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/.idea/gradle.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/.idea/kotlinc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/.idea/gradle.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/debug/app-debug.aab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/google-services.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/proguard-rules.pro" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/release/app-release.aab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/androidTest/java/com/ew/firstDemo/ExampleInstrumentedTest.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/AndroidManifest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/ic_launcher-playstore.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/java/com/ew/firstDemo/Alerts/AlertPing.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/java/com/ew/firstDemo/Location/LocationData.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/java/com/ew/firstDemo/Location/LocationState.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/java/com/ew/firstDemo/Location/NameToCoordinates.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/java/com/ew/firstDemo/Location/RouteData.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/java/com/ew/firstDemo/Location/RoutingClass.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/java/com/ew/firstDemo/MainActivity.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/java/com/ew/firstDemo/MainActivityViewModel.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/java/com/ew/firstDemo/MyApplication.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/java/com/ew/firstDemo/Notifications/NotificationClass.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/java/com/ew/firstDemo/Notifications/NotificationService.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/java/com/ew/firstDemo/Notifications/NotificationTypes.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/java/com/ew/firstDemo/Notifications/WeatherTypes.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/java/com/ew/firstDemo/SettingsActivity.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/java/com/ew/firstDemo/Weather/WeatherClass.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/java/com/ew/firstDemo/Weather/WeatherParser.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable-anydpi-v24/notification_icon.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable-hdpi/ic_rain.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable-hdpi/ic_sun.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable-hdpi/notification_icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable-mdpi/ic_rain.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable-mdpi/ic_sun.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable-mdpi/notification_icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable-xhdpi/ic_rain.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable-xhdpi/ic_sun.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable-xhdpi/notification_icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable-xxhdpi/ic_rain.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable-xxhdpi/ic_sun.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable-xxhdpi/notification_icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable-xxxhdpi/ic_rain.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable-xxxhdpi/ic_sun.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/avalanche.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/bad_thunderstorm.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/bg_gradient.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/cloud.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/cloudy.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/cold.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/dust_sand.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/edit_text_background.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/edit_text_bg_night.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/fire.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/flood.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/fog.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/gear.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/heavy_rain.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/hot.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/hurricane.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/light_rain.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/lightning.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/moon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/moon_cloud.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/partly_cloudy.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/rain.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/recenter.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/snow.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/splash_background.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/sun.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/sunny.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/thunderstorm.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/thunderstorm_rain.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/tornado.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/unknown.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/user_icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/volcano.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/wind.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/drawable/wind_warning.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/layout/activity_main.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/layout/fragment_maps.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/layout/settings_activity.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/menu/map_menu.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/mipmap-hdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/mipmap-hdpi/ic_launcher_round.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/mipmap-mdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/mipmap-mdpi/ic_launcher_round.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/mipmap-xhdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/values-night/splash.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/values-night/themes.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/values/arrays.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/values/colors.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/values/ic_launcher_background.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/values/splash.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/values/strings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/values/themes.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/values/us_cities.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/xml/backup_rules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/xml/data_extraction_rules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/main/res/xml/root_preferences.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/app/src/test/java/com/ew/firstDemo/ExampleUnitTest.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/gradle.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/gradlew" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/gradlew.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/hs_err_pid34092.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/local.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EnvironmentWatcher/settings.gradle" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,6 +251,44 @@
       <ProjectState />
     </projectState>
   </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$/app">
+          <activation />
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="EnvironmentWatcher" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="EnvironmentWatcher" type="f1a62948:ProjectNode" />
+                <item name="app" type="2d1252cf:ModuleNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="EnvironmentWatcher" type="f1a62948:ProjectNode" />
+                <item name="app" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="EnvironmentWatcher" type="f1a62948:ProjectNode" />
+                <item name="app" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="other" type="c8890929:TasksNode$1" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
@@ -31,6 +300,9 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectId" id="2KkKlmstiTrl8SMwy2Wo5BqtNEf" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -41,8 +313,11 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;ScreenshotViewer.SavePath&quot;: &quot;/Users/wells/Desktop/EW stuff&quot;,
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/ProgramFiles/EnvironmentWatcher/FirstDemo&quot;,
+    &quot;com.google.services.firebase.aqiPopupShown&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/wells/coding/environmentwatcher&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
@@ -50,7 +325,7 @@
 }</component>
   <component name="RunManager">
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App">
-      <module name="EnvironmentWatcher.app.main" />
+      <module name="FirstDemo.app.main" />
       <option name="DEPLOY" value="true" />
       <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
       <option name="DEPLOY_AS_INSTANT" value="false" />
@@ -103,7 +378,22 @@
       <option name="ACTIVITY_CLASS" value="" />
       <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
       <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
-      <method v="2" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="FirstDemo" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="FirstDemo" />
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
