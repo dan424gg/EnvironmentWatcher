@@ -82,4 +82,6 @@ dependencies {
     implementation("androidx.cardview:cardview:1.0.0")
     implementation 'androidx.activity:activity-compose:1.7.2'
 
+    // Dependency for shared module
+    implementation (project(":shared"))
 }
